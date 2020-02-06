@@ -430,6 +430,7 @@ class ComposerStaticInit67b02b826b9dc4ffeb49f46c964b4b69
         'App\\Http\\Middleware\\TrustProxies' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustProxies.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
         'App\\Model\\Room' => __DIR__ . '/../..' . '/app/Model/Room.php',
+        'App\\Model\\BookingCustomer' => __DIR__ . '/../..' . '/app/Model/BookingCustomer.php',
         'App\\Model\\RoomCategory' => __DIR__ . '/../..' . '/app/Model/RoomCategory.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
         'App\\Providers\\AuthServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AuthServiceProvider.php',
