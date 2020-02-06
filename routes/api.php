@@ -19,6 +19,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::apiResource('/room_categories', 'RoomCategoryController');
-Route::group(['prefix'=>'room_categories'], function(){
-    Route::apiResource('/{room_category}/rooms', 'RoomController');
-});
+Route::apiResource('/rooms', 'RoomController');
+
+// Route::group(['prefix'=>'room_categories'], function(){
+    // Route::apiResource('/{room_category}/rooms', 'RoomController');
+// });
