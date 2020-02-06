@@ -3,13 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Model\RoomCategory;
-use App\Http\Resources\RoomCategory\RoomCategoryResource;
-use App\Http\Resources\RoomCategory\RoomCategoryCollection;
-use App\Http\Requests\RoomCategoryRequest;
+use App\Model\Room;
 use Symfony\Component\HttpFoundation\Response;
 
-class RoomCategoryController extends Controller
+
+class RoomController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,8 +16,9 @@ class RoomCategoryController extends Controller
      */
     public function index()
     {
-        $roomCategory = RoomCategory::all();
-        return $roomCategory;
+        //
+        $room = Room::all();
+        return $room;
     }
 
 
@@ -29,26 +28,25 @@ class RoomCategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(Request $request)
     {
-
-        $roomCategory = RoomCategory::create($this->validateRequest());
+        $room = Room::create($this->validateRequest());
         return response([
-            'data' => $roomCategory
+            'data' => $room
         ], Response::HTTP_CREATED);
     }
+
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $room
      * @return \Illuminate\Http\Response
      */
-    public function show(RoomCategory $roomCategory)
-    {
-        //
-        return $roomCategory;
 
+    public function show(Room $room)
+    {
+        return $room;
     }
 
     /**
@@ -58,12 +56,11 @@ class RoomCategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(RoomCategory $roomCategory)
+    public function update(Room $room)
     {
-        //
-        $roomCategory->update($this->validateRequest());
+        $room->update($this->validateRequest());
         return response([
-            'data' => $roomCategory
+            'data' => $room
         ], Response::HTTP_CREATED);
     }
 
@@ -73,19 +70,20 @@ class RoomCategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy( RoomCategory $roomCategory)
+    public function destroy(Room $room)
     {
-        //
-        $roomCategory->delete();
+        $room->delete();
         return response(null, Response::HTTP_NO_CONTENT);
     }
 
+    
     private function validateRequest()
     {
         return request()->validate([
-            'room_category'=>'required |unique:room_categories',
-            'number_of_room'=>'required',
-            'room_price'=>'required'
+            'room_category_id'=>'required',
+            'room_number'=>'required |unique:rooms',
+            'number_of_bed'=>'required',
+            'phone_number'=>'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10'
         ]);
     }
 }
