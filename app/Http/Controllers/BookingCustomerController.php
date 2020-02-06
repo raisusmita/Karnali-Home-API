@@ -9,53 +9,49 @@ class BookingCustomerController extends Controller
 {
     public function index()
     {
+        // Show all booking customer detail
         $bookingCustomer = ['booking_customer' => BookingCustomer::all()];
         return $bookingCustomer;
     }
+
     public function store(Request $request)
     {
-        $bookingCustomer = $request->validate([
+        // Store booking customer
+        $bookingCustomer = BookingCustomer::create($this->validateRequest());
+        return $bookingCustomer;
+    }
+
+    public function show(BookingCustomer $bookingCustomer)
+    {
+        // show individual booking customer
+        return $bookingCustomer;
+    }
+
+    public function update(Request $request, BookingCustomer $bookingCustomer)
+    {
+        //Update booking customer
+        $bookingCustomer->update($this->validateRequest());
+        return $bookingCustomer;
+
+    }
+
+    public function destroy(BookingCustomer $bookingCustomer)
+    {
+        //Delete Booking Customer
+        $bookingCustomer->delete();
+        return 'Booking Customer Deleted Successfully';
+
+    }
+
+    // Form validation function
+    public function validateRequest()
+    {
+        return request()->validate([
             'first_name' => 'required|max:50',
             'middle_name' => '',
             'last_name' => 'required',
             'email'=> 'required|email',
             'phone'=> 'required',
         ]);
-
-        $bookingCustomer = new BookingCustomer;
-        $bookingCustomer->first_name = $request->first_name;
-        $bookingCustomer->middle_name = $request->middle_name;
-        $bookingCustomer->last_name = $request->last_name;
-        $bookingCustomer->email = $request->email;
-        $bookingCustomer->phone = $request->phone;
-
-        // $bookingCustomerData = BookingCustomer::create($this->bookingCustomer);
-        $bookingCustomer->save();
-
-        return $bookingCustomer;
-    }
-    public function show(BookingCustomer $bookingCustomer)
-    {
-        return $bookingCustomer;
-    }
-
-    public function update(Request $request, BookingCustomer $bookingCustomer)
-    {
-        //
-
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Model\BookingCustomer  $bookingCustomer
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(BookingCustomer $bookingCustomer)
-    {
-        //
-        $bookingCustomer->delete();
-        return 'Booking Customer Deleted Successfully';
-
     }
 }
