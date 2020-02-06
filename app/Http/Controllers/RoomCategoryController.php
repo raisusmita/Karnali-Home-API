@@ -18,18 +18,10 @@ class RoomCategoryController extends Controller
      */
     public function index()
     {
-        return RoomCategoryCollection::collection(RoomCategory::all());
+        $roomCategory = RoomCategory::all();
+        return $roomCategory;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -37,16 +29,12 @@ class RoomCategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(RoomCategoryRequest $request)
+    public function store()
     {
-        //
-        
-        $roomCategory = new RoomCategory;
-        $roomCategory->room_category = $request->room_category;
-        $roomCategory->number_of_room = $request->no_of_rooms;
-        $roomCategory->save();
+
+        $roomCategory = RoomCategory::create($this->validateRequest());
         return response([
-            'data' => new RoomCategoryResource($roomCategory)
+            'data' => $roomCategory
         ], Response::HTTP_CREATED);
     }
 
@@ -56,23 +44,11 @@ class RoomCategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(RoomCategory $roomCategory)
     {
         //
-        $roomCategory = RoomCategory::find($id);
-        return new RoomCategoryResource($roomCategory);
+        return $roomCategory;
 
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
     }
 
     /**
@@ -82,15 +58,12 @@ class RoomCategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, RoomCategory $roomCategory)
+    public function update(RoomCategory $roomCategory)
     {
         //
-        $request['number_of_room'] = $request->no_of_rooms;
-        unset($request['no_of_rooms']);
-
-        $roomCategory->update($request->all());
+        $roomCategory->update($this->validateRequest());
         return response([
-            'data' => new RoomCategoryResource($roomCategory)
+            'data' => $roomCategory
         ], Response::HTTP_CREATED);
     }
 
@@ -105,5 +78,14 @@ class RoomCategoryController extends Controller
         //
         $roomCategory->delete();
         return response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    private function validateRequest()
+    {
+        return request()->validate([
+            'room_category'=>'required',
+            'number_of_room'=>'required',
+            'room_price'=>'required'
+        ]);
     }
 }
