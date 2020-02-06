@@ -8,6 +8,6 @@ class RoomCategory extends Model
 {
     //
 
-    protected $fillable = ['room_category', 'number_of_room'];
+    protected $fillable = ['room_category', 'number_of_room', 'room_price'];
 
 }
