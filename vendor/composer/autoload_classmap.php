@@ -27,7 +27,7 @@ return array(
     'App\\Http\\Requests\\RoomCategoryRequest' => $baseDir . '/app/Http/Requests/RoomCategoryRequest.php',
     'App\\Http\\Resources\\RoomCategory\\RoomCategoryCollection' => $baseDir . '/app/Http/Resources/RoomCategory/RoomCategoryCollection.php',
     'App\\Http\\Resources\\RoomCategory\\RoomCategoryResource' => $baseDir . '/app/Http/Resources/RoomCategory/RoomCategoryResource.php',
-    'App\\Model\\BookingCustomer' => $baseDir . '/app/Model/BookingCustomer.php',
+    'App\\Model\\Customer' => $baseDir . '/app/Model/Customer.php',
     'App\\Model\\RoomCategory' => $baseDir . '/app/Model/RoomCategory.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',
     'App\\Providers\\AuthServiceProvider' => $baseDir . '/app/Providers/AuthServiceProvider.php',

@@ -431,7 +431,7 @@ class ComposerStaticInit67b02b826b9dc4ffeb49f46c964b4b69
         'App\\Http\\Requests\\RoomCategoryRequest' => __DIR__ . '/../..' . '/app/Http/Requests/RoomCategoryRequest.php',
         'App\\Http\\Resources\\RoomCategory\\RoomCategoryCollection' => __DIR__ . '/../..' . '/app/Http/Resources/RoomCategory/RoomCategoryCollection.php',
         'App\\Http\\Resources\\RoomCategory\\RoomCategoryResource' => __DIR__ . '/../..' . '/app/Http/Resources/RoomCategory/RoomCategoryResource.php',
-        'App\\Model\\BookingCustomer' => __DIR__ . '/../..' . '/app/Model/BookingCustomer.php',
+        'App\\Model\\Customer' => __DIR__ . '/../..' . '/app/Model/Customer.php',
         'App\\Model\\RoomCategory' => __DIR__ . '/../..' . '/app/Model/RoomCategory.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
         'App\\Providers\\AuthServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AuthServiceProvider.php',

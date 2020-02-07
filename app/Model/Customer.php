@@ -4,7 +4,7 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class BookingCustomer extends Model
+class Customer extends Model
 {
     //
 
