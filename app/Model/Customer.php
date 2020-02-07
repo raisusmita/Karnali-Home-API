@@ -7,8 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Customer extends Model
 {
     //
-
     protected $fillable = [
-        'first_name', 'middle_name', 'last_name', 'email', 'phone',
+        'first_name', 'middle_name', 'last_name', 'email', 'phone', 'customer_type'
     ];
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
 }

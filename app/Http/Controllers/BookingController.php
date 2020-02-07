@@ -47,7 +47,7 @@ class BookingController extends Controller
     public function validateRequest()
     {
         return request()->validate([
-            'booking_customer_id'=> 'required',
+            'customer_id'=> 'required',
             'booking_start_date' => 'required',
             'booking_end_date' => 'required',
             'no_of_customers' => 'required',
