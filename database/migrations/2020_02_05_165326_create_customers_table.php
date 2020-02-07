@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBookingCustomersTable extends Migration
+class CreateCustomersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,15 @@ class CreateBookingCustomersTable extends Migration
      */
     public function up()
     {
-        Schema::create('booking_customers', function (Blueprint $table) {
+        // status represents 0 which means booking customer and 1 means customer who has reserved the room
+        Schema::create('customers', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name');
             $table->string('email');
             $table->string('phone');
+            $table->enum('customer_type', array(0,1)); //->default(1) // We can set Default value to one since we may have large reserving customer
             $table->timestamps();
         });
     }
@@ -31,6 +33,6 @@ class CreateBookingCustomersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('booking_customers');
+        Schema::dropIfExists('customers');
     }
 }
