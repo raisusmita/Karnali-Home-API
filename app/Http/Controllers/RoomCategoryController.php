@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Model\RoomCategory;
-use App\Http\Resources\RoomCategory\RoomCategoryResource;
-use App\Http\Resources\RoomCategory\RoomCategoryCollection;
-use App\Http\Requests\RoomCategoryRequest;
 use Symfony\Component\HttpFoundation\Response;
 
 class RoomCategoryController extends Controller
