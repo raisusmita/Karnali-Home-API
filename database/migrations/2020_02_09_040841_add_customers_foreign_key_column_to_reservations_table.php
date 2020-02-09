@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBookingsTable extends Migration
+class AddCustomersForeignKeyColumnToReservationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,9 @@ class CreateBookingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('bookings', function (Blueprint $table) {
-            $table->bigIncrements('id');
+        Schema::table('reservations', function (Blueprint $table) {
             $table->unsignedBigInteger('customer_id');
             $table->foreign('customer_id')->references('id')->on('customers');
-            $table->dateTime('booking_start_date');
-            $table->dateTime('booking_end_date');
-            $table->integer('no_of_customers');
-            $table->integer('no_of_room');
-            $table->timestamps();
         });
     }
 
@@ -32,6 +26,8 @@ class CreateBookingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bookings');
+        Schema::table('reservations', function (Blueprint $table) {
+            //
+        });
     }
 }
