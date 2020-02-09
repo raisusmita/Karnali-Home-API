@@ -33,6 +33,7 @@ return array(
     'App\\Model\\Reservation' => $baseDir . '/app/Model/Reservation.php',
     'App\\Model\\Room' => $baseDir . '/app/Model/Room.php',
     'App\\Model\\RoomCategory' => $baseDir . '/app/Model/RoomCategory.php',
+    'App\\Model\\RoomTransaction' => $baseDir . '/app/Model/RoomTransaction.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',
     'App\\Providers\\AuthServiceProvider' => $baseDir . '/app/Providers/AuthServiceProvider.php',
     'App\\Providers\\BroadcastServiceProvider' => $baseDir . '/app/Providers/BroadcastServiceProvider.php',
