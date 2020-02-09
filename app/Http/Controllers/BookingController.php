@@ -27,7 +27,7 @@ class BookingController extends Controller
         return $booking;
     }
 
-    public function update(Request $request, Booking $booking)
+    public function update(Booking $booking)
     {
         //Update booking
         $booking->update($this->validateRequest());

@@ -17,28 +17,28 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         // Store  customer
-        $Customer = Customer::create($this->validateRequest());
-        return $Customer;
+        $customer = Customer::create($this->validateRequest());
+        return $customer;
     }
 
-    public function show(Customer $Customer)
+    public function show(Customer $customer)
     {
         // show individual  customer
-        return $Customer;
+        return $customer;
     }
 
-    public function update(Request $request, Customer $Customer)
+    public function update(Customer $customer)
     {
         //Update  customer
-        $Customer->update($this->validateRequest());
-        return $Customer;
+        $customer->update($this->validateRequest());
+        return $customer;
 
     }
 
-    public function destroy(Customer $Customer)
+    public function destroy(Customer $customer)
     {
         //Delete  Customer
-        $Customer->delete();
+        $customer->delete();
         return ' Customer Deleted Successfully';
 
     }
