@@ -8,79 +8,69 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ReservationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $reservation = Reservation::all();
-        return $reservation;
+        if ($reservation->isNotEmpty()) {
+            return response([
+                'success' => true,
+                'message' => 'Lists of Customers.',
+                'data' => $reservation
+            ], Response::HTTP_CREATED);
+        } else {
+            return response([
+                'success' => false,
+                'message' => 'Currently, there is no any Customers yet.',
+            ], Response::HTTP_CREATED);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store()
     {
         $reservation = Reservation::create($this->validateRequest());
         return response([
+            'success' => true,
+            'message' => 'Reservation has been created successfully.',
             'data' => $reservation
         ], Response::HTTP_CREATED);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Model\Reservation  $reservation
-     * @return \Illuminate\Http\Response
-     */
     public function show(Reservation $reservation)
     {
-        return $reservation;
+        return response([
+            'success' => true,
+            'message' => 'Data of an individual Reservation',
+            'data' => $reservation
+        ], Response::HTTP_CREATED);
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Model\Reservation  $reservation
-     * @return \Illuminate\Http\Response
-     */
     public function update(Reservation $reservation)
     {
         $reservation->update($this->validateRequest());
         return response([
+            'success' => true,
+            'message' => 'Reservation has been updated',
             'data' => $reservation
         ], Response::HTTP_CREATED);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Model\Reservation  $reservation
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Reservation $reservation)
     {
         $reservation->delete();
-        return response(null, Response::HTTP_NO_CONTENT);
+        return response([
+            'success' => true,
+            'message' => 'Reservation has been deleted successfully.'
+        ], Response::HTTP_NO_CONTENT);
     }
 
     private function validateRequest()
     {
         return request()->validate([
-            'room_id'=>'required',
-            'customer_id'=>'required',
-            'check_in_date'=>'required',
-            'check_out_date'=>'required'
+            'room_id' => 'required',
+            'customer_id' => 'required',
+            'check_in_date' => 'required',
+            'check_out_date' => 'required'
 
         ]);
-
     }
 }

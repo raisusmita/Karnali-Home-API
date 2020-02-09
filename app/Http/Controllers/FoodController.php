@@ -11,72 +11,64 @@ class FoodController extends Controller
     public function index()
     {
         $food = Food::all();
-        return $food;
+        if ($food->isNotEmpty()) {
+            return response([
+                'success' => true,
+                'message' => 'Lists of Customers.',
+                'data' => $food
+            ], Response::HTTP_CREATED);
+        } else {
+            return response([
+                'success' => false,
+                'message' => 'Currently, there is no any Customers yet.',
+            ], Response::HTTP_CREATED);
+        }
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store()
     {
-
         $food = Food::create($this->validateRequest());
         return response([
+            'success' => true,
+            'message' => 'Food has been created successfully.',
             'data' => $food
         ], Response::HTTP_CREATED);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show(Food $food)
     {
-        //
-        return $food;
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Food $food)
-    {
-        //
-        $food->update($this->validateRequest());
         return response([
+            'success' => true,
+            'message' => 'Data of an individual Food',
             'data' => $food
         ], Response::HTTP_CREATED);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    public function update(Food $food)
+    {
+        $food->update($this->validateRequest());
+        return response([
+            'success' => true,
+            'message' => 'Food has been updated',
+            'data' => $food
+        ], Response::HTTP_CREATED);
+    }
+
     public function destroy(Food $food)
     {
-        //
         $food->delete();
-        return response('Food Deleted SUccessfully', Response::HTTP_NO_CONTENT);
+        return response([
+            'success' => true,
+            'message' => 'Food has been deleted successfully.'
+        ], Response::HTTP_NO_CONTENT);
     }
 
     private function validateRequest()
     {
         return request()->validate([
-            'name'=>'required',
-            'price'=>'required',
-            'food_type'=>'required'
+            'name' => 'required',
+            'price' => 'required',
+            'food_type' => 'required'
         ]);
     }
 }
