@@ -8,8 +8,13 @@ class Reservation extends Model
 {
     protected $guarded =[];
 
-    public function rooms()
+    public function room()
     {
         return $this->belongsTo(Room::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
     }
 }

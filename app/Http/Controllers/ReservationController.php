@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Model\Reservation;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ReservationController extends Controller
 {
@@ -14,17 +15,8 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $reservation = Reservation::all();
+        return $reservation;
     }
 
     /**
@@ -33,9 +25,12 @@ class ReservationController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
+        $reservation = Reservation::create($this->validateRequest());
+        return response([
+            'data' => $reservation
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -46,19 +41,9 @@ class ReservationController extends Controller
      */
     public function show(Reservation $reservation)
     {
-        //
+        return $reservation;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Model\Reservation  $reservation
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Reservation $reservation)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -67,9 +52,12 @@ class ReservationController extends Controller
      * @param  \App\Model\Reservation  $reservation
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Reservation $reservation)
+    public function update(Reservation $reservation)
     {
-        //
+        $reservation->update($this->validateRequest());
+        return response([
+            'data' => $reservation
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -80,6 +68,19 @@ class ReservationController extends Controller
      */
     public function destroy(Reservation $reservation)
     {
-        //
+        $reservation->delete();
+        return response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    private function validateRequest()
+    {
+        return request()->validate([
+            'room_id'=>'required',
+            'customer_id'=>'required',
+            'check_in_date'=>'required',
+            'check_out_date'=>'required'
+
+        ]);
+
     }
 }
