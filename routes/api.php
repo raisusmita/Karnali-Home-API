@@ -20,6 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::apiResource('/room_categories', 'RoomCategoryController');
 Route::apiResource('/rooms', 'RoomController');
+Route::apiResource('/room_transactions', 'RoomTransactionController');
 Route::apiResource('/reservations', 'ReservationController');
 Route::apiResource('/booking', 'BookingController');
 Route::apiResource('/customer', 'CustomerController');
