@@ -4,54 +4,74 @@ namespace App\Http\Controllers;
 
 use App\Model\Booking;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
 
 class BookingController extends Controller
 {
     public function index()
     {
-        // Show all booking  detail
-        $booking = ['booking' => Booking::all()];
-        return $booking;
+        $booking = Booking::all();
+        if ($booking->isNotEmpty()) {
+            return response([
+                'success' => true,
+                'message' => 'Lists of Bookings.',
+                'data' => $booking
+            ], Response::HTTP_CREATED);
+        } else {
+            return response([
+                'success' => false,
+                'message' => 'Currently, there is no any Bookings yet.',
+            ], Response::HTTP_CREATED);
+        }
     }
 
-    public function store(Request $request)
+    public function store()
     {
-        // Store booking
         $booking = Booking::create($this->validateRequest());
-        return $booking;
+        return response([
+            'success' => true,
+            'message' => 'Booking has been created successfully.',
+            'data' => $booking
+        ], Response::HTTP_CREATED);
     }
 
     public function show(Booking $booking)
     {
-        // show individual booking
-        return $booking;
+        return response([
+            'success' => true,
+            'message' => 'Data of an individual Booking',
+            'data' => $booking
+        ], Response::HTTP_CREATED);
     }
 
-    public function update(Request $request, Booking $booking)
+    public function update(Booking $booking)
     {
-        //Update booking
         $booking->update($this->validateRequest());
-        return $booking;
-
+        return response([
+            'success' => true,
+            'message' => 'Booking has been updated',
+            'data' => $booking
+        ], Response::HTTP_CREATED);
     }
 
     public function destroy(Booking $booking)
     {
-        //Delete Booking
         $booking->delete();
-        return 'Booking  Deleted Successfully';
-
+        return response([
+            'success' => true,
+            'message' => 'Booking has been deleted successfully.'
+        ], Response::HTTP_NO_CONTENT);
     }
 
-    // Form validation function
     public function validateRequest()
     {
         return request()->validate([
-            'customer_id'=> 'required',
+            'customer_id' => 'required',
             'booking_start_date' => 'required',
             'booking_end_date' => 'required',
             'no_of_customers' => 'required',
-            'no_of_room'=> 'required',
+            'no_of_room' => 'required',
         ]);
     }
 }

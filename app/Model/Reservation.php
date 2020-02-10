@@ -17,4 +17,14 @@ class Reservation extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    public function room_transaction()
+    {
+        return $this->hasOne(RoomTransaction::class);
+    }
+
+    public function foodOrders()
+    {
+        return $this->hasMany(FoodOrder::class);
+    }
 }
