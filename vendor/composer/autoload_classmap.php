@@ -30,6 +30,7 @@ return array(
     'App\\Http\\Middleware\\VerifyCsrfToken' => $baseDir . '/app/Http/Middleware/VerifyCsrfToken.php',
     'App\\Model\\Booking' => $baseDir . '/app/Model/Booking.php',
     'App\\Model\\Customer' => $baseDir . '/app/Model/Customer.php',
+    'App\\Model\\Food' => $baseDir . '/app/Model/Food.php',
     'App\\Model\\Reservation' => $baseDir . '/app/Model/Reservation.php',
     'App\\Model\\Room' => $baseDir . '/app/Model/Room.php',
     'App\\Model\\RoomCategory' => $baseDir . '/app/Model/RoomCategory.php',
