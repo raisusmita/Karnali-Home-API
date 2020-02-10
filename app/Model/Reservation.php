@@ -20,6 +20,6 @@ class Reservation extends Model
 
     public function room_transaction()
     {
-        return $this->belongsTo(RoomTransaction::class);
+        return $this->hasOne(RoomTransaction::class);
     }
 }

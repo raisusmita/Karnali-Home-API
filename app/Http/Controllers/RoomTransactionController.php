@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Model\RoomTransaction;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
 
 class RoomTransactionController extends Controller
 {
@@ -14,7 +16,19 @@ class RoomTransactionController extends Controller
      */
     public function index()
     {
-        //
+        $roomTransaction = RoomTransaction::all();
+        if ($roomTransaction->isNotEmpty()) {
+            return response([
+                'success' => true,
+                'message' => 'Lists of Room Transactions.',
+                'data' => $roomTransaction
+            ], Response::HTTP_CREATED);
+        } else {
+            return response([
+                'success' => false,
+                'message' => 'Currently, there is no any Room Transactions yet.',
+            ], Response::HTTP_CREATED);
+        }
     }
 
 
@@ -24,43 +38,54 @@ class RoomTransactionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
+        $roomTransaction = RoomTransaction::create($this->validateRequest());
+        return response([
+            'success' => true,
+            'message' => 'Room Transaction has been created successfully.',
+            'data' => $roomTransaction
+        ], Response::HTTP_CREATED);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Model\RoomTransaction  $roomTransaction
-     * @return \Illuminate\Http\Response
-     */
     public function show(RoomTransaction $roomTransaction)
     {
-        //
+        return response([
+            'success' => true,
+            'message' => 'Data of an individual roomTransaction',
+            'data' => $roomTransaction
+        ], Response::HTTP_CREATED);
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Model\RoomTransaction  $roomTransaction
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, RoomTransaction $roomTransaction)
+    public function update(RoomTransaction $roomTransaction)
     {
-        //
+        $roomTransaction->update($this->validateRequest());
+        return response([
+            'success' => true,
+            'message' => 'Room Transaction has been updated',
+            'data' => $roomTransaction
+        ], Response::HTTP_CREATED);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Model\RoomTransaction  $roomTransaction
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(RoomTransaction $roomTransaction)
     {
-        //
+        $roomTransaction->delete();
+        return response([
+            'success' => true,
+            'message' => 'Room Transaction has been deleted successfully.'
+        ], Response::HTTP_NO_CONTENT);
+    }
+
+    public function validateRequest()
+    {
+        return request()->validate([
+            'customer_id' => 'required',
+            'reservation_id' => 'required',
+            'number_of_day' => 'required',
+            'rate' => 'required',
+            'total_amount' => 'required',
+            'transaction_date' => 'required'
+        ]);
+
     }
 }
