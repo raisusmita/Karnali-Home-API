@@ -26,5 +26,7 @@ Route::apiResource('/booking', 'BookingController');
 Route::apiResource('/customer', 'CustomerController');
 Route::apiResource('/food', 'FoodController');
 Route::apiResource('/tables', 'TableController');
+Route::apiResource('/invoices', 'InvoiceController');
+
 
 
