@@ -71,7 +71,7 @@ class BookingController extends Controller
             'booking_start_date' => 'required',
             'booking_end_date' => 'required',
             'no_of_customers' => 'required',
-            'no_of_room' => 'required',
+            'no_of_room' => 'required'
         ]);
     }
 }

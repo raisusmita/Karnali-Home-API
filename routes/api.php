@@ -28,6 +28,8 @@ Route::apiResource('/food', 'FoodController');
 Route::apiResource('/food_orders', 'FoodOrderController');
 Route::apiResource('/tables', 'TableController');
 Route::apiResource('/invoices', 'InvoiceController');
+Route::apiResource('/booked_rooms', 'BookedRoomController');
+
 
 
 

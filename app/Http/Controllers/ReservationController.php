@@ -69,7 +69,8 @@ class ReservationController extends Controller
             'room_id' => 'required',
             'customer_id' => 'required',
             'check_in_date' => 'required',
-            'check_out_date' => 'required'
+            'check_out_date' => 'required',
+            'availability' => 'required'
 
         ]);
     }
