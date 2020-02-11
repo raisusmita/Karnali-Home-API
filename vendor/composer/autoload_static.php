@@ -444,7 +444,6 @@ class ComposerStaticInit67b02b826b9dc4ffeb49f46c964b4b69
         'App\\Model\\Invoice' => __DIR__ . '/../..' . '/app/Model/Invoice.php',
         'App\\Model\\Reservation' => __DIR__ . '/../..' . '/app/Model/Reservation.php',
         'App\\Model\\Room' => __DIR__ . '/../..' . '/app/Model/Room.php',
-        'App\\Model\\RoomAvailability' => __DIR__ . '/../..' . '/app/Model/RoomAvailability.php',
         'App\\Model\\RoomCategory' => __DIR__ . '/../..' . '/app/Model/RoomCategory.php',
         'App\\Model\\RoomTransaction' => __DIR__ . '/../..' . '/app/Model/RoomTransaction.php',
         'App\\Model\\Table' => __DIR__ . '/../..' . '/app/Model/Table.php',
