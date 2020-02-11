@@ -40,7 +40,6 @@ return array(
     'App\\Model\\Invoice' => $baseDir . '/app/Model/Invoice.php',
     'App\\Model\\Reservation' => $baseDir . '/app/Model/Reservation.php',
     'App\\Model\\Room' => $baseDir . '/app/Model/Room.php',
-    'App\\Model\\RoomAvailability' => $baseDir . '/app/Model/RoomAvailability.php',
     'App\\Model\\RoomCategory' => $baseDir . '/app/Model/RoomCategory.php',
     'App\\Model\\RoomTransaction' => $baseDir . '/app/Model/RoomTransaction.php',
     'App\\Model\\Table' => $baseDir . '/app/Model/Table.php',
