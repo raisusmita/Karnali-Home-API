@@ -4,13 +4,13 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class RoomTransaction extends Model
+class FoodOrder extends Model
 {
     protected $guarded =[];
-
-    public function customer()
+    
+    public function room()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Room::class);
     }
 
     public function reservation()
@@ -18,9 +18,16 @@ class RoomTransaction extends Model
         return $this->belongsTo(Reservation::class);
     }
 
+    public function table()
+    {
+        return $this->belongsTo(Table::class);
+    }
+
     public function invoice()
     {
         return $this->belongsTo(Invoice::class);
     }
-    
+
+
 }
+

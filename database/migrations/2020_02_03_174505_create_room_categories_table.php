@@ -17,6 +17,7 @@ class CreateRoomCategoriesTable extends Migration
             $table->bigIncrements('id');
             $table->string('room_category');
             $table->integer('number_of_room');
+            $table->decimal('room_price', 50, 2);
             $table->timestamps();
         });
     }

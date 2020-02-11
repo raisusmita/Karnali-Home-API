@@ -81,6 +81,7 @@ class RoomTransactionController extends Controller
         return request()->validate([
             'customer_id' => 'required',
             'reservation_id' => 'required',
+            'invoice_id' => 'nullable',
             'number_of_day' => 'required',
             'rate' => 'required',
             'total_amount' => 'required',
