@@ -12,5 +12,10 @@ class Invoice extends Model
     {
         return $this->hasMany(FoodOrder::class);
     }
+
+    public function roomTransactions()
+    {
+        return $this->hasMany(RoomTransaction::class);
+    }
     
 }
