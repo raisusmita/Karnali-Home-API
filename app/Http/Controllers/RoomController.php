@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Model\Room;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -74,21 +73,24 @@ class RoomController extends Controller
 
     public function show(Room $room, Request $request)
     {
+        // This passing response format could be Changed with below code
+        // return response([
+        //     'success' => true,
+        //     'message' => 'Data of an individual Room',
+        //     'data' => $room,
+        //     'image_file' => response()->download($image_file)
+        // ], Response::HTTP_CREATED);
 
-        if ($room->image) {
-            $imagefile = Storage::get(asset('storage/images/' . $room->image));
-            // dd($imagefile);
-            // $room->image = $imagefile;
-        } else {
-            $imagefile = '';
-        }
 
-        return response([
+        // $image_file = $this->getImage($room);
+
+        // THis code is more readable I think
+        return response()->json([
             'success' => true,
             'message' => 'Data of an individual Room',
             'data' => $room,
-            'image_file' => $imagefile
-        ], Response::HTTP_CREATED);
+            'image' => $room->image ? public_path('storage/images/' . $room->image) : "No image"
+        ]);
     }
 
     public function update(Room $room)
@@ -109,6 +111,12 @@ class RoomController extends Controller
             'success' => true,
             'message' => 'Room has been deleted successfully.'
         ], Response::HTTP_NO_CONTENT);
+    }
+
+
+    private function getImage($room)
+    {
+        return;
     }
 
     private function storeImage($room)
