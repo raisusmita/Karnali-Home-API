@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Model\Room;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-
 
 class RoomController extends Controller
 {
@@ -13,55 +10,55 @@ class RoomController extends Controller
     {
         $room = Room::all();
         if ($room->isNotEmpty()) {
-            return response([
+            return response()->json([
                 'success' => true,
                 'message' => 'Lists of Customers.',
                 'data' => $room
-            ], Response::HTTP_CREATED);
+            ]);
         } else {
-            return response([
+            return response()->json([
                 'success' => false,
                 'message' => 'Currently, there is no any Customers yet.',
-            ], Response::HTTP_CREATED);
+            ]);
         }
     }
 
     public function store()
     {
         $room = Room::create($this->validateRequest());
-        return response([
+        return response()->json([
             'success' => true,
             'message' => 'Room has been created successfully.',
             'data' => $room
-        ], Response::HTTP_CREATED);
+        ]);
     }
 
     public function show(Room $room)
     {
-        return response([
+        return response()->json([
             'success' => true,
             'message' => 'Data of an individual Room',
             'data' => $room
-        ], Response::HTTP_CREATED);
+        ]);
     }
 
     public function update(Room $room)
     {
         $room->update($this->validateRequest());
-        return response([
+        return response()->json([
             'success' => true,
             'message' => 'Room has been updated',
             'data' => $room
-        ], Response::HTTP_CREATED);
+        ]);
     }
 
     public function destroy(Room $room)
     {
         $room->delete();
-        return response([
+        return response()->json([
             'success' => true,
             'message' => 'Room has been deleted successfully.'
-        ], Response::HTTP_NO_CONTENT);
+        ]);
     }
 
     private function validateRequest()
