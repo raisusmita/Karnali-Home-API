@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddForeignKeyColumnToRoomsTable extends Migration
+class AddInvoiceForeignKeyColumnToRoomTransactionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class AddForeignKeyColumnToRoomsTable extends Migration
      */
     public function up()
     {
-        Schema::table('rooms', function (Blueprint $table) {
-            $table->foreign('room_category_id')->references('id')->on('room_categories');
+        Schema::table('room_transactions', function (Blueprint $table) {
+            $table->unsignedBigInteger('invoice_id')->nullable();
+            $table->foreign('invoice_id')->references('id')->on('invoices');
         });
     }
 
@@ -25,7 +26,7 @@ class AddForeignKeyColumnToRoomsTable extends Migration
      */
     public function down()
     {
-        Schema::table('rooms', function (Blueprint $table) {
+        Schema::table('room_transactions', function (Blueprint $table) {
             //
         });
     }

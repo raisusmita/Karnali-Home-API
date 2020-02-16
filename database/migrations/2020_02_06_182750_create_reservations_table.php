@@ -19,6 +19,8 @@ class CreateReservationsTable extends Migration
             $table->dateTime('check_out_date');
             $table->unsignedBigInteger('room_id');
             $table->foreign('room_id')->references('id')->on('rooms');
+            $table->unsignedBigInteger('customer_id');
+            $table->foreign('customer_id')->references('id')->on('customers');
             $table->timestamps();
         });
     }
