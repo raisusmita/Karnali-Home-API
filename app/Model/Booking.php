@@ -13,4 +13,9 @@ class Booking extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    public function bookedRooms()
+    {
+        return $this->hasMany(BookedRoom::class);
+    }
 }
