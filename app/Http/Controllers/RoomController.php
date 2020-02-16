@@ -10,15 +10,18 @@ class RoomController extends Controller
     {
         $room = Room::all();
         if ($room->isNotEmpty()) {
+            $room->map(function ($room) {
+                $room->image = $room->image ? public_path('storage/' . $room->image) : "";
+            });
             return response()->json([
                 'success' => true,
-                'message' => 'Lists of Customers.',
-                'data' => $room
+                'message' => 'Lists of Room.',
+                'data' => $room,
             ]);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Currently, there is no any Customers yet.',
+                'message' => 'Currently, there is no any Room yet.',
             ]);
         }
     }
