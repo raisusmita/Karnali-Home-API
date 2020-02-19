@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Model\Room;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-
 
 class RoomController extends Controller
 {
@@ -13,88 +10,70 @@ class RoomController extends Controller
     {
         $room = Room::all();
         if ($room->isNotEmpty()) {
-            return response([
+            $room->map(function ($room) {
+                $room->image = $room->image ? asset('storage/' . $room->image) : "";
+            });
+            return response()->json([
                 'success' => true,
-                'message' => 'Lists of Customers.',
-                'data' => $room
-            ], Response::HTTP_CREATED);
+                'message' => 'Lists of Room.',
+                'data' => $room,
+            ]);
         } else {
-            return response([
+            return response()->json([
                 'success' => false,
-                'message' => 'Currently, there is no any Customers yet.',
-            ], Response::HTTP_CREATED);
+                'message' => 'Currently, there is no any Room yet.',
+            ]);
         }
     }
 
-    public function store(Request $request)
+    public function store()
     {
-        
-        if($request->hasFile('image')){
-            //Get Filename with the extension
-            $fileNameWithExt = $request->file('image')->getClientOriginalName();
-
-            //Get just filename
-            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-
-            //Get just extension
-            $extension = $request->file('image')->getClientOriginalExtension();
-
-            //Filenameto store
-            $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-            //Upload Image
-            $path = $request->file('image')->storeAs('public/images', $fileNameToStore);
-        }else{
-            $fileNameToStore = 'noimage.jpg';
-        }
-
-        $room = new Room;
-        $room->image = $fileNameToStore;
-        $room->room_category_id = $request->room_category_id;
-        $room->room_number = $request->room_number;
-        $room->number_of_bed = $request->number_of_bed;
-        $room->phone_number = $request->phone_number;
-        $room->save();
-
-        // $room = Room::create($this->validateRequest());
-        
-        
-        
-        return response([
+        $room = Room::create($this->validateRequest());
+        $this->storeImage($room);
+        return response()->json([
             'success' => true,
             'message' => 'Room has been created successfully.',
             'data' => $room
-        ], Response::HTTP_CREATED);
+        ]);
     }
 
-    public function show(Room $room, Request $request)
+    public function show(Room $room)
     {
-
-
-        return response([
+        $room->image = $room->image ? asset('storage/' . $room->image) : "";
+        return response()->json([
             'success' => true,
             'message' => 'Data of an individual Room',
-            'data' => $room
-        ], Response::HTTP_CREATED);
+            'data' => $room,
+        ]);
     }
 
     public function update(Room $room)
     {
         $room->update($this->validateRequest());
-        return response([
+        $this->storeImage($room);
+        return response()->json([
             'success' => true,
             'message' => 'Room has been updated',
-            'data' => $room
-        ], Response::HTTP_CREATED);
+            'data' => $room,
+        ]);
     }
 
     public function destroy(Room $room)
     {
         $room->delete();
-        return response([
+        return response()->json([
             'success' => true,
             'message' => 'Room has been deleted successfully.'
-        ], Response::HTTP_NO_CONTENT);
+        ]);
+    }
+
+    private function storeImage($room)
+    {
+        if (request()->has('image')) {
+            $room->update([
+                'image' => request()->image->store('images', 'public'),
+            ]);
+        }
     }
 
     private function validateRequest()
