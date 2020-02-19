@@ -11,7 +11,7 @@ class RoomController extends Controller
         $room = Room::all();
         if ($room->isNotEmpty()) {
             $room->map(function ($room) {
-                $room->image = $room->image ? public_path('storage/' . $room->image) : "";
+                $room->image = $room->image ? asset('storage/' . $room->image) : "";
             });
             return response()->json([
                 'success' => true,
@@ -39,7 +39,7 @@ class RoomController extends Controller
 
     public function show(Room $room)
     {
-        $room->image = $room->image ? public_path('storage/' . $room->image) : "";
+        $room->image = $room->image ? asset('storage/' . $room->image) : "";
         return response()->json([
             'success' => true,
             'message' => 'Data of an individual Room',
