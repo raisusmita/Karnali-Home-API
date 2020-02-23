@@ -50,7 +50,7 @@ class RoomController extends Controller
     public function update(Room $room)
     {
         $room->update($this->validateRequest());
-        $this->storeImage($room);
+        // $this->storeImage($room);
         return response()->json([
             'success' => true,
             'message' => 'Room has been updated',
