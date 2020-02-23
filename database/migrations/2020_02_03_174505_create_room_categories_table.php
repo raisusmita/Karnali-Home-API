@@ -16,8 +16,7 @@ class CreateRoomCategoriesTable extends Migration
         Schema::create('room_categories', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('room_category');
-            $table->string('room_type');
-            $table->integer('number_of_room');
+            $table->string('room_type'); // Single, Double or Triple
             $table->decimal('room_price', 50, 2);
             $table->string('image');
             $table->timestamps();

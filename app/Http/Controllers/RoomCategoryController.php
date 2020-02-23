@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\RoomCategory;
+use Intervention\Image\Facades\Image;
 
 class RoomCategoryController extends Controller
 {
@@ -11,7 +12,7 @@ class RoomCategoryController extends Controller
         $roomCategory = RoomCategory::all();
         if ($roomCategory->isNotEmpty()) {
             $roomCategory->map(function ($roomCategory) {
-                $roomCategory->image = $roomCategory->image ? asset('storage/' . $room->image) : "";
+                $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
             });
             return response()->json([
                 'success' => true,
@@ -66,12 +67,15 @@ class RoomCategoryController extends Controller
         ]);
     }
 
-    private function storeImage($room)
+    private function storeImage($roomCategory)
     {
         if (request()->has('image')) {
-            $room->update([
+            $roomCategory->update([
                 'image' => request()->image->store('images', 'public'),
             ]);
+
+            $img = Image::make(public_path('storage/' . $roomCategory->image))->fit(386, 235);
+            $img->save();
         }
     }
 
@@ -80,7 +84,6 @@ class RoomCategoryController extends Controller
         return request()->validate([
             'room_category' => 'required |unique:room_categories',
             'room_type' => 'required',
-            'number_of_room' => 'required',
             'room_price' => 'required',
             'image' => 'image|nullable|max:5555'
         ]);
