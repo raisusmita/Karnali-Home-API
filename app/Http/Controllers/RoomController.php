@@ -10,9 +10,9 @@ class RoomController extends Controller
     {
         $room = Room::all();
         if ($room->isNotEmpty()) {
-            $room->map(function ($room) {
-                $room->image = $room->image ? asset('storage/' . $room->image) : "";
-            });
+            // $room->map(function ($room) {
+            //     $room->image = $room->image ? asset('storage/' . $room->image) : "";
+            // });
             return response()->json([
                 'success' => true,
                 'message' => 'Lists of Room.',
@@ -39,7 +39,7 @@ class RoomController extends Controller
 
     public function show(Room $room)
     {
-        $room->image = $room->image ? asset('storage/' . $room->image) : "";
+        // $room->image = $room->image ? asset('storage/' . $room->image) : "";
         return response()->json([
             'success' => true,
             'message' => 'Data of an individual Room',
@@ -67,14 +67,14 @@ class RoomController extends Controller
         ]);
     }
 
-    private function storeImage($room)
-    {
-        if (request()->has('image')) {
-            $room->update([
-                'image' => request()->image->store('images', 'public'),
-            ]);
-        }
-    }
+    // private function storeImage($room)
+    // {
+    //     if (request()->has('image')) {
+    //         $room->update([
+    //             'image' => request()->image->store('images', 'public'),
+    //         ]);
+    //     }
+    // }
 
     private function validateRequest()
     {
@@ -83,7 +83,7 @@ class RoomController extends Controller
             'room_number' => 'required |unique:rooms',
             'number_of_bed' => 'required',
             'phone_number' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
-            'image' => 'image|nullable|max:1999'
+            // 'image' => 'image|nullable|max:1999'
         ]);
     }
 }

@@ -10,6 +10,9 @@ class RoomCategoryController extends Controller
     {
         $roomCategory = RoomCategory::all();
         if ($roomCategory->isNotEmpty()) {
+            $roomCategory->map(function ($roomCategory) {
+                $roomCategory->image = $roomCategory->image ? asset('storage/' . $room->image) : "";
+            });
             return response()->json([
                 'success' => true,
                 'message' => 'Lists of Room Category.',
@@ -26,6 +29,7 @@ class RoomCategoryController extends Controller
     public function store()
     {
         $roomCategory = RoomCategory::create($this->validateRequest());
+        $this->storeImage($roomCategory);
         return response()->json([
             'success' => true,
             'message' => 'Room Category has been created successfully.',
@@ -35,6 +39,7 @@ class RoomCategoryController extends Controller
 
     public function show(RoomCategory $roomCategory)
     {
+        $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
         return response()->json([
             'success' => true,
             'message' => 'Data of an individual Room Category',
@@ -61,12 +66,22 @@ class RoomCategoryController extends Controller
         ]);
     }
 
+    private function storeImage($room)
+    {
+        if (request()->has('image')) {
+            $room->update([
+                'image' => request()->image->store('images', 'public'),
+            ]);
+        }
+    }
+
     private function validateRequest()
     {
         return request()->validate([
             'room_category' => 'required |unique:room_categories',
             'number_of_room' => 'required',
-            'room_price' => 'required'
+            'room_price' => 'required',
+            'image' => 'image|nullable|max:5555'
         ]);
     }
 }
