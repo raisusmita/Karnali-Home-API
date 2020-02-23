@@ -82,7 +82,7 @@ class RoomController extends Controller
             'room_category_id' => 'required',
             'room_number' => 'required |unique:rooms',
             'number_of_bed' => 'required',
-            'phone_number' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
+            'phone_number' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/',
             // 'image' => 'image|nullable|max:1999'
         ]);
     }
