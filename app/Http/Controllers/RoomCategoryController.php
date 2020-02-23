@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\RoomCategory;
+use Intervention\Image\Facades\Image;
 
 class RoomCategoryController extends Controller
 {
@@ -10,6 +11,9 @@ class RoomCategoryController extends Controller
     {
         $roomCategory = RoomCategory::all();
         if ($roomCategory->isNotEmpty()) {
+            $roomCategory->map(function ($roomCategory) {
+                $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
+            });
             return response()->json([
                 'success' => true,
                 'message' => 'Lists of Room Category.',
@@ -26,6 +30,7 @@ class RoomCategoryController extends Controller
     public function store()
     {
         $roomCategory = RoomCategory::create($this->validateRequest());
+        $this->storeImage($roomCategory);
         return response()->json([
             'success' => true,
             'message' => 'Room Category has been created successfully.',
@@ -35,6 +40,7 @@ class RoomCategoryController extends Controller
 
     public function show(RoomCategory $roomCategory)
     {
+        $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
         return response()->json([
             'success' => true,
             'message' => 'Data of an individual Room Category',
@@ -61,12 +67,25 @@ class RoomCategoryController extends Controller
         ]);
     }
 
+    private function storeImage($roomCategory)
+    {
+        if (request()->has('image')) {
+            $roomCategory->update([
+                'image' => request()->image->store('images', 'public'),
+            ]);
+
+            $img = Image::make(public_path('storage/' . $roomCategory->image))->fit(386, 235);
+            $img->save();
+        }
+    }
+
     private function validateRequest()
     {
         return request()->validate([
             'room_category' => 'required |unique:room_categories',
-            'number_of_room' => 'required',
-            'room_price' => 'required'
+            'room_type' => 'required',
+            'room_price' => 'required',
+            'image' => 'image|nullable|max:5555'
         ]);
     }
 }
