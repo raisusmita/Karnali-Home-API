@@ -29,7 +29,7 @@ class RoomController extends Controller
     public function store()
     {
         $room = Room::create($this->validateRequest());
-        $this->storeImage($room);
+        // $this->storeImage($room);
         return response()->json([
             'success' => true,
             'message' => 'Room has been created successfully.',
