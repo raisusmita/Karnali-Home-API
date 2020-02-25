@@ -19,9 +19,11 @@ class CreateCustomersTable extends Migration
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name');
+            $table->string('country');
+            $table->string('address');
             $table->string('email');
             $table->string('phone');
-            $table->enum('customer_type', array(0,1)); //->default(1) // We can set Default value to one since we may have large reserving customer
+            $table->enum('customer_type', array(0, 1)); //->default(1) // We can set Default value to one since we may have large reserving customer
             $table->timestamps();
         });
     }

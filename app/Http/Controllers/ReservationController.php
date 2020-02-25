@@ -67,9 +67,9 @@ class ReservationController extends Controller
         return request()->validate([
             'room_id' => 'required',
             'customer_id' => 'required',
+            'booking_id' => 'nullable',
             'check_in_date' => 'required',
             'check_out_date' => 'required',
-            'availability' => 'required'
 
         ]);
     }
