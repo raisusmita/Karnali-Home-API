@@ -69,7 +69,7 @@ class InvoiceController extends Controller
         return request()->validate([
             'invoice_number' => 'required | unique:invoices',
             'vat' => 'required',
-            'discount' => 'required',
+            'discount' => 'sometimes',
             'invoice_date' => 'required'
         ]);
     }

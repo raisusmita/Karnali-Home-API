@@ -68,6 +68,8 @@ class CustomerController extends Controller
             'first_name' => 'required|max:50',
             'middle_name' => '',
             'last_name' => 'required',
+            'country' => 'required',
+            'address' => 'required',
             'email' => 'required|email',
             'phone' => 'required',
             'customer_type' => 'required'

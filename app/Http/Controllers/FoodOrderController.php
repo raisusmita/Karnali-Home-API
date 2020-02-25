@@ -66,13 +66,12 @@ class FoodOrderController extends Controller
     {
         return request()->validate([
             'food_id' => 'required',
-            'reservation_id' => 'required',
-            'table_id' => 'required',
-            'invoice_id' => 'required',
+            'reservation_id' => 'nullable|sometimes',
+            'table_id' => 'nullable|sometimes',
+            'invoice_id' => 'nullabel|sometimes',
             'quantity' => 'required',
             'price' => 'required',
             'total_amount' => 'required',
-            'order_date' => 'required'
         ]);
     }
 }
