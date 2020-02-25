@@ -19,8 +19,6 @@ class CreateRoomTransactionsTable extends Migration
             $table->foreign('customer_id')->references('id')->on('customers');
             $table->unsignedBigInteger('reservation_id');
             $table->foreign('reservation_id')->references('id')->on('reservations');
-            $table->unsignedBigInteger('invoice_id')->nullable();
-            $table->foreign('invoice_id')->references('id')->on('invoices');
             $table->integer('number_of_days');
             $table->decimal('rate', 25, 2);
             $table->decimal('total_amount', 50, 2);
