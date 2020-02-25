@@ -17,7 +17,7 @@ class CreateBookingsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('customer_id');
             $table->foreign('customer_id')->references('id')->on('customers');
-            $table->integer('no_of_customers');
+            $table->integer('number_of_customers');
             $table->dateTime('check_in_date');
             $table->dateTime('check_out_date');
             $table->timestamps();
