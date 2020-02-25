@@ -84,6 +84,7 @@ class RoomCategoryController extends Controller
         return request()->validate([
             'room_category' => 'required',
             'room_type' => 'required',
+            'number_of_rooms' => 'required',
             'room_price' => 'required',
             'image' => 'image|nullable|max:5555'
         ]);
