@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Model\Booking;
+use App\Model\BookedRoom;
+
 
 class BookingController extends Controller
 {

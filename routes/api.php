@@ -33,7 +33,7 @@ Route::apiResource('/food', 'FoodController');
 Route::apiResource('/food_orders', 'FoodOrderController');
 Route::apiResource('/tables', 'TableController');
 Route::apiResource('/invoices', 'InvoiceController');
-Route::post('/booked_rooms', 'BookingController')->name('storeBookedRoom');
+Route::post('/booked_rooms', 'BookingController@storeBookedRoom');
 
 
 
