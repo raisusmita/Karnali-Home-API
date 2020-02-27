@@ -70,4 +70,25 @@ class BookingController extends Controller
             'check_out_date' => 'required',
         ]);
     }
+
+    //Store for booked_room table
+    public function storeBookedRoom()
+    {
+        $bookedRoom = BookedRoom::create($this->validateBookedRoomRequest());
+        return response()->json([
+            'success' => true,
+            'message' => 'BookedRoom has been created successfully.',
+            'data' => $bookedRoom
+        ]);
+    }
+
+    public function validateBookedRoomRequest()
+    {
+        return request()->validate([
+            'room_category_id' => 'required',
+            'booking_id' => 'required',
+            'number_of_rooms' => 'required'
+        ]);
+    }
+
 }
