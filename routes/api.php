@@ -18,6 +18,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
+Route::middleware('cors')->group(function(){
+    //your_routes
+ });
+ 
 
 
 Route::apiResource('/room_categories', 'RoomCategoryController');
