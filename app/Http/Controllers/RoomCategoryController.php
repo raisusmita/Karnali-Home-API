@@ -2,90 +2,91 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Model\RoomCategory;
-use App\Http\Resources\RoomCategory\RoomCategoryResource;
-use App\Http\Resources\RoomCategory\RoomCategoryCollection;
-use App\Http\Requests\RoomCategoryRequest;
-use Symfony\Component\HttpFoundation\Response;
+use Intervention\Image\Facades\Image;
 
 class RoomCategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $roomCategory = RoomCategory::all();
-        return $roomCategory;
+        if ($roomCategory->isNotEmpty()) {
+            $roomCategory->map(function ($roomCategory) {
+                $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
+            });
+            return response()->json([
+                'success' => true,
+                'message' => 'Lists of Room Category.',
+                'data' => $roomCategory
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Currently, there is no any Room Category.',
+            ]);
+        }
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store()
     {
-
         $roomCategory = RoomCategory::create($this->validateRequest());
-        return response([
+        $this->storeImage($roomCategory);
+        return response()->json([
+            'success' => true,
+            'message' => 'Room Category has been created successfully.',
             'data' => $roomCategory
-        ], Response::HTTP_CREATED);
+        ]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show(RoomCategory $roomCategory)
     {
-        //
-        return $roomCategory;
-
+        $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
+        return response()->json([
+            'success' => true,
+            'message' => 'Data of an individual Room Category',
+            'data' => $roomCategory
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(RoomCategory $roomCategory)
     {
-        //
         $roomCategory->update($this->validateRequest());
-        return response([
+        return response()->json([
+            'success' => true,
+            'message' => 'Room Category has been updated',
             'data' => $roomCategory
-        ], Response::HTTP_CREATED);
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy( RoomCategory $roomCategory)
+    public function destroy(RoomCategory $roomCategory)
     {
-        //
         $roomCategory->delete();
-        return response(null, Response::HTTP_NO_CONTENT);
+        return response()->json([
+            'success' => true,
+            'message' => 'Room Category has been deleted successfully.'
+        ]);
+    }
+
+    private function storeImage($roomCategory)
+    {
+        if (request()->has('image')) {
+            $roomCategory->update([
+                'image' => request()->image->store('images', 'public'),
+            ]);
+
+            $img = Image::make(public_path('storage/' . $roomCategory->image))->fit(386, 235);
+            $img->save();
+        }
     }
 
     private function validateRequest()
     {
         return request()->validate([
-            'room_category'=>'required |unique:room_categories',
-            'number_of_room'=>'required',
-            'room_price'=>'required'
+            'room_category' => 'required',
+            'room_type' => 'required',
+            'number_of_rooms' => 'required',
+            'room_price' => 'required',
+            'image' => 'image|nullable|max:5555'
         ]);
     }
 }

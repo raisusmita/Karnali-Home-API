@@ -3,55 +3,94 @@
 namespace App\Http\Controllers;
 
 use App\Model\Booking;
-use Illuminate\Http\Request;
+use App\Model\BookedRoom;
+
 
 class BookingController extends Controller
 {
     public function index()
     {
-        // Show all booking  detail
-        $booking = ['booking' => Booking::all()];
-        return $booking;
+        $booking = Booking::all();
+        if ($booking->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Lists of Bookings.',
+                'data' => $booking
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Currently, there is no any Bookings yet.',
+            ]);
+        }
     }
 
-    public function store(Request $request)
+    public function store()
     {
-        // Store booking
         $booking = Booking::create($this->validateRequest());
-        return $booking;
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking has been created successfully.',
+            'data' => $booking
+        ]);
     }
 
     public function show(Booking $booking)
     {
-        // show individual booking
-        return $booking;
+        return response()->json([
+            'success' => true,
+            'message' => 'Data of an individual Booking',
+            'data' => $booking
+        ]);
     }
 
     public function update(Booking $booking)
     {
-        //Update booking
         $booking->update($this->validateRequest());
-        return $booking;
-
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking has been updated',
+            'data' => $booking
+        ]);
     }
 
     public function destroy(Booking $booking)
     {
-        //Delete Booking
         $booking->delete();
-        return 'Booking  Deleted Successfully';
-
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking has been deleted successfully.'
+        ]);
     }
 
-    // Form validation function
     public function validateRequest()
     {
         return request()->validate([
-            'customer_id'=> 'required',
-            'booking_start_date' => 'required',
-            'booking_end_date' => 'required',
-            'no_of_customers' => 'required',
-            'no_of_room'=> 'required',
+            'customer_id' => 'required',
+            'number_of_customers' => 'required',
+            'check_in_date' => 'required',
+            'check_out_date' => 'required',
         ]);
     }
+
+    //Store for booked_room table
+    public function storeBookedRoom()
+    {
+        $bookedRoom = BookedRoom::create($this->validateBookedRoomRequest());
+        return response()->json([
+            'success' => true,
+            'message' => 'BookedRoom has been created successfully.',
+            'data' => $bookedRoom
+        ]);
+    }
+
+    public function validateBookedRoomRequest()
+    {
+        return request()->validate([
+            'room_category_id' => 'required',
+            'booking_id' => 'required',
+            'number_of_rooms' => 'required'
+        ]);
+    }
+
 }

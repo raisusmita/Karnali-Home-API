@@ -8,12 +8,22 @@ class Customer extends Model
 {
     //
     protected $fillable = [
-        'first_name', 'middle_name', 'last_name', 'email', 'phone', 'customer_type'
+        'first_name', 'middle_name', 'last_name', 'email', 'phone', 'customer_type', 'country', 'address'
     ];
 
     public function bookings()
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
+
+    public function room_transactions()
+    {
+        return $this->hasMany(RoomTransaction::class);
     }
 
 }

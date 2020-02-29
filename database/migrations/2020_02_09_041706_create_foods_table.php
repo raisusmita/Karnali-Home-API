@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddForeignKeyColumnToRoomsTable extends Migration
+class CreateFoodsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,12 @@ class AddForeignKeyColumnToRoomsTable extends Migration
      */
     public function up()
     {
-        Schema::table('rooms', function (Blueprint $table) {
-            $table->foreign('room_category_id')->references('id')->on('room_categories');
+        Schema::create('foods', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->double('price', 10, 2);
+            $table->enum('food_type', ['kitchen', 'bar']);
+            $table->timestamps();
         });
     }
 
@@ -25,8 +29,6 @@ class AddForeignKeyColumnToRoomsTable extends Migration
      */
     public function down()
     {
-        Schema::table('rooms', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('foods');
     }
 }
