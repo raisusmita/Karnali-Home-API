@@ -18,10 +18,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-Route::middleware('cors')->group(function(){
+Route::middleware('cors')->group(function () {
     //your_routes
- });
- 
+});
+
 
 
 Route::apiResource('/room_categories', 'RoomCategoryController');
@@ -41,7 +41,5 @@ Route::get('/booked_rooms/{{id}}', 'BookingController@showBookedRoom');
 
 
 
-
-
-
-
+Route::get('/available', 'RoomAvailabilityController@getAvailableRoom');
+Route::post('/availableRoomByDate', 'RoomAvailabilityController@getAvailableRoomByDate');
