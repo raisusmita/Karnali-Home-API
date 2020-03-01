@@ -2,84 +2,45 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\Room;
 use App\RoomAvailability;
-use Illuminate\Http\Request;
 
 class RoomAvailabilityController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+
+    public function getAvailableRoom()
     {
-        //
+        // getting unavailable data to filter available
+        $unAvailableRoom = RoomAvailability::unavailable()->get();
+        $roomIds = [];
+        foreach ($unAvailableRoom as $av) {
+            array_push($roomIds, $av->room_id);
+        }
+        $room = Room::whereNotIn('id', $roomIds)->get();
+        $room->map(function ($roomCat) {
+            $roomCat->roomCategory->id;
+        });
+        $room = $room->groupBy('room_category_id');
+
+        return $room;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function getAvailableRoomByDate()
     {
-        //
-    }
+        $dateValue =  request();
+        $unAvailableRoom = RoomAvailability::unavailable()
+            ->where('check_out_date', '>=', $dateValue->check_in_date)
+            ->get();
+        $roomIds = [];
+        foreach ($unAvailableRoom as $av) {
+            array_push($roomIds, $av->room_id);
+        }
+        $room = Room::whereNotIn('id', $roomIds)->get();
+        $room->map(function ($roomCat) {
+            $roomCat->roomCategory->id;
+        });
+        $room = $room->groupBy('room_category_id');
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\RoomAvailability  $roomAvailability
-     * @return \Illuminate\Http\Response
-     */
-    public function show(RoomAvailability $roomAvailability)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\RoomAvailability  $roomAvailability
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(RoomAvailability $roomAvailability)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\RoomAvailability  $roomAvailability
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, RoomAvailability $roomAvailability)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\RoomAvailability  $roomAvailability
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(RoomAvailability $roomAvailability)
-    {
-        //
+        return $room;
     }
 }

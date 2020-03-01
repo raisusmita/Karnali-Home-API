@@ -18,10 +18,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-Route::middleware('cors')->group(function(){
+Route::middleware('cors')->group(function () {
     //your_routes
- });
- 
+});
+
 
 
 Route::apiResource('/room_categories', 'RoomCategoryController');
@@ -36,7 +36,5 @@ Route::apiResource('/tables', 'TableController');
 Route::apiResource('/invoices', 'InvoiceController');
 Route::post('/booked_rooms', 'BookingController@storeBookedRoom');
 
-
-
-
-
+Route::get('/available', 'RoomAvailabilityController@getAvailableRoom');
+Route::post('/availableRoomByDate', 'RoomAvailabilityController@getAvailableRoomByDate');
