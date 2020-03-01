@@ -35,6 +35,11 @@ Route::apiResource('/food_orders', 'FoodOrderController');
 Route::apiResource('/tables', 'TableController');
 Route::apiResource('/invoices', 'InvoiceController');
 Route::post('/booked_rooms', 'BookingController@storeBookedRoom');
+Route::get('/booked_rooms', 'BookingController@getBookedRoom');
+Route::get('/booked_rooms/{{id}}', 'BookingController@showBookedRoom');
+
+
+
 
 
 

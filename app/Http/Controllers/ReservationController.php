@@ -11,6 +11,7 @@ class ReservationController extends Controller
     {
         $reservation = Reservation::all();
         if ($reservation->isNotEmpty()) {
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Lists of Customers.',
