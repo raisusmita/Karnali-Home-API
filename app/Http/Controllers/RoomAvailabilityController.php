@@ -28,19 +28,23 @@ class RoomAvailabilityController extends Controller
     public function getAvailableRoomByDate()
     {
         $dateValue =  request();
-        $unAvailableRoom = RoomAvailability::unavailable()
-            ->where('check_out_date', '>=', $dateValue->check_in_date)
-            ->get();
-        $roomIds = [];
-        foreach ($unAvailableRoom as $av) {
-            array_push($roomIds, $av->room_id);
-        }
-        $room = Room::whereNotIn('id', $roomIds)->get();
-        $room->map(function ($roomCat) {
-            $roomCat->roomCategory->id;
-        });
-        $room = $room->groupBy('room_category_id');
+        if ($dateValue->check_in_date < $dateValue->check_out_date) {
+            $unAvailableRoom = RoomAvailability::unavailable()
+                ->where('check_out_date', '>=', $dateValue->check_in_date or 'check_in_date', '>', $dateValue->check_out_date)
+                ->get();
+            $roomIds = [];
+            foreach ($unAvailableRoom as $av) {
+                array_push($roomIds, $av->room_id);
+            }
+            $room = Room::whereNotIn('id', $roomIds)->get();
+            $room->map(function ($roomCat) {
+                $roomCat->roomCategory->id;
+            });
+            $room = $room->groupBy('room_category_id');
 
-        return $room;
+            return $room;
+        } else {
+            return 'Invalid Date';
+        }
     }
 }
