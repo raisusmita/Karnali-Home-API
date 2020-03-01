@@ -32,6 +32,3 @@ foreach($headers as $key => $value)
 return $response;
     }
 }
-
-
-

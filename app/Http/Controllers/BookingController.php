@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Model\Booking;
+use App\Model\BookedRoom;
+
 
 class BookingController extends Controller
 {
@@ -10,6 +12,10 @@ class BookingController extends Controller
     {
         $booking = Booking::all();
         if ($booking->isNotEmpty()) {
+            $booking->map(function ($booking){
+                $booking->Customer;
+                $booking->BookedRoom;
+            });
             return response()->json([
                 'success' => true,
                 'message' => 'Lists of Bookings.',
@@ -70,4 +76,57 @@ class BookingController extends Controller
             'check_out_date' => 'required',
         ]);
     }
+
+    public function getBookedRoom()
+    {
+        $bookedRoom = BookedRoom::all();
+        if ($bookedRoom->isNotEmpty()) {
+            $bookedRoom->map(function ($bookedRoom){
+                $bookedRoom->Booking; 
+                $bookedRoom->Booking->Customer;
+                $bookedRoom->RoomCategory;
+
+            });
+            return response()->json([
+                'success' => true,
+                'message' => 'Lists of BookedRooms.',
+                'data' => $bookedRoom
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Currently, there is no any BookedRooms yet.',
+            ]);
+        }
+    }
+
+    //Store for booked_room table
+    public function storeBookedRoom()
+    {
+        $bookedRoom = BookedRoom::create($this->validateBookedRoomRequest());
+        return response()->json([
+            'success' => true,
+            'message' => 'BookedRoom has been created successfully.',
+            'data' => $bookedRoom
+        ]);
+    }
+
+    public function showBookedRoom(BookedRoom $bookedRoom)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Data of an individual bookedRoom',
+            'data' => $bookedRoom
+        ]);
+    }
+
+    public function validateBookedRoomRequest()
+    {
+        return request()->validate([
+            'room_category_id' => 'required',
+            'booking_id' => 'required',
+            'number_of_rooms' => 'required'
+        ]);
+    }
+
 }
