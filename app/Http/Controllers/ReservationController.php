@@ -11,7 +11,13 @@ class ReservationController extends Controller
     {
         $reservation = Reservation::all();
         if ($reservation->isNotEmpty()) {
-            
+            $reservation->map(function ($reservation) {
+                // These three data may not be required when Room Availability is implemented
+                $reservation->Room;
+                $reservation->Room->RoomCategory;
+                $reservation->Customer;
+                // ------------------------------------
+            });
             return response()->json([
                 'success' => true,
                 'message' => 'Lists of Customers.',
@@ -37,6 +43,8 @@ class ReservationController extends Controller
 
     public function show(Reservation $reservation)
     {
+        $reservation->Room;
+        $reservation->Customer;
         return response()->json([
             'success' => true,
             'message' => 'Data of an individual Reservation',
