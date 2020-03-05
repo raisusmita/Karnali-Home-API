@@ -43,3 +43,5 @@ Route::get('/booked_rooms/{{id}}', 'BookingController@showBookedRoom');
 
 Route::get('/available', 'RoomAvailabilityController@getAvailableRoom');
 Route::post('/availableRoomByDate', 'RoomAvailabilityController@getAvailableRoomByDate');
+Route::post('/availableRoomByBooking', 'RoomAvailabilityController@storeRoomAvailability');
+
