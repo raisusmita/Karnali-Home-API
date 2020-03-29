@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -14,8 +15,8 @@ class UserController extends Controller
      */
     public function login(Request $request)
     {
-        $user = User::all()->where('email', $request->email)->where('password', $request->password);
-        if ($user->isNotEmpty()) {
+        $user = User::all()->where('email', $request->email)->first();
+        if (Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => true,
                 'message' => 'Lists of Users.',
@@ -36,23 +37,7 @@ class UserController extends Controller
      */
     public function register(Request $request)
     {
-        //
-        $user = '';
-        if ($request->email && $request->name && $request->password && $request->role) {
-            $user = new User();
-            $user->email = $request->email;
-            $user->name = $request->name;
-            $user->password = $request->password;
-            $user->role = $request->role;
-            $user->save();
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Requirements are not sufficient',
-            ]);
-        }
-        // $user = User::create($this->validateUserRequest());
-        // echo ($user);
+        $user = User::create($this->validateUserRequest());
         if ($user) {
             return response()->json([
                 'success' => true,
@@ -65,7 +50,6 @@ class UserController extends Controller
                 'message' => 'Failed to create User',
             ]);
         }
-
     }
 
     public function validateUserRequest()
@@ -73,7 +57,7 @@ class UserController extends Controller
         return request()->validate([
             'name' => 'required',
             'email' => 'required|email',
-            'password' => 'required|password',
+            'password' => 'required|min:6',
             'role' => 'required',
         ]);
     }
