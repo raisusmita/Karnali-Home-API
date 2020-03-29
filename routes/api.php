@@ -24,6 +24,7 @@ Route::middleware('cors')->group(function () {
 Route::apiResource('/room_categories', 'RoomCategoryController');
 Route::apiResource('/rooms', 'RoomController');
 Route::apiResource('/room_transactions', 'RoomTransactionController');
+
 Route::apiResource('/reservations', 'ReservationController');
 Route::apiResource('/booking', 'BookingController');
 Route::apiResource('/customer', 'CustomerController');
@@ -31,8 +32,12 @@ Route::apiResource('/food', 'FoodController');
 Route::apiResource('/food_orders', 'FoodOrderController');
 Route::apiResource('/tables', 'TableController');
 Route::apiResource('/invoices', 'InvoiceController');
+
+Route::get('/user_list', 'UserController@list');
 Route::post('/login', 'UserController@login');
 Route::post('/register', 'UserController@register');
+Route::post('/update_user', 'UserController@updateUser');
+
 Route::post('/booked_rooms', 'BookingController@storeBookedRoom');
 Route::get('/booked_rooms', 'BookingController@getBookedRoom');
 Route::get('/booked_rooms/{{id}}', 'BookingController@showBookedRoom');

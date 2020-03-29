@@ -8,18 +8,29 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    function list() {
+        $user = User::all();
+        if ($user) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Lists of Users.',
+                'data' => $user,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No Users',
+            ]);
+        }
+    }
+
     public function login(Request $request)
     {
         $user = User::all()->where('email', $request->email)->first();
         if (Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => true,
-                'message' => 'Lists of Users.',
+                'message' => 'Login Success.',
                 'data' => $user,
             ]);
         } else {
@@ -30,11 +41,6 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function register(Request $request)
     {
         $user = User::create($this->validateUserRequest());
@@ -50,6 +56,24 @@ class UserController extends Controller
                 'message' => 'Failed to create User',
             ]);
         }
+    }
+
+    public function updateUser(Request $request)
+    {
+        $user = User::find($request->id);
+        // $user->update($this->validateUserRequest());
+        // if ($user) {
+        //     return response()->json([
+        //         'success' => true,
+        //         'message' => 'User has been updated successfully.',
+        //         'data' => $user,
+        //     ]);
+        // } else {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Failed to update User',
+        //     ]);
+        // }
     }
 
     public function validateUserRequest()
