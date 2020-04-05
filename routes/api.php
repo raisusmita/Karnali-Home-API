@@ -32,11 +32,12 @@ Route::apiResource('/food', 'FoodController');
 Route::apiResource('/food_orders', 'FoodOrderController');
 Route::apiResource('/tables', 'TableController');
 Route::apiResource('/invoices', 'InvoiceController');
+Route::apiResource('/user', 'UserController');
 
-Route::get('/user_list', 'UserController@list');
+// Route::get('/user_list', 'UserController@list');
 Route::post('/login', 'UserController@login');
-Route::post('/register', 'UserController@register');
-Route::post('/update_user', 'UserController@updateUser');
+// Route::post('/register', 'UserController@register');
+// Route::put('/update_user', 'UserController@updateUser');
 
 Route::post('/booked_rooms', 'BookingController@storeBookedRoom');
 Route::get('/booked_rooms', 'BookingController@getBookedRoom');

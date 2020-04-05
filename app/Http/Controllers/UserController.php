@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    function list() {
+
+    public function index()
+    {
         $user = User::all();
-        if ($user) {
+        if ($user->isNotEmpty()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Lists of Users.',
@@ -19,15 +21,70 @@ class UserController extends Controller
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'No Users',
+                'message' => 'Currently, there is no any Users.',
             ]);
         }
     }
 
+    public function store()
+    {
+        $user = User::create($this->validateUserRequest());
+        return response()->json([
+            'success' => true,
+            'message' => 'User has been created successfully.',
+            'data' => $user,
+        ]);
+    }
+
+    public function show(User $user)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Data of an individual User',
+            'data' => $user,
+        ]);
+    }
+
+    public function update(User $user)
+    {
+        // $p = $user->update($this->validateUserRequest());
+        // dd(request()->email);
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'User has been updated',
+        //     'data' => $user,
+        // ]);
+    }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'User has been deleted successfully.',
+        ]);
+    }
+
+    // function list() {
+    //     $user = User::all();
+    //     if ($user) {
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Lists of Users.',
+    //             'data' => $user,
+    //         ]);
+    //     } else {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'No Users',
+    //         ]);
+    //     }
+    // }
+
     public function login(Request $request)
     {
         $user = User::all()->where('email', $request->email)->first();
-        if (Hash::check($request->password, $user->password)) {
+        if ($user && Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => true,
                 'message' => 'Login Success.',
@@ -41,40 +98,42 @@ class UserController extends Controller
         }
     }
 
-    public function register(Request $request)
-    {
-        $user = User::create($this->validateUserRequest());
-        if ($user) {
-            return response()->json([
-                'success' => true,
-                'message' => 'User has been created successfully.',
-                'data' => $user,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create User',
-            ]);
-        }
-    }
+    // public function register(Request $request)
+    // {
+    //     $user = User::create($this->validateUserRequest());
+    //     if ($user) {
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'User has been created successfully.',
+    //             'data' => $user,
+    //         ]);
+    //     } else {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Failed to create User',
+    //         ]);
+    //     }
+    // }
 
-    public function updateUser(Request $request)
-    {
-        $user = User::find($request->id);
-        // $user->update($this->validateUserRequest());
-        // if ($user) {
-        //     return response()->json([
-        //         'success' => true,
-        //         'message' => 'User has been updated successfully.',
-        //         'data' => $user,
-        //     ]);
-        // } else {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Failed to update User',
-        //     ]);
-        // }
-    }
+    // public function updateUser(Request $user)
+    // {
+    //     dd($user);
+    //     // dd(request());
+    //     // $user = User::find($request->id);
+    //     // $user->update($this->validateUserRequest());
+    //     // if ($user) {
+    //     //     return response()->json([
+    //     //         'success' => true,
+    //     //         'message' => 'User has been updated successfully.',
+    //     //         'data' => $user,
+    //     //     ]);
+    //     // } else {
+    //     //     return response()->json([
+    //     //         'success' => false,
+    //     //         'message' => 'Failed to update User',
+    //     //     ]);
+    //     // }
+    // }
 
     public function validateUserRequest()
     {
