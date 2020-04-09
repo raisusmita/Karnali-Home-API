@@ -47,13 +47,13 @@ class UserController extends Controller
 
     public function update(User $user)
     {
-        // $p = $user->update($this->validateUserRequest());
-        // dd(request()->email);
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'User has been updated',
-        //     'data' => $user,
-        // ]);
+
+        $user->update($this->validateUserRequest());
+        return response()->json([
+            'success' => true,
+            'message' => 'User has been updated',
+            'data' => $user,
+        ]);
     }
 
     public function destroy(User $user)
