@@ -86,7 +86,7 @@ class RoomCategoryController extends Controller
             'room_type' => 'required',
             'number_of_rooms' => 'required',
             'room_price' => 'required',
-            'image' => 'image|nullable|sometimes',
+            'image' => 'file|image|nullable|sometimes',
         ]);
     }
 }
