@@ -14,8 +14,13 @@ class Booking extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    public function bookedRooms()
+    public function roomCategory()
     {
-        return $this->hasMany(BookedRoom::class);
+        return $this->belongsTo(RoomCategory::class);
+    }
+
+    public function setCheckInDateAttribute($value)
+    {
+        $this->attributes['check_in_date'] = date('Y-m-d h:i:s', strtotime(strtolower($value))
     }
 }

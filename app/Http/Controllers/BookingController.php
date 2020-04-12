@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Booking;
-use App\Model\BookedRoom;
-
+use Carbon\Carbon;
 
 class BookingController extends Controller
 {
@@ -29,9 +28,13 @@ class BookingController extends Controller
         }
     }
 
-    public function store()
+    public function store(Request $request)
     {
+
         $booking = Booking::create($this->validateRequest());
+        // $booking['check_in_date'] = Carbon::createFromFormat('m/d/Y', $request->check_in_date)->format('Y-m-d');
+        // $booking['check_out_date'] = Carbon::createFromFormat('m/d/Y', $request->check_out_date)->format('Y-m-d');
+    //    return  print_r($booking)
         return response()->json([
             'success' => true,
             'message' => 'Booking has been created successfully.',
@@ -71,7 +74,10 @@ class BookingController extends Controller
     {
         return request()->validate([
             'customer_id' => 'required',
-            'number_of_customers' => 'required',
+            'room_category_id' => 'required',
+            'number_of_rooms' => 'required',
+            'number_of_adult' => 'required',
+            'number_of_child' => 'required',
             'check_in_date' => 'required',
             'check_out_date' => 'required',
         ]);
@@ -79,18 +85,17 @@ class BookingController extends Controller
 
     public function getBookedRoom()
     {
-        $bookedRoom = BookedRoom::all();
-        if ($bookedRoom->isNotEmpty()) {
-            $bookedRoom->map(function ($bookedRoom){
-                $bookedRoom->Booking; 
-                $bookedRoom->Booking->Customer;
-                $bookedRoom->RoomCategory;
+        $booking = Booking::all();
+        if ($booking->isNotEmpty()) {
+            $booking->map(function ($booking){
+                $booking->Customer;
+                $booking->RoomCategory;
 
             });
             return response()->json([
                 'success' => true,
                 'message' => 'Lists of BookedRooms.',
-                'data' => $bookedRoom
+                'data' => $booking
             ]);
         } else {
             return response()->json([
