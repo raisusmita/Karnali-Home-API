@@ -17,7 +17,7 @@ class RoomCategoryController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Lists of Room Category.',
-                'data' => $roomCategory
+                'data' => $roomCategory,
             ]);
         } else {
             return response()->json([
@@ -34,7 +34,7 @@ class RoomCategoryController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Room Category has been created successfully.',
-            'data' => $roomCategory
+            'data' => $roomCategory,
         ]);
     }
 
@@ -44,7 +44,7 @@ class RoomCategoryController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Data of an individual Room Category',
-            'data' => $roomCategory
+            'data' => $roomCategory,
         ]);
     }
 
@@ -54,7 +54,7 @@ class RoomCategoryController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Room Category has been updated',
-            'data' => $roomCategory
+            'data' => $roomCategory,
         ]);
     }
 
@@ -63,7 +63,7 @@ class RoomCategoryController extends Controller
         $roomCategory->delete();
         return response()->json([
             'success' => true,
-            'message' => 'Room Category has been deleted successfully.'
+            'message' => 'Room Category has been deleted successfully.',
         ]);
     }
 
@@ -86,7 +86,7 @@ class RoomCategoryController extends Controller
             'room_type' => 'required',
             'number_of_rooms' => 'required',
             'room_price' => 'required',
-            'image' => 'image|nullable|max:5555'
+            'image' => 'image|nullable|sometimes',
         ]);
     }
 }
