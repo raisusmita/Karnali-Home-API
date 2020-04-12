@@ -68,10 +68,9 @@ class RoomTransactionController extends Controller
             'customer_id' => 'required',
             'reservation_id' => 'required',
             'invoice_id' => 'nullable',
-            'number_of_day' => 'required',
+            'number_of_days' => 'required',
             'rate' => 'required',
-            'total_amount' => 'required',
-            'transaction_date' => 'required'
+            'total_amount' => 'required'
         ]);
     }
 }

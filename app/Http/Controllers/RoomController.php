@@ -33,7 +33,7 @@ class RoomController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Room has been created successfully.',
-            'data' => $room
+            'data' => $room,
         ]);
     }
 
@@ -63,7 +63,7 @@ class RoomController extends Controller
         $room->delete();
         return response()->json([
             'success' => true,
-            'message' => 'Room has been deleted successfully.'
+            'message' => 'Room has been deleted successfully.',
         ]);
     }
 
@@ -82,8 +82,8 @@ class RoomController extends Controller
             'room_category_id' => 'required',
             'room_number' => 'required |unique:rooms',
             'number_of_bed' => 'required',
-            'phone_number' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
-            'image' => 'image|nullable|max:1999'
+            'telephone_number' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/',
+            'image' => 'image|nullable|max:1999',
         ]);
     }
 }
