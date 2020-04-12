@@ -30,9 +30,9 @@ class BookingController extends Controller
 
     public function store()
     {
-        request()->check_in_date = date('Y-m-d h:i:s', strtotime(request()->check_in_date));
-        request()->check_out_date = date('Y-m-d h:i:s', strtotime(request()->check_out_date));
-        return request();
+        // request()->check_in_date = date('Y-m-d h:i:s', strtotime(request()->check_in_date));
+        // request()->check_out_date = date('Y-m-d h:i:s', strtotime(request()->check_out_date));
+        // return request();
         $booking = Booking::create($this->validateRequest());
         return response()->json([
             'success' => true,
