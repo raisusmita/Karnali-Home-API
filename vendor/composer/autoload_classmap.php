@@ -27,6 +27,7 @@ return array(
     'App\\Http\\Controllers\\RoomController' => $baseDir . '/app/Http/Controllers/RoomController.php',
     'App\\Http\\Controllers\\RoomTransactionController' => $baseDir . '/app/Http/Controllers/RoomTransactionController.php',
     'App\\Http\\Controllers\\TableController' => $baseDir . '/app/Http/Controllers/TableController.php',
+    'App\\Http\\Controllers\\UserController' => $baseDir . '/app/Http/Controllers/UserController.php',
     'App\\Http\\Kernel' => $baseDir . '/app/Http/Kernel.php',
     'App\\Http\\Middleware\\Authenticate' => $baseDir . '/app/Http/Middleware/Authenticate.php',
     'App\\Http\\Middleware\\CheckForMaintenanceMode' => $baseDir . '/app/Http/Middleware/CheckForMaintenanceMode.php',
