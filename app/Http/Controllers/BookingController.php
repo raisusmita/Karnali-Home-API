@@ -28,13 +28,12 @@ class BookingController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function store()
     {
-
+        request()->check_in_date = date('Y-m-d h:i:s', strtotime(request()->check_in_date));
+        request()->check_out_date = date('Y-m-d h:i:s', strtotime(request()->check_out_date));
+        return request();
         $booking = Booking::create($this->validateRequest());
-        // $booking['check_in_date'] = Carbon::createFromFormat('m/d/Y', $request->check_in_date)->format('Y-m-d');
-        // $booking['check_out_date'] = Carbon::createFromFormat('m/d/Y', $request->check_out_date)->format('Y-m-d');
-    //    return  print_r($booking)
         return response()->json([
             'success' => true,
             'message' => 'Booking has been created successfully.',
