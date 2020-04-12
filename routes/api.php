@@ -21,12 +21,6 @@ Route::middleware('cors')->group(function () {
     //your_routes
 });
 
-Route::middleware('cors')->group(function () {
-    //your_routes
-});
-
-
-
 Route::apiResource('/room_categories', 'RoomCategoryController');
 Route::apiResource('/rooms', 'RoomController');
 Route::apiResource('/room_transactions', 'RoomTransactionController');
