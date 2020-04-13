@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Booking;
-use App\Model\BookedRoom;
-
+use Carbon\Carbon;
 
 class BookingController extends Controller
 {
@@ -31,6 +30,9 @@ class BookingController extends Controller
 
     public function store()
     {
+        // request()->check_in_date = date('Y-m-d h:i:s', strtotime(request()->check_in_date));
+        // request()->check_out_date = date('Y-m-d h:i:s', strtotime(request()->check_out_date));
+        // return request();
         $booking = Booking::create($this->validateRequest());
         return response()->json([
             'success' => true,

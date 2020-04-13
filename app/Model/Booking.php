@@ -23,7 +23,7 @@ class Booking extends Model
     
         $this->attributes['check_in_date'] = date('Y-m-d h:i:s', strtotime(request()->check_in_date));
     
-    }
+    } 
 
     
     public function setCheckOutDateAttribute( $pass ) {
