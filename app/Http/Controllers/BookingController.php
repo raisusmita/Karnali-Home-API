@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Booking;
-use App\Model\BookedRoom;
-
+use Carbon\Carbon;
 
 class BookingController extends Controller
 {
@@ -31,6 +30,9 @@ class BookingController extends Controller
 
     public function store()
     {
+        // request()->check_in_date = date('Y-m-d h:i:s', strtotime(request()->check_in_date));
+        // request()->check_out_date = date('Y-m-d h:i:s', strtotime(request()->check_out_date));
+        // return request();
         $booking = Booking::create($this->validateRequest());
         return response()->json([
             'success' => true,
@@ -71,7 +73,10 @@ class BookingController extends Controller
     {
         return request()->validate([
             'customer_id' => 'required',
-            'number_of_customers' => 'required',
+            'room_category_id' => 'required',
+            'number_of_rooms' => 'required',
+            'number_of_adult' => 'required',
+            'number_of_child' => 'required',
             'check_in_date' => 'required',
             'check_out_date' => 'required',
         ]);
@@ -79,18 +84,17 @@ class BookingController extends Controller
 
     public function getBookedRoom()
     {
-        $bookedRoom = BookedRoom::all();
-        if ($bookedRoom->isNotEmpty()) {
-            $bookedRoom->map(function ($bookedRoom){
-                $bookedRoom->Booking; 
-                $bookedRoom->Booking->Customer;
-                $bookedRoom->RoomCategory;
+        $booking = Booking::all();
+        if ($booking->isNotEmpty()) {
+            $booking->map(function ($booking){
+                $booking->Customer;
+                $booking->RoomCategory;
 
             });
             return response()->json([
                 'success' => true,
                 'message' => 'Lists of BookedRooms.',
-                'data' => $bookedRoom
+                'data' => $booking
             ]);
         } else {
             return response()->json([
