@@ -85,10 +85,13 @@ class UserController extends Controller
     {
         $user = User::all()->where('email', $request->email)->first();
         if ($user && Hash::check($request->password, $user->password)) {
+            $token['token'] = $user->createToken('MyApp')->accessToken;
+            $token['name'] = $user->name;
             return response()->json([
                 'success' => true,
                 'message' => 'Login Success.',
                 'data' => $user,
+                'token' => $token,
             ]);
         } else {
             return response()->json([
