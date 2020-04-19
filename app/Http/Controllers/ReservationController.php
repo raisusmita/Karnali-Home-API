@@ -16,17 +16,18 @@ class ReservationController extends Controller
                 $reservation->Room;
                 $reservation->Room->RoomCategory;
                 $reservation->Customer;
+                $reservation->Booking;
                 // ------------------------------------
             });
             return response()->json([
                 'success' => true,
-                'message' => 'Lists of Customers.',
+                'message' => 'Lists of Reservation.',
                 'data' => $reservation
             ]);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Currently, there is no any Customers yet.',
+                'message' => 'Currently, there is no any Reservation yet.',
             ]);
         }
     }
