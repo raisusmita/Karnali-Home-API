@@ -1,7 +1,7 @@
 @component('mail::message')
 # Welcome to Karnlai Home
 
-You have successfully booked your Rooms.
+Your room has been booked from {{$check_in_date}} to {{$check_out_date}}.
 
 
 <strong> Note: Your booking will be cancelled after 12 hours </strong>

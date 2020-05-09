@@ -36,12 +36,20 @@ class BookingController extends Controller
         // request()->check_out_date = date('Y-m-d h:i:s', strtotime(request()->check_out_date));
         // return request();
 
+        $message = '';
         $booking = Booking::create($this->validateRequest());
-        // send email
-        Mail::to('test@test.com')->send(new BookingMail());
+        $userEmail = $booking->customer->email;
+        if ($booking && $userEmail) {
+            Mail::to($userEmail)->send(new BookingMail($booking->check_in_date, $booking->check_out_date));
+            $message = 'Booking has been created successfully.';
+        } else if ($booking) {
+            $message = 'Booking has been created successfully. But email failed';
+        } else {
+            $message = 'Booking failed';
+        }
         return response()->json([
             'success' => true,
-            'message' => 'Booking has been created successfully.',
+            'message' => $message,
             'data' => $booking,
         ]);
     }

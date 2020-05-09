@@ -7,8 +7,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class BookingMail extends Mailable
+class BookingMail extends Mailable implements ShouldQueue
 {
+    public $check_in_date;
+    public $check_out_date;
+
     use Queueable, SerializesModels;
 
     /**
@@ -16,8 +19,11 @@ class BookingMail extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($check_in_date, $check_out_date)
     {
+        $this->check_in_date = $check_in_date;
+        $this->check_out_date = $check_out_date;
+
         //
     }
 
