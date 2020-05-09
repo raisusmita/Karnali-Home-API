@@ -37,7 +37,7 @@ return array(
     'App\\Http\\Middleware\\TrimStrings' => $baseDir . '/app/Http/Middleware/TrimStrings.php',
     'App\\Http\\Middleware\\TrustProxies' => $baseDir . '/app/Http/Middleware/TrustProxies.php',
     'App\\Http\\Middleware\\VerifyCsrfToken' => $baseDir . '/app/Http/Middleware/VerifyCsrfToken.php',
-    'App\\Model\\BookedRoom' => $baseDir . '/app/Model/BookedRoom.php',
+    'App\\Mail\\BookingMail' => $baseDir . '/app/Mail/BookingMail.php',
     'App\\Model\\Booking' => $baseDir . '/app/Model/Booking.php',
     'App\\Model\\Customer' => $baseDir . '/app/Model/Customer.php',
     'App\\Model\\Food' => $baseDir . '/app/Model/Food.php',

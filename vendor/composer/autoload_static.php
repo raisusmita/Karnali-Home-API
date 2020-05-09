@@ -550,7 +550,7 @@ class ComposerStaticInit67b02b826b9dc4ffeb49f46c964b4b69
         'App\\Http\\Middleware\\TrimStrings' => __DIR__ . '/../..' . '/app/Http/Middleware/TrimStrings.php',
         'App\\Http\\Middleware\\TrustProxies' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustProxies.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
-        'App\\Model\\BookedRoom' => __DIR__ . '/../..' . '/app/Model/BookedRoom.php',
+        'App\\Mail\\BookingMail' => __DIR__ . '/../..' . '/app/Mail/BookingMail.php',
         'App\\Model\\Booking' => __DIR__ . '/../..' . '/app/Model/Booking.php',
         'App\\Model\\Customer' => __DIR__ . '/../..' . '/app/Model/Customer.php',
         'App\\Model\\Food' => __DIR__ . '/../..' . '/app/Model/Food.php',
