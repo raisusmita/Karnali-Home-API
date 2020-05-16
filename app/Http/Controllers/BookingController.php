@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\BookingMail;
 use App\Model\Booking;
-use Carbon\Carbon;
+use App\Model\Customer;
+use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
@@ -11,14 +13,14 @@ class BookingController extends Controller
     {
         $booking = Booking::all();
         if ($booking->isNotEmpty()) {
-            $booking->map(function ($booking){
+            $booking->map(function ($booking) {
                 $booking->Customer;
                 $booking->BookedRoom;
             });
             return response()->json([
                 'success' => true,
                 'message' => 'Lists of Bookings.',
-                'data' => $booking
+                'data' => $booking,
             ]);
         } else {
             return response()->json([
@@ -33,11 +35,22 @@ class BookingController extends Controller
         // request()->check_in_date = date('Y-m-d h:i:s', strtotime(request()->check_in_date));
         // request()->check_out_date = date('Y-m-d h:i:s', strtotime(request()->check_out_date));
         // return request();
+
+        $message = '';
         $booking = Booking::create($this->validateRequest());
+        $userEmail = $booking->customer->email;
+        if ($booking && $userEmail) {
+            Mail::to($userEmail)->send(new BookingMail($booking->check_in_date, $booking->check_out_date));
+            $message = 'Booking has been created successfully.';
+        } else if ($booking) {
+            $message = 'Booking has been created successfully. But email failed';
+        } else {
+            $message = 'Booking failed';
+        }
         return response()->json([
             'success' => true,
-            'message' => 'Booking has been created successfully.',
-            'data' => $booking
+            'message' => $message,
+            'data' => $booking,
         ]);
     }
 
@@ -46,7 +59,7 @@ class BookingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Data of an individual Booking',
-            'data' => $booking
+            'data' => $booking,
         ]);
     }
 
@@ -56,7 +69,7 @@ class BookingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Booking has been updated',
-            'data' => $booking
+            'data' => $booking,
         ]);
     }
 
@@ -65,7 +78,7 @@ class BookingController extends Controller
         $booking->delete();
         return response()->json([
             'success' => true,
-            'message' => 'Booking has been deleted successfully.'
+            'message' => 'Booking has been deleted successfully.',
         ]);
     }
 
@@ -86,7 +99,7 @@ class BookingController extends Controller
     {
         $booking = Booking::all();
         if ($booking->isNotEmpty()) {
-            $booking->map(function ($booking){
+            $booking->map(function ($booking) {
                 $booking->Customer;
                 $booking->RoomCategory;
 
@@ -94,7 +107,7 @@ class BookingController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Lists of BookedRooms.',
-                'data' => $booking
+                'data' => $booking,
             ]);
         } else {
             return response()->json([
