@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Model\Room;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-
 
 class RoomController extends Controller
 {
@@ -13,56 +10,71 @@ class RoomController extends Controller
     {
         $room = Room::all();
         if ($room->isNotEmpty()) {
-            return response([
+            // $room->map(function ($room) {
+            //     $room->image = $room->image ? public_path('storage/' . $room->image) : "";
+            // });
+            return response()->json([
                 'success' => true,
-                'message' => 'Lists of Customers.',
-                'data' => $room
-            ], Response::HTTP_CREATED);
+                'message' => 'Lists of Room.',
+                'data' => $room,
+            ]);
         } else {
-            return response([
+            return response()->json([
                 'success' => false,
-                'message' => 'Currently, there is no any Customers yet.',
-            ], Response::HTTP_CREATED);
+                'message' => 'Currently, there is no any Room yet.',
+            ]);
         }
     }
 
     public function store()
     {
         $room = Room::create($this->validateRequest());
-        return response([
+        // $this->storeImage($room);
+        return response()->json([
             'success' => true,
             'message' => 'Room has been created successfully.',
-            'data' => $room
-        ], Response::HTTP_CREATED);
+            'data' => $room,
+        ]);
     }
 
     public function show(Room $room)
     {
-        return response([
+        // $room->image = $room->image ? public_path('storage/' . $room->image) : "";
+        return response()->json([
             'success' => true,
             'message' => 'Data of an individual Room',
-            'data' => $room
-        ], Response::HTTP_CREATED);
+            'data' => $room,
+        ]);
     }
 
     public function update(Room $room)
     {
         $room->update($this->validateRequest());
-        return response([
+        // $this->storeImage($room);
+        return response()->json([
             'success' => true,
             'message' => 'Room has been updated',
-            'data' => $room
-        ], Response::HTTP_CREATED);
+            'data' => $room,
+        ]);
     }
 
     public function destroy(Room $room)
     {
         $room->delete();
-        return response([
+        return response()->json([
             'success' => true,
-            'message' => 'Room has been deleted successfully.'
-        ], Response::HTTP_NO_CONTENT);
+            'message' => 'Room has been deleted successfully.',
+        ]);
     }
+
+    // private function storeImage($room)
+    // {
+    //     if (request()->has('image')) {
+    //         $room->update([
+    //             'image' => request()->image->store('images', 'public'),
+    //         ]);
+    //     }
+    // }
 
     private function validateRequest()
     {
@@ -70,7 +82,8 @@ class RoomController extends Controller
             'room_category_id' => 'required',
             'room_number' => 'required |unique:rooms',
             'number_of_bed' => 'required',
-            'phone_number' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10'
+            'telephone_number' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/',
+            // 'image' => 'image|nullable|max:1999',
         ]);
     }
 }

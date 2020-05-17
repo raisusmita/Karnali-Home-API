@@ -19,7 +19,7 @@ class CreateRoomsTable extends Migration
             $table->foreign('room_category_id')->references('id')->on('room_categories');
             $table->string('room_number');
             $table->integer('number_of_bed');
-            $table->string('phone_number');
+            $table->string('telephone_number');
             $table->timestamps();
         });
     }

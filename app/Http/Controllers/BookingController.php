@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Booking;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-
+use Carbon\Carbon;
 
 class BookingController extends Controller
 {
@@ -13,65 +11,126 @@ class BookingController extends Controller
     {
         $booking = Booking::all();
         if ($booking->isNotEmpty()) {
-            return response([
+            $booking->map(function ($booking){
+                $booking->Customer;
+                $booking->BookedRoom;
+            });
+            return response()->json([
                 'success' => true,
                 'message' => 'Lists of Bookings.',
                 'data' => $booking
-            ], Response::HTTP_CREATED);
+            ]);
         } else {
-            return response([
+            return response()->json([
                 'success' => false,
                 'message' => 'Currently, there is no any Bookings yet.',
-            ], Response::HTTP_CREATED);
+            ]);
         }
     }
 
     public function store()
     {
+        // request()->check_in_date = date('Y-m-d h:i:s', strtotime(request()->check_in_date));
+        // request()->check_out_date = date('Y-m-d h:i:s', strtotime(request()->check_out_date));
+        // return request();
         $booking = Booking::create($this->validateRequest());
-        return response([
+        return response()->json([
             'success' => true,
             'message' => 'Booking has been created successfully.',
             'data' => $booking
-        ], Response::HTTP_CREATED);
+        ]);
     }
 
     public function show(Booking $booking)
     {
-        return response([
+        return response()->json([
             'success' => true,
             'message' => 'Data of an individual Booking',
             'data' => $booking
-        ], Response::HTTP_CREATED);
+        ]);
     }
 
     public function update(Booking $booking)
     {
         $booking->update($this->validateRequest());
-        return response([
+        return response()->json([
             'success' => true,
             'message' => 'Booking has been updated',
             'data' => $booking
-        ], Response::HTTP_CREATED);
+        ]);
     }
 
     public function destroy(Booking $booking)
     {
         $booking->delete();
-        return response([
+        return response()->json([
             'success' => true,
             'message' => 'Booking has been deleted successfully.'
-        ], Response::HTTP_NO_CONTENT);
+        ]);
     }
 
     public function validateRequest()
     {
         return request()->validate([
             'customer_id' => 'required',
-            'booking_start_date' => 'required',
-            'booking_end_date' => 'required',
-            'no_of_customers' => 'required',
-            'no_of_room' => 'required',
+            'room_category_id' => 'required',
+            'number_of_rooms' => 'required',
+            'number_of_adult' => 'required',
+            'number_of_child' => 'required',
+            'check_in_date' => 'required',
+            'check_out_date' => 'required',
         ]);
     }
+
+    public function getBookedRoom()
+    {
+        $booking = Booking::all();
+        if ($booking->isNotEmpty()) {
+            $booking->map(function ($booking){
+                $booking->Customer;
+                $booking->RoomCategory;
+
+            });
+            return response()->json([
+                'success' => true,
+                'message' => 'Lists of BookedRooms.',
+                'data' => $booking
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Currently, there is no any BookedRooms yet.',
+            ]);
+        }
+    }
+
+    //Store for booked_room table
+    // public function storeBookedRoom()
+    // {
+    //     $bookedRoom = BookedRoom::create($this->validateBookedRoomRequest());
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'BookedRoom has been created successfully.',
+    //         'data' => $bookedRoom
+    //     ]);
+    // }
+
+    // public function showBookedRoom(BookedRoom $bookedRoom)
+    // {
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Data of an individual bookedRoom',
+    //         'data' => $bookedRoom
+    //     ]);
+    // }
+
+    // public function validateBookedRoomRequest()
+    // {
+    //     return request()->validate([
+    //         'room_category_id' => 'required',
+    //         'booking_id' => 'required',
+    //         'number_of_rooms' => 'required'
+    //     ]);
+    // }
+
 }
