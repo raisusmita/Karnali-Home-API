@@ -73,8 +73,8 @@ class RoomCategoryController extends Controller
             $roomCategory->update([
                 'image' => request()->image->store('images', 'public'),
             ]);
-
-            $img = Image::make(public_path('storage/' . $roomCategory->image))->fit(386, 235);
+            $image = request()->file('image');
+            $img = Image::make(public_path('storage/' . $image))->fit(386, 235);
             $img->save();
         }
     }
@@ -86,7 +86,7 @@ class RoomCategoryController extends Controller
             'room_type' => 'required',
             'number_of_rooms' => 'required',
             'room_price' => 'required',
-            'image' => 'file|image|nullable|sometimes',
+            'image' => 'file|image|mimes:jpeg,png,jpg,gif|nullable|sometimes',
         ]);
     }
 }
