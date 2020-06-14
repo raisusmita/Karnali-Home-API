@@ -23,4 +23,9 @@ class Room extends Model
         return $this->hasMany(FoodOrder::class);
     }
 
+    
+    public function roomAvailabilities()
+    {
+        return $this->hasMany(roomAvailability::class);
+    }
 }
