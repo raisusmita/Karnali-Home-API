@@ -12,13 +12,13 @@ class FoodController extends Controller
         if ($food->isNotEmpty()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Lists of Customers.',
-                'data' => $food
+                'message' => 'Lists of Foods.',
+                'data' => $food,
             ]);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Currently, there is no any Customers yet.',
+                'message' => 'Currently, there is no Food.',
             ]);
         }
     }
@@ -29,7 +29,7 @@ class FoodController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Food has been created successfully.',
-            'data' => $food
+            'data' => $food,
         ]);
     }
 
@@ -38,7 +38,7 @@ class FoodController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Data of an individual Food',
-            'data' => $food
+            'data' => $food,
         ]);
     }
 
@@ -48,7 +48,7 @@ class FoodController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Food has been updated',
-            'data' => $food
+            'data' => $food,
         ]);
     }
 
@@ -57,7 +57,7 @@ class FoodController extends Controller
         $food->delete();
         return response()->json([
             'success' => true,
-            'message' => 'Food has been deleted successfully.'
+            'message' => 'Food has been deleted successfully.',
         ]);
     }
 
@@ -66,7 +66,7 @@ class FoodController extends Controller
         return request()->validate([
             'name' => 'required',
             'price' => 'required',
-            'food_type' => 'required'
+            'food_type' => 'required',
         ]);
     }
 }

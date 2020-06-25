@@ -29,11 +29,11 @@ class RoomAvailabilityController extends Controller
 
     public function getAvailableRoomByDate()
     {
-        $dateValue =  request();
-
+        $dateValue = request();
+        $format = "Y-m-d H:i:s";
         if ($dateValue->check_in_date < $dateValue->check_out_date) {
-            $unAvailableRoom = RoomAvailability::whereDate('check_in_date', '>=', $dateValue->check_in_date, 'and', 'check_in_date', '<=', $dateValue->check_out_date)
-                ->orWhereDate('check_out_date', '>=', $dateValue->check_in_date, 'and', 'check_out_date', '<=', $dateValue->check_out_date)
+            $unAvailableRoom = RoomAvailability::whereBetween('check_in_date', [date($format, strtotime($dateValue->check_in_date)), date($format, strtotime($dateValue->check_out_date))])
+                ->orWhereBetween('check_out_date', [date($format, strtotime($dateValue->check_in_date)), date($format, strtotime($dateValue->check_out_date))])
                 ->available()
                 ->get();
             $roomIds = [];
@@ -60,14 +60,14 @@ class RoomAvailabilityController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'The room is already taken'
+                'message' => 'The room is already taken',
             ]);
         } else {
             $roomAvailability = RoomAvailability::insert($request->all());
             return response()->json([
                 'success' => true,
                 'message' => 'Room Availability has been created successfully.',
-                'data' => $roomAvailability
+                'data' => $roomAvailability,
             ]);
         }
     }
@@ -75,32 +75,32 @@ class RoomAvailabilityController extends Controller
     public function getRoomByBookingId()
     {
         $bookingId = request();
-        // return $bookingId->bookingId;
-        $bookedRoom =  RoomAvailability::where('booking_id', $bookingId->bookingId)->get();
+        $bookedRoom = RoomAvailability::where('booking_id', $bookingId->bookingId)->get();
         $bookedRoom->map(function ($bookedRoom) {
             $bookedRoom->Room;
         });
         return response()->json([
             'success' => true,
             'message' => 'Customer has been updated',
-            'data' => $bookedRoom
+            'data' => $bookedRoom,
         ]);
-        
+
     }
 
-    public function updateBookingToReservation(){
-        $reservation =request();
-        $selected = RoomAvailability::where('booking_id','=', $reservation->booking_id)
-                                    ->where( 'room_id','=', $reservation->room_id)
-                                    ->update([  'reservation_id'=> $reservation->reservation_id, 
-                                                'check_in_date'=>$reservation->check_in_date, 
-                                                'check_out_date'=>$reservation->check_out_date
-                                            ]);
+    public function updateBookingToReservation()
+    {
+        $reservation = request();
+        $selected = RoomAvailability::where('booking_id', '=', $reservation->booking_id)
+            ->where('room_id', '=', $reservation->room_id)
+            ->update(['reservation_id' => $reservation->reservation_id,
+                'check_in_date' => $reservation->check_in_date,
+                'check_out_date' => $reservation->check_out_date,
+            ]);
         return response()->json([
             'success' => true,
             'message' => 'Room Availability has been updated',
             // 'data' => $bookedRoom
-           ]);
+        ]);
     }
 
     private function validateRequest()
@@ -110,7 +110,7 @@ class RoomAvailabilityController extends Controller
             'reservation_id' => 'nullable',
             'booking_id' => 'required',
             'check_in_date' => 'required',
-            'check_out_date' => 'required'
+            'check_out_date' => 'required',
         ]);
     }
 }
