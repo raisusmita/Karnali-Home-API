@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Model\Room;
 use App\Model\RoomAvailability;
+use Illuminate\Http\Request;
 
 class RoomAvailabilityController extends Controller
 {
@@ -21,7 +22,7 @@ class RoomAvailabilityController extends Controller
         $room->map(function ($roomCat) {
             $roomCat->roomCategory->id;
         });
-        $room = $room->groupBy('room_category_id');
+        // $room = $room->groupBy('room_category_id');
 
         return $room;
     }
@@ -33,7 +34,7 @@ class RoomAvailabilityController extends Controller
         if ($dateValue->check_in_date < $dateValue->check_out_date) {
             $unAvailableRoom = RoomAvailability::whereDate('check_in_date', '>=', $dateValue->check_in_date, 'and', 'check_in_date', '<=', $dateValue->check_out_date)
                 ->orWhereDate('check_out_date', '>=', $dateValue->check_in_date, 'and', 'check_out_date', '<=', $dateValue->check_out_date)
-                ->unavailable()
+                ->available()
                 ->get();
             $roomIds = [];
             foreach ($unAvailableRoom as $av) {
@@ -51,7 +52,7 @@ class RoomAvailabilityController extends Controller
         }
     }
 
-    public function storeRoomAvailability()
+    public function storeRoomAvailability(Request $request)
     {
         $roomId = request();
         $test = RoomAvailability::where('room_id', $roomId->room_id)->get();
@@ -62,13 +63,44 @@ class RoomAvailabilityController extends Controller
                 'message' => 'The room is already taken'
             ]);
         } else {
-            $roomAvailability = RoomAvailability::create($this->validateRequest());
+            $roomAvailability = RoomAvailability::insert($request->all());
             return response()->json([
                 'success' => true,
                 'message' => 'Room Availability has been created successfully.',
                 'data' => $roomAvailability
             ]);
         }
+    }
+
+    public function getRoomByBookingId()
+    {
+        $bookingId = request();
+        // return $bookingId->bookingId;
+        $bookedRoom =  RoomAvailability::where('booking_id', $bookingId->bookingId)->get();
+        $bookedRoom->map(function ($bookedRoom) {
+            $bookedRoom->Room;
+        });
+        return response()->json([
+            'success' => true,
+            'message' => 'Customer has been updated',
+            'data' => $bookedRoom
+        ]);
+        
+    }
+
+    public function updateBookingToReservation(){
+        $reservation =request();
+        $selected = RoomAvailability::where('booking_id','=', $reservation->booking_id)
+                                    ->where( 'room_id','=', $reservation->room_id)
+                                    ->update([  'reservation_id'=> $reservation->reservation_id, 
+                                                'check_in_date'=>$reservation->check_in_date, 
+                                                'check_out_date'=>$reservation->check_out_date
+                                            ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Room Availability has been updated',
+            // 'data' => $bookedRoom
+           ]);
     }
 
     private function validateRequest()
