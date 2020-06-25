@@ -11,55 +11,33 @@ class FoodOrderController extends Controller
     {
         $foodOrder = FoodOrder::all();
         if ($foodOrder->isNotEmpty()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Lists of Food Order.',
-                'data' => $foodOrder
-            ]);
+            return $this->jsonResponse(true, 'Lists of Food Order.', $foodOrder);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Currently, there is no any Food Order yet.',
-            ]);
+            return $this->jsonResponse(false, 'Currently, there is no any Food Order yet.');
         }
     }
 
     public function store()
     {
         $foodOrder = FoodOrder::create($this->validateRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'Food Order has been created successfully.',
-            'data' => $foodOrder
-        ]);
+        return $this->jsonResponse(true, 'Food Order has been created successfully.', $foodOrder);
     }
 
     public function show(FoodOrder $foodOrder)
     {
-        return response()->json([
-            'success' => true,
-            'message' => 'Data of an individual Food Order',
-            'data' => $foodOrder
-        ]);
+        return $this->jsonResponse(true, 'Data of an individual Food Order.', $foodOrder);
     }
 
     public function update(FoodOrder $foodOrder)
     {
         $foodOrder->update($this->validateRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'Food Order has been updated',
-            'data' => $foodOrder
-        ]);
+        return $this->jsonResponse(true, 'FoodOrder has been updated.', $foodOrder);
     }
 
     public function destroy(FoodOrder $foodOrder)
     {
         $foodOrder->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Food Order has been deleted successfully.'
-        ]);
+        return $this->jsonResponse(true, 'Food Order has been deleted successfully.');
     }
 
     public function validateRequest()
@@ -72,6 +50,15 @@ class FoodOrderController extends Controller
             'quantity' => 'required',
             'price' => 'required',
             'total_amount' => 'required',
+        ]);
+    }
+
+    private function jsonResponse($success = false, $message = '', $data = null)
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
         ]);
     }
 }

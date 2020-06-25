@@ -13,64 +13,51 @@ class InvoiceController extends Controller
     {
         $invoice = Invoice::all();
         if ($invoice->isNotEmpty()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Lists of Invoice.',
-                'data' => $invoice
-            ]);
+            return $this->jsonResponse(true, 'Lists of Invoice.', $invoice);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Currently, there is no any Invoice yet.',
-            ]);
+            return $this->jsonResponse(false, 'Currently, there is no any Invoice yet.');
         }
     }
 
     public function store()
     {
         $invoice = Invoice::create($this->validateRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'Invoice has been created successfully.',
-            'data' => $invoice
-        ]);
+        return $this->jsonResponse(true, 'Invoice has been created successfully.', $invoice);
     }
 
     public function show(Invoice $invoice)
     {
-        return response()->json([
-            'success' => true,
-            'message' => 'Data of an individual Invoice',
-            'data' => $invoice
-        ]);
+        return $this->jsonResponse(true, 'Data of an individual Invoice.', $invoice);
     }
 
     public function update(Invoice $invoice)
     {
         $invoice->update($this->validateRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'Invoice has been updated',
-            'data' => $invoice
-        ]);
+        return $this->jsonResponse(true, 'Invoice has been updated.', $invoice);
     }
 
     public function destroy(Invoice $invoice)
     {
         $invoice->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Invoice has been deleted successfully.'
-        ]);
+        return $this->jsonResponse(true, 'Invoice has been deleted successfully.');
     }
 
-    public function validateRequest()
+    private function validateRequest()
     {
         return request()->validate([
             'invoice_number' => 'required | unique:invoices',
             'vat' => 'required',
             'discount' => 'sometimes',
             'invoice_date' => 'required'
+        ]);
+    }
+
+    private function jsonResponse($success = false, $message = '', $data = null)
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
         ]);
     }
 }

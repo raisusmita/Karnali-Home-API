@@ -10,71 +10,34 @@ class RoomController extends Controller
     {
         $room = Room::all();
         if ($room->isNotEmpty()) {
-            // $room->map(function ($room) {
-            //     $room->image = $room->image ? public_path('storage/' . $room->image) : "";
-            // });
-            return response()->json([
-                'success' => true,
-                'message' => 'Lists of Room.',
-                'data' => $room,
-            ]);
+            return $this->jsonResponse(true, 'List of Rooms', $room);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Currently, there is no any Room yet.',
-            ]);
+            return $this->jsonResponse(false, 'There is no any room yet');
         }
     }
 
     public function store()
     {
         $room = Room::create($this->validateRequest());
-        // $this->storeImage($room);
-        return response()->json([
-            'success' => true,
-            'message' => 'Room has been created successfully.',
-            'data' => $room,
-        ]);
+        return $this->jsonResponse(true, 'Room has been created successfully', $room);
     }
 
     public function show(Room $room)
     {
-        // $room->image = $room->image ? public_path('storage/' . $room->image) : "";
-        return response()->json([
-            'success' => true,
-            'message' => 'Data of an individual Room',
-            'data' => $room,
-        ]);
+        return $this->jsonResponse(true, 'Data of an individual Room', $room);
     }
 
     public function update(Room $room)
     {
         $room->update($this->validateRequest());
-        // $this->storeImage($room);
-        return response()->json([
-            'success' => true,
-            'message' => 'Room has been updated',
-            'data' => $room,
-        ]);
+        return $this->jsonResponse(true, 'Room has been updated.', $room);
     }
 
     public function destroy(Room $room)
     {
         $room->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Room has been deleted successfully.',
-        ]);
+        return $this->jsonResponse(true, 'Room has been deleted successfully.');
     }
-
-    // private function storeImage($room)
-    // {
-    //     if (request()->has('image')) {
-    //         $room->update([
-    //             'image' => request()->image->store('images', 'public'),
-    //         ]);
-    //     }
-    // }
 
     private function validateRequest()
     {
@@ -83,7 +46,15 @@ class RoomController extends Controller
             'room_number' => 'required |unique:rooms',
             'number_of_bed' => 'required',
             'telephone_number' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/',
-            // 'image' => 'image|nullable|max:1999',
+        ]);
+    }
+
+    private function jsonResponse($success = false, $message = '', $data = null)
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
         ]);
     }
 }

@@ -14,16 +14,9 @@ class RoomCategoryController extends Controller
             $roomCategory->map(function ($roomCategory) {
                 $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
             });
-            return response()->json([
-                'success' => true,
-                'message' => 'Lists of Room Category.',
-                'data' => $roomCategory,
-            ]);
+            return $this->jsonResponse(true, 'Lists of Room Category.', $roomCategory);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Currently, there is no any Room Category.',
-            ]);
+            return $this->jsonResponse(false, 'Currently, there is no any Room Category.', $roomCategory);
         }
     }
 
@@ -31,40 +24,25 @@ class RoomCategoryController extends Controller
     {
         $roomCategory = RoomCategory::create($this->validateRequest());
         $this->storeImage($roomCategory);
-        return response()->json([
-            'success' => true,
-            'message' => 'Room Category has been created successfully.',
-            'data' => $roomCategory,
-        ]);
+        return $this->jsonResponse(true, 'Room Category has been created successfully.', $roomCategory);
     }
 
     public function show(RoomCategory $roomCategory)
     {
         $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
-        return response()->json([
-            'success' => true,
-            'message' => 'Data of an individual Room Category',
-            'data' => $roomCategory,
-        ]);
+        return $this->jsonResponse(true, 'Data of an individual Room Category.', $roomCategory);
     }
 
     public function update(RoomCategory $roomCategory)
     {
         $roomCategory->update($this->validateRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'Room Category has been updated',
-            'data' => $roomCategory,
-        ]);
+        return $this->jsonResponse(true, 'Room Category has been updated.', $roomCategory);
     }
 
     public function destroy(RoomCategory $roomCategory)
     {
         $roomCategory->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Room Category has been deleted successfully.',
-        ]);
+        return $this->jsonResponse(true, 'Room Category has been deleted successfully.');
     }
 
     private function storeImage($roomCategory)
@@ -87,6 +65,15 @@ class RoomCategoryController extends Controller
             'number_of_rooms' => 'required',
             'room_price' => 'required',
             'image' => 'file|image|mimes:jpeg,png,jpg,gif|nullable|sometimes',
+        ]);
+    }
+
+    private function jsonResponse($success = false, $message = '', $data = null)
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
         ]);
     }
 }

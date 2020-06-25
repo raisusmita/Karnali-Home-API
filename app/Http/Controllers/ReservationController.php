@@ -19,57 +19,35 @@ class ReservationController extends Controller
                 $reservation->Booking;
                 // ------------------------------------
             });
-            return response()->json([
-                'success' => true,
-                'message' => 'Lists of Reservation.',
-                'data' => $reservation
-            ]);
+            return $this->jsonResponse(true, 'Lists of Reservation.', $reservation);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Currently, there is no any Reservation yet.',
-            ]);
+            return $this->jsonResponse(false, 'Currently, there is no any Reservation yet.');
         }
     }
 
     public function store()
     {
         $reservation = Reservation::create($this->validateRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'Reservation has been created successfully.',
-            'data' => $reservation
-        ]);
+        return $this->jsonResponse(true, 'Reservation has been created successfully.', $reservation);
     }
 
     public function show(Reservation $reservation)
     {
         $reservation->Room;
         $reservation->Customer;
-        return response()->json([
-            'success' => true,
-            'message' => 'Data of an individual Reservation',
-            'data' => $reservation
-        ]);
+        return $this->jsonResponse(true, 'Data of an individual Reservation.', $reservation);
     }
 
     public function update(Reservation $reservation)
     {
         $reservation->update($this->validateRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'Reservation has been updated',
-            'data' => $reservation
-        ]);
+        return $this->jsonResponse(true, 'Reservation has been updated.', $reservation);
     }
 
     public function destroy(Reservation $reservation)
     {
         $reservation->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Reservation has been deleted successfully.'
-        ]);
+        return $this->jsonResponse(true, 'Reservation has been deleted successfully.');
     }
 
     private function validateRequest()
@@ -81,6 +59,15 @@ class ReservationController extends Controller
             'check_in_date' => 'required',
             'check_out_date' => 'required',
 
+        ]);
+    }
+
+    private function jsonResponse($success = false, $message = '', $data = null)
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
         ]);
     }
 }

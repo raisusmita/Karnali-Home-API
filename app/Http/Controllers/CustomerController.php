@@ -10,56 +10,33 @@ class CustomerController extends Controller
     {
         $customer = Customer::all();
         if ($customer->isNotEmpty()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Lists of Customers.',
-                'data' => $customer
-            ]);
+            return $this->jsonResponse(true, 'Lists of Customers.', $customer);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Currently, there is no any Customers yet.',
-            ]);
+            return $this->jsonResponse(false, 'Currently, there is no any Customers yet.');
         }
     }
 
     public function store()
     {
         $customer = Customer::create($this->validateRequest());
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Customer has been created successfully.',
-            'data' => $customer
-        ]);
+        return $this->jsonResponse(true, 'Customer has been created successfully.', $customer);
     }
 
     public function show(Customer $customer)
     {
-        return response()->json([
-            'success' => true,
-            'message' => 'Data of an individual Customer',
-            'data' => $customer
-        ]);
+        return $this->jsonResponse(true, 'Data of an individual Customer.', $customer);
     }
 
     public function update(Customer $customer)
     {
         $customer->update($this->validateRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'Customer has been updated',
-            'data' => $customer
-        ]);
+        return $this->jsonResponse(true, 'Customer has been updated.', $customer);
     }
 
     public function destroy(Customer $customer)
     {
         $customer->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Customer has been deleted successfully.'
-        ]);
+        return $this->jsonResponse(true, 'Customer has been deleted successfully.');
     }
 
     public function validateRequest()
@@ -73,6 +50,15 @@ class CustomerController extends Controller
             'email' => 'required|email',
             'phone' => 'required',
             'customer_type' => 'required'
+        ]);
+    }
+
+    private function jsonResponse($success = false, $message = '', $data = null)
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
         ]);
     }
 }

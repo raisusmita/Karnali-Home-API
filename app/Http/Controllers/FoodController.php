@@ -10,55 +10,33 @@ class FoodController extends Controller
     {
         $food = Food::all();
         if ($food->isNotEmpty()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Lists of Customers.',
-                'data' => $food
-            ]);
+            return $this->jsonResponse(true, 'Lists of foods.', $food);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Currently, there is no any Customers yet.',
-            ]);
+            return $this->jsonResponse(false, 'Currently, there is no any foods yet.', $food);
         }
     }
 
     public function store()
     {
         $food = Food::create($this->validateRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'Food has been created successfully.',
-            'data' => $food
-        ]);
+        return $this->jsonResponse(true, 'Food has been created successfully.', $food);
     }
 
     public function show(Food $food)
     {
-        return response()->json([
-            'success' => true,
-            'message' => 'Data of an individual Food',
-            'data' => $food
-        ]);
+        return $this->jsonResponse(true, 'Data of an individual Food.', $food);
     }
 
     public function update(Food $food)
     {
         $food->update($this->validateRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'Food has been updated',
-            'data' => $food
-        ]);
+        return $this->jsonResponse(true, 'Food has been updated.', $food);
     }
 
     public function destroy(Food $food)
     {
         $food->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Food has been deleted successfully.'
-        ]);
+        return $this->jsonResponse(true, 'Food has been deleted successfully.');
     }
 
     private function validateRequest()
@@ -67,6 +45,15 @@ class FoodController extends Controller
             'name' => 'required',
             'price' => 'required',
             'food_type' => 'required'
+        ]);
+    }
+
+    private function jsonResponse($success = false, $message = '', $data = null)
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
         ]);
     }
 }

@@ -13,79 +13,41 @@ class UserController extends Controller
     {
         $user = User::all();
         if ($user->isNotEmpty()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Lists of Users.',
-                'data' => $user,
-            ]);
+            return $this->jsonResponse(true, 'Lists of Users.', $user);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Currently, there is no any Users.',
-            ]);
+            return $this->jsonResponse(false, 'Currently, there is no any Users.', $user);
         }
     }
 
     public function store()
     {
         $user = User::create($this->validateUserRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'User has been created successfully.',
-            'data' => $user,
-        ]);
+        return $this->jsonResponse(true, 'User has been created successfully.', $user);
     }
 
     public function show(User $user)
     {
-        return response()->json([
-            'success' => true,
-            'message' => 'Data of an individual User',
-            'data' => $user,
-        ]);
+        return $this->jsonResponse(true, 'Data of an individual User.', $user);
     }
 
     public function update(User $user)
     {
 
         $user->update($this->validateUserRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'User has been updated',
-            'data' => $user,
-        ]);
+        return $this->jsonResponse(true, 'User has been updated.', $user);
     }
 
     public function destroy(User $user)
     {
         $user->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'User has been deleted successfully.',
-        ]);
+        return $this->jsonResponse(true, 'User has been deleted successfully.');
     }
-
-    // function list() {
-    //     $user = User::all();
-    //     if ($user) {
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Lists of Users.',
-    //             'data' => $user,
-    //         ]);
-    //     } else {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'No Users',
-    //         ]);
-    //     }
-    // }
 
     public function login(Request $request)
     {
         $user = User::all()->where('email', $request->email)->first();
         if ($user && Hash::check($request->password, $user->password)) {
-            $token['token'] = $user->createToken('MyApp')->accessToken;
+            $token['token'] = $user->createToken('KarnaliHome')->accessToken;
             $token['name'] = $user->name;
             return response()->json([
                 'success' => true,
@@ -145,6 +107,15 @@ class UserController extends Controller
             'email' => 'required|email',
             'password' => 'required|min:6',
             'role' => 'required',
+        ]);
+    }
+
+    private function jsonResponse($success = false, $message = '', $data = null)
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
         ]);
     }
 }

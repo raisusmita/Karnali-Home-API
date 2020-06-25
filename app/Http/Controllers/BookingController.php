@@ -17,16 +17,9 @@ class BookingController extends Controller
                 $booking->Customer;
                 $booking->BookedRoom;
             });
-            return response()->json([
-                'success' => true,
-                'message' => 'Lists of Bookings.',
-                'data' => $booking,
-            ]);
+            return $this->jsonResponse(true, 'Lists of Bookings.', $booking);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Currently, there is no any Bookings yet.',
-            ]);
+            return $this->jsonResponse(false, 'Currently, there is no any Bookings yet.');
         }
     }
 
@@ -47,39 +40,24 @@ class BookingController extends Controller
         } else {
             $message = 'Booking failed';
         }
-        return response()->json([
-            'success' => true,
-            'message' => $message,
-            'data' => $booking,
-        ]);
+        return $this->jsonResponse(true, $message, $booking);
     }
 
     public function show(Booking $booking)
     {
-        return response()->json([
-            'success' => true,
-            'message' => 'Data of an individual Booking',
-            'data' => $booking,
-        ]);
+        return $this->jsonResponse(true, 'Data of an individual Booking.', $booking);
     }
 
     public function update(Booking $booking)
     {
         $booking->update($this->validateRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'Booking has been updated',
-            'data' => $booking,
-        ]);
+        return $this->jsonResponse(true, 'Booking has been updated.', $booking);
     }
 
     public function destroy(Booking $booking)
     {
         $booking->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Booking has been deleted successfully.',
-        ]);
+        return $this->jsonResponse(true, 'Booking has been deleted successfully.');
     }
 
     public function validateRequest()
@@ -102,19 +80,20 @@ class BookingController extends Controller
             $booking->map(function ($booking) {
                 $booking->Customer;
                 $booking->RoomCategory;
-
             });
-            return response()->json([
-                'success' => true,
-                'message' => 'Lists of BookedRooms.',
-                'data' => $booking,
-            ]);
+            return $this->jsonResponse(true, 'Lists of BookedRooms.', $booking);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Currently, there is no any BookedRooms yet.',
-            ]);
+            return $this->jsonResponse(false, 'Currently, there is no any BookedRooms yet.', $booking);
         }
+    }
+
+    private function jsonResponse($success = false, $message = '', $data = null)
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
+        ]);
     }
 
     //Store for booked_room table

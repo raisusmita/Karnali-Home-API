@@ -11,55 +11,33 @@ class RoomTransactionController extends Controller
     {
         $roomTransaction = RoomTransaction::all();
         if ($roomTransaction->isNotEmpty()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Lists of Room Transactions.',
-                'data' => $roomTransaction
-            ]);
+            return $this->jsonResponse(true, 'Lists of Room Transactions.', $roomTransaction);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Currently, there is no any Room Transactions yet.',
-            ]);
+            return $this->jsonResponse(false, 'Currently, there is no any Room Transactions yet.', $roomTransaction);
         }
     }
 
     public function store()
     {
         $roomTransaction = RoomTransaction::create($this->validateRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'Room Transaction has been created successfully.',
-            'data' => $roomTransaction
-        ]);
+        return $this->jsonResponse(true, 'Room Transaction has been created successfully.', $roomTransaction);
     }
 
     public function show(RoomTransaction $roomTransaction)
     {
-        return response()->json([
-            'success' => true,
-            'message' => 'Data of an individual roomTransaction',
-            'data' => $roomTransaction
-        ]);
+        return $this->jsonResponse(true, 'Data of an individual room transaction.', $roomTransaction);
     }
 
     public function update(RoomTransaction $roomTransaction)
     {
         $roomTransaction->update($this->validateRequest());
-        return response()->json([
-            'success' => true,
-            'message' => 'Room Transaction has been updated',
-            'data' => $roomTransaction
-        ]);
+        return $this->jsonResponse(true, 'Room Transaction has been updated.', $roomTransaction);
     }
 
     public function destroy(RoomTransaction $roomTransaction)
     {
         $roomTransaction->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Room Transaction has been deleted successfully.'
-        ]);
+        return $this->jsonResponse(true, 'Room Transaction has been deleted successfully.');
     }
 
     public function validateRequest()
@@ -71,6 +49,15 @@ class RoomTransactionController extends Controller
             'number_of_days' => 'required',
             'rate' => 'required',
             'total_amount' => 'required'
+        ]);
+    }
+
+    private function jsonResponse($success = false, $message = '', $data = null)
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
         ]);
     }
 }
