@@ -29,11 +29,11 @@ class RoomAvailabilityController extends Controller
 
     public function getAvailableRoomByDate()
     {
-        $dateValue =  request();
-
+        $dateValue = request();
+        $format = "Y-m-d H:i:s";
         if ($dateValue->check_in_date < $dateValue->check_out_date) {
-            $unAvailableRoom = RoomAvailability::whereDate('check_in_date', '>=', $dateValue->check_in_date, 'and', 'check_in_date', '<=', $dateValue->check_out_date)
-                ->orWhereDate('check_out_date', '>=', $dateValue->check_in_date, 'and', 'check_out_date', '<=', $dateValue->check_out_date)
+            $unAvailableRoom = RoomAvailability::whereBetween('check_in_date', [date($format, strtotime($dateValue->check_in_date)), date($format, strtotime($dateValue->check_out_date))])
+                ->orWhereBetween('check_out_date', [date($format, strtotime($dateValue->check_in_date)), date($format, strtotime($dateValue->check_out_date))])
                 ->available()
                 ->get();
             $roomIds = [];
@@ -66,8 +66,7 @@ class RoomAvailabilityController extends Controller
     public function getRoomByBookingId()
     {
         $bookingId = request();
-        // return $bookingId->bookingId;
-        $bookedRoom =  RoomAvailability::where('booking_id', $bookingId->bookingId)->get();
+        $bookedRoom = RoomAvailability::where('booking_id', $bookingId->bookingId)->get();
         $bookedRoom->map(function ($bookedRoom) {
             $bookedRoom->Room;
         });
@@ -94,7 +93,7 @@ class RoomAvailabilityController extends Controller
             'reservation_id' => 'nullable',
             'booking_id' => 'required',
             'check_in_date' => 'required',
-            'check_out_date' => 'required'
+            'check_out_date' => 'required',
         ]);
     }
 

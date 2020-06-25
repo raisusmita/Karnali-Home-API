@@ -44,7 +44,7 @@ class FoodController extends Controller
         return request()->validate([
             'name' => 'required',
             'price' => 'required',
-            'food_type' => 'required'
+            'food_type' => 'required',
         ]);
     }
 
