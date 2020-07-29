@@ -47,9 +47,14 @@ class CustomerController extends Controller
             'last_name' => 'required',
             'country' => 'required',
             'address' => 'required',
-            'email' => 'required|email',
+            'email' => 'email',
             'phone' => 'required',
-            'customer_type' => 'required'
+            'date_of_birth' => 'required',
+            'profession' => 'required',
+            'identity_type' => 'required',
+            'identity_number' => 'required',
+            'identity_image_first' => 'required',
+            'identity_image_second' => 'required'
         ]);
     }
 
