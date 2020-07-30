@@ -10,6 +10,10 @@ class CustomerController extends Controller
     {
         $customer = Customer::all();
         if ($customer->isNotEmpty()) {
+            $customer->map(function ($customer) {
+                $customer->identity_image_first = $customer->identity_image_first ? asset('storage/' . $customer->identity_image_first) : "";
+                $customer->identity_image_second = $customer->identity_image_second ? asset('storage/' . $customer->identity_image_second) : "";
+            });
             return $this->jsonResponse(true, 'Lists of Customers.', $customer);
         } else {
             return $this->jsonResponse(false, 'Currently, there is no any Customers yet.');
@@ -19,6 +23,7 @@ class CustomerController extends Controller
     public function store()
     {
         $customer = Customer::create($this->validateRequest());
+        $this->storeImage($customer);
         return $this->jsonResponse(true, 'Customer has been created successfully.', $customer);
     }
 
@@ -33,10 +38,32 @@ class CustomerController extends Controller
         return $this->jsonResponse(true, 'Customer has been updated.', $customer);
     }
 
+    public function editCustomer()
+    {
+        $customer = Customer::find(request()->id);
+        $customer->update($this->validateRequest());
+        $this->storeImage($customer);
+        return $this->jsonResponse(true, 'Customer has been updated.', $customer);
+    }
+
     public function destroy(Customer $customer)
     {
         $customer->delete();
         return $this->jsonResponse(true, 'Customer has been deleted successfully.');
+    }
+
+    private function storeImage($identityImage)
+    {
+        if (request()->has('identity_image_first')) {
+            $identityImage->update([
+                'identity_image_first' => request()->identity_image_first->store('images', 'public'),
+                'identity_image_second' => request()->identity_image_second->store('images', 'public'),
+            ]);
+            $imgFirst = Image::make(public_path('storage/' . $identityImage->identity_image_first))->fit(386, 235);
+            $imgSecond = Image::make(public_path('storage/' . $identityImage->identity_image_second))->fit(386, 235);
+            $imgFirst->save();
+            $imgSecond->save();
+        }
     }
 
     public function validateRequest()
@@ -47,14 +74,14 @@ class CustomerController extends Controller
             'last_name' => 'required',
             'country' => 'required',
             'address' => 'required',
-            'email' => 'email',
+            'email' => 'sometimes',
             'phone' => 'required',
             'date_of_birth' => 'required',
             'profession' => 'required',
             'identity_type' => 'required',
             'identity_number' => 'required',
-            'identity_image_first' => 'required',
-            'identity_image_second' => 'required'
+            'identity_image_first' => 'sometimes',
+            'identity_image_second' => 'sometimes'
         ]);
     }
 
