@@ -33,12 +33,6 @@ class CustomerController extends Controller
         return $this->jsonResponse(true, 'Data of an individual Customer.', $customer);
     }
 
-    public function update(Customer $customer)
-    {
-        $customer->update($this->validateRequest());
-        return $this->jsonResponse(true, 'Customer has been updated.', $customer);
-    }
-
     public function editCustomer()
     {
         $customer = Customer::find(request()->id);
@@ -60,8 +54,8 @@ class CustomerController extends Controller
                 'identity_image_first' => request()->identity_image_first->store('images/identity', 'public'),
                 'identity_image_second' => request()->identity_image_second->store('images/identity', 'public'),
             ]);
-            $imgFirst = Image::make(public_path('storage/identity' . $identityImage->identity_image_first))->fit(386, 235);
-            $imgSecond = Image::make(public_path('storage/identity' . $identityImage->identity_image_second))->fit(386, 235);
+            $imgFirst = Image::make(public_path('storage/' . $identityImage->identity_image_first))->resize(386, 235);
+            $imgSecond = Image::make(public_path('storage/' . $identityImage->identity_image_second))->resize(386, 235);
             $imgFirst->save();
             $imgSecond->save();
         }
