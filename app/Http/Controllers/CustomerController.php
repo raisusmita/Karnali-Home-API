@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Customer;
+use Intervention\Image\Facades\Image;
 
 class CustomerController extends Controller
 {
@@ -56,11 +57,11 @@ class CustomerController extends Controller
     {
         if (request()->has('identity_image_first')) {
             $identityImage->update([
-                'identity_image_first' => request()->identity_image_first->store('images', 'public'),
-                'identity_image_second' => request()->identity_image_second->store('images', 'public'),
+                'identity_image_first' => request()->identity_image_first->store('images/identity', 'public'),
+                'identity_image_second' => request()->identity_image_second->store('images/identity', 'public'),
             ]);
-            $imgFirst = Image::make(public_path('storage/' . $identityImage->identity_image_first))->fit(386, 235);
-            $imgSecond = Image::make(public_path('storage/' . $identityImage->identity_image_second))->fit(386, 235);
+            $imgFirst = Image::make(public_path('storage/identity' . $identityImage->identity_image_first))->fit(386, 235);
+            $imgSecond = Image::make(public_path('storage/identity' . $identityImage->identity_image_second))->fit(386, 235);
             $imgFirst->save();
             $imgSecond->save();
         }
@@ -80,8 +81,8 @@ class CustomerController extends Controller
             'profession' => 'required',
             'identity_type' => 'required',
             'identity_number' => 'required',
-            'identity_image_first' => 'sometimes',
-            'identity_image_second' => 'sometimes'
+            'identity_image_first' => 'file|image|mimes:jpeg,png,jpg,gif|nullable|sometimes',
+            'identity_image_second' => 'file|image|mimes:jpeg,png,jpg,gif|nullable|sometimes'
         ]);
     }
 
