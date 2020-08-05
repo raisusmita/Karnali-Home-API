@@ -24,8 +24,13 @@ class Room extends Model
     }
 
     
-    public function roomAvailabilities()
-    {
-        return $this->hasMany(roomAvailability::class);
-    }
+    // public function roomAvailabilities()
+    // {
+    //     return $this->hasMany(RoomAvailability::class);
+    // }
+
+    public function rooms()
+{
+    return $this->belongsToMany(Room::class, 'room_availabilities');
+}
 }

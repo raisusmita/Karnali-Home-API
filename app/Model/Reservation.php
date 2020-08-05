@@ -32,16 +32,16 @@ class Reservation extends Model
         return $this->belongsTo(Booking::class);
     }
 
-    public function setCheckInDateAttribute( $pass ) {
+    // public function setCheckInDateAttribute( $pass ) {
     
-        $this->attributes['check_in_date'] = date('Y-m-d h:i:s', strtotime(request()->check_in_date));
+    //     $this->attributes['check_in_date'] = date('Y-m-d h:i:s', strtotime(request()->check_in_date));
     
-    } 
+    // } 
 
     
-    public function setCheckOutDateAttribute( $pass ) {
+    // public function setCheckOutDateAttribute( $pass ) {
     
-        $this->attributes['check_out_date'] = date('Y-m-d h:i:s', strtotime(request()->check_out_date));
+    //     $this->attributes['check_out_date'] = date('Y-m-d h:i:s', strtotime(request()->check_out_date));
     
-    }
+    // }
 }

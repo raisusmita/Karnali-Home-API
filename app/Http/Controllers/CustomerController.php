@@ -1,14 +1,21 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Model\Customer;
+use App\Model\Booking;
+
 
 class CustomerController extends Controller
 {
     public function index()
     {
         $customer = Customer::all();
+        if ($customer->isNotEmpty()) {
+            $customer->map(function ($customer) {
+                $customer->bookings;
+            });
+        }
+
         if ($customer->isNotEmpty()) {
             return $this->jsonResponse(true, 'Lists of Customers.', $customer);
         } else {

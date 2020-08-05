@@ -15,6 +15,17 @@ class RoomController extends Controller
             return $this->jsonResponse(false, 'There is no any room yet');
         }
     }
+    public function getRoomBasedOnCategory()
+    {
+        $category = request();
+        $room = Room::where('room_category_id','=', $category->room_category_id)->get();
+        if ($room->isNotEmpty()) {
+            return $this->jsonResponse(true, 'List of rooms based on category', $room);
+        } else {
+            return $this->jsonResponse(false, 'There is no any room yet');
+        }
+    }
+
 
     public function store()
     {
