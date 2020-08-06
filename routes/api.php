@@ -26,7 +26,9 @@ Route::post('/login', 'UserController@login');
 Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('/room_categories', 'RoomCategoryController');
     Route::apiResource('/rooms', 'RoomController');
+    Route::post('/room_category/room', 'RoomController@getRoomBasedOnCategory');
     Route::apiResource('/room_transactions', 'RoomTransactionController');
+
 
     Route::apiResource('/reservations', 'ReservationController');
     Route::apiResource('/booking', 'BookingController');
@@ -40,6 +42,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/booked_rooms', 'BookingController@storeBookedRoom');
     Route::get('/booked_rooms', 'BookingController@getBookedRoom');
     Route::get('/booked_rooms/{{id}}', 'BookingController@showBookedRoom');
+
 
     Route::get('/available', 'RoomAvailabilityController@getAvailableRoom');
     Route::post('/availableRoomByDate', 'RoomAvailabilityController@getAvailableRoomByDate');

@@ -68,7 +68,8 @@ class RoomAvailabilityController extends Controller
         $bookingId = request();
         $bookedRoom = RoomAvailability::where('booking_id', $bookingId->bookingId)->get();
         $bookedRoom->map(function ($bookedRoom) {
-            $bookedRoom->Room;
+            // $bookedRoom->Room;
+            $bookedRoom->Room->roomCategory->id;
         });
         return $this->jsonResponse(true, 'Individual Room.', $bookedRoom);
     }

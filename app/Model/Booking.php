@@ -19,11 +19,22 @@ class Booking extends Model
         return $this->hasMany(Reservation::class);
     }
 
+    // public function roomAvailability()
+    // {
+    //     return $this->hasMany(RoomAvailability::class);
+    // }
+
+    public function rooms()
+{
+    return $this->belongsToMany(Room::class, 'room_availabilities');
+}
+
     public function roomCategory()
     {
         return $this->belongsTo(RoomCategory::class);
     }
 
+    //Formatting invalid date for booking
     public function setCheckInDateAttribute( $pass ) {
     
         $this->attributes['check_in_date'] = date('Y-m-d h:i:s', strtotime(request()->check_in_date));

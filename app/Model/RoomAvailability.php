@@ -21,9 +21,14 @@ class RoomAvailability extends Model
         return $query->where('availability', '1');
     }
 
-    public function room()
-    {
-        return $this->belongsTo(Room::class);
-    }
+    // public function room()
+    // {
+    //     return $this->belongsTo(Room::class);
+    // }
+
+    // public function booking()
+    // {
+    //     return $this->belongsTo(Booking::class);
+    // }
 
 }
