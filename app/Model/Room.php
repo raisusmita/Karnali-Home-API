@@ -24,10 +24,10 @@ class Room extends Model
     }
 
     
-    // public function roomAvailabilities()
-    // {
-    //     return $this->hasMany(RoomAvailability::class);
-    // }
+    public function roomAvailabilities()
+    {
+        return $this->hasMany(RoomAvailability::class);
+    }
 
     public function rooms()
 {
