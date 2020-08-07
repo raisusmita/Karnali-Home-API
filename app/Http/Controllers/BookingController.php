@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\CancelBooking;
 use App\Mail\BookingMail;
 use App\Model\Booking;
 use App\Model\Customer;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
@@ -34,9 +36,12 @@ class BookingController extends Controller
         $userEmail = $booking->customer->email;
         if ($booking && $userEmail) {
             Mail::to($userEmail)->send(new BookingMail($booking->check_in_date, $booking->check_out_date));
+            $job = (new CancelBooking($booking->id))->delay(30);
+            // Carbon::now()->addHour(12)
+            $this->dispatch($job);
             $message = 'Booking has been created successfully.';
         } else if ($booking) {
-            $message = 'Booking has been created successfully. But email failed';
+            $message = 'Booking has been created successfully. User does not have email address.';
         } else {
             $message = 'Booking failed';
         }
