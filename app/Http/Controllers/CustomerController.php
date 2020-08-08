@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers;
 use App\Model\Customer;
-<<<<<<< HEAD
 use App\Model\Booking;
 
-=======
 use Intervention\Image\Facades\Image;
->>>>>>> 081afcdb47e0849ee6d864a28b2484eca099d304
 
 class CustomerController extends Controller
 {
