@@ -128,10 +128,51 @@ class ReservationController extends Controller
         return $this->jsonResponse(true, 'Data of an individual Reservation.', $reservation);
     }
 
-    public function update(Reservation $reservation)
+    public function update(Request $request, Reservation $reservation)
     {
-        $reservation->update($this->validateRequest());
-        return $this->jsonResponse(true, 'Reservation has been updated.', $reservation);
+        try{
+            DB::beginTransaction();
+            // First indexisparams for reservationUpdate
+            $reservationParams =  array(
+                "id" => $request[0]['reservation_id'],
+                'check_in_date' => Carbon::createFromFormat('Y-m-d\TH:i:s+', $request[0]['check_in_date']),
+                'check_out_date' =>Carbon::createFromFormat('Y-m-d\TH:i:s+', $request[0]['check_out_date']),
+                'room_id' => $request[0]['room_id']
+            );
+
+            // Formatting dates
+            $paramsRoomAvailable = array_map(function($reserved){
+                $reserved['check_in_date'] = Carbon::createFromFormat('Y-m-d\TH:i:s+', $reserved['check_in_date']);
+                $reserved['check_out_date'] = Carbon::createFromFormat('Y-m-d\TH:i:s+', $reserved['check_out_date']);
+                return $reserved;
+            }, $request->all());
+
+            // Removing first index which is params for reservation update
+            array_shift($paramsRoomAvailable);
+
+            // Update reservation info
+            $reservation= Reservation::where(['id'=> $reservationParams['id']])->update([
+                "check_in_date" => $reservationParams['check_in_date'],
+                "check_out_date" => $reservationParams['check_out_date'],
+                "room_id" => $reservationParams['room_id'],
+            ]);
+
+            // Update roomAvailability info
+            $roomAvailability= RoomAvailability::where(['reservation_id'=> $paramsRoomAvailable[0]['reservation_id']])->update([
+                "check_in_date" => $paramsRoomAvailable[0]['check_in_date'],
+                "check_out_date" => $paramsRoomAvailable[0]['check_out_date'],
+                "room_id" => $paramsRoomAvailable[0]['room_id'],
+
+            ]);
+
+            DB::commit();
+            return $this->jsonResponse(true, 'Reservation has been updated.', $reservation);
+
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+        }
     }
 
     public function destroy(Reservation $reservation)
