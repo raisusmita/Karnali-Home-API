@@ -36,6 +36,7 @@ class RoomCategoryController extends Controller
     public function update(RoomCategory $roomCategory)
     {
         $roomCategory->update($this->validateRequest());
+        // $this->storeImage($roomCategory);
         return $this->jsonResponse(true, 'Room Category has been updated.', $roomCategory);
     }
 
@@ -51,8 +52,7 @@ class RoomCategoryController extends Controller
             $roomCategory->update([
                 'image' => request()->image->store('images', 'public'),
             ]);
-            $image = request()->file('image');
-            $img = Image::make(public_path('storage/' . $image))->fit(386, 235);
+            $img = Image::make(public_path('storage/' . $roomCategory->image))->fit(386, 235);
             $img->save();
         }
     }
