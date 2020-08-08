@@ -40,6 +40,14 @@ class RoomCategoryController extends Controller
         return $this->jsonResponse(true, 'Room Category has been updated.', $roomCategory);
     }
 
+    public function editRoomCategory()
+    {
+        $roomCategory = RoomCategory::find(request()->id);
+        $roomCategory->update($this->validateRequest());
+        $this->storeImage($roomCategory);
+        return $this->jsonResponse(true, 'Room Category has been updated.', $roomCategory);
+    }
+
     public function destroy(RoomCategory $roomCategory)
     {
         $roomCategory->delete();
