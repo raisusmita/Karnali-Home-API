@@ -27,7 +27,9 @@ Route::post('/login', 'UserController@login');
 Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('/room_categories', 'RoomCategoryController');
     Route::apiResource('/rooms', 'RoomController');
+    Route::post('/room_category/room', 'RoomController@getRoomBasedOnCategory');
     Route::apiResource('/room_transactions', 'RoomTransactionController');
+
 
     Route::apiResource('/reservations', 'ReservationController');
     Route::apiResource('/booking', 'BookingController');
