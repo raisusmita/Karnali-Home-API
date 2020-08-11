@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/booked_rooms', 'BookingController@storeBookedRoom');
     Route::get('/booked_rooms', 'BookingController@getBookedRoom');
     Route::get('/booked_rooms/{{id}}', 'BookingController@showBookedRoom');
+    Route::post('/editRoomCategory', 'RoomCategoryController@editRoomCategory');
+    Route::post('/editCustomer', 'CustomerController@editCustomer');
 
 
     Route::get('/available', 'RoomAvailabilityController@getAvailableRoom');
