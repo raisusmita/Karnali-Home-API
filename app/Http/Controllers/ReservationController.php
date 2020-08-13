@@ -86,6 +86,7 @@ class ReservationController extends Controller
                       "check_in_date" => $all[$i]['check_in_date'],
                       "check_out_date" => $all[$i]['check_out_date'],
                       "status" => "reserved",
+                      "availability"=>"1",
                     ]);
                 }
             }
@@ -100,15 +101,15 @@ class ReservationController extends Controller
                     "check_out_date" => $all[$i]['check_out_date'],
                     "status" => "reserved",
                     "booking_id" => null,
+                    "availability"=>"1",
                     "created_at" => Carbon::now(),
                     "updated_at" => Carbon::now(),
                     );
-        
+
                     array_push($totalRooms, $availableRoomParams);
-        
-                    // Inserting into room availability 
-                    $this->roomAvailabilityService->storeRoomAvailability($totalRooms);
                 }
+                // Inserting into room availability 
+                $this->roomAvailabilityService->storeRoomAvailability($totalRooms);
             }
                 
 

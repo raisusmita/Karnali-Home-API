@@ -78,6 +78,7 @@ class BookingController extends Controller
                         "check_out_date" => $booking->check_out_date,
                         "status" => "booked",
                         "booking_id" => $booking->id,
+                        "availability"=>"1",
                         "created_at" => $booking->created_at,
                         "updated_at" => $booking->updated_at,
                     );
