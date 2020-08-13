@@ -23,4 +23,14 @@ class Customer extends Model
         return $this->hasMany(RoomTransaction::class);
     }
 
+    public function roomAvailabilityBooking()
+    {
+        return $this->hasOneThrough(RoomAvailability::class, Booking::class,
+        'customer_id', // Foreign key on booking table...
+        'booking_id', // Foreign key on room_availabilities table...
+        'id', // Local key on customer table...
+        'id' // Local key on booking table...
+        );
+    }
+
 }
