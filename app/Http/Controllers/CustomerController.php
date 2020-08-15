@@ -14,11 +14,12 @@ class CustomerController extends Controller
         if ($customer->isNotEmpty()) {
             $customer->map(function ($customer) {
                 $customer->bookings;
+                $customer->roomAvailabilityBooking;
                 $customer->identity_image_first = $customer->identity_image_first ? asset('storage/' . $customer->identity_image_first) : "";
                 $customer->identity_image_second = $customer->identity_image_second ? asset('storage/' . $customer->identity_image_second) : "";
             });
             return $this->jsonResponse(true, 'Lists of Customers.', $customer);
-
+        
         } else {
             return $this->jsonResponse(false, 'Currently, there is no any Customers yet.');
         }
