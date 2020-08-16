@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Model\FoodItems;
 use App\Model\MainFoodCategory;
+use App\Model\SubFoodCategory;
 use Illuminate\Http\Request;
 
 class FoodItemsController extends Controller
@@ -50,12 +51,34 @@ class FoodItemsController extends Controller
         return $this->jsonResponse(true, 'FoodItems has been deleted successfully.');
     }
 
+    public function getMainFoodCategory()
+    {
+        $mainFood = MainFoodCategory::all();
+        if ($mainFood->isNotEmpty()) {
+            return $this->jsonResponse(true, 'Lists of main foods.', $mainFood);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any main food yet.', $mainFood);
+        }
+    }
+
+    public function getSubFoodCategory()
+    {
+        $subFood = SubFoodCategory::all();
+        if ($subFood->isNotEmpty()) {
+            return $this->jsonResponse(true, 'Lists of sub foods.', $subFood);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any sub food yet.', $subFood);
+        }
+    }
+
     private function validateRequest()
     {
         return request()->validate([
-            'name' => 'required',
+            'main_food_category_id' => 'required',
+            'sub_food_category_id' => 'sometimes',
+            'food_name' => 'required',
+            'header' => 'sometimes',
             'price' => 'required',
-            'food_type' => 'required',
         ]);
     }
 

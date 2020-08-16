@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class SubFoodCategory extends Model
 {
-    //
+    protected $guarded = [];
+
     public function mainFoodCategory()
     {
         return $this->belongsTo(MainFoodCategory::class);

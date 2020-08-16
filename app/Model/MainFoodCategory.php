@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class MainFoodCategory extends Model
 {
-    //
+    protected $guarded = [];
+
     public function subFoodCategories()
     {
         return $this->hasMany(SubFoodCategory::class);
