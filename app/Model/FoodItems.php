@@ -17,4 +17,9 @@ class FoodItems extends Model
     {
         return $this->belongsTo(SubFoodCategory::class);
     }
+
+    public function foodHeader()
+    {
+        return $this->belongsTo(FoodHeader::class);
+    }
 }
