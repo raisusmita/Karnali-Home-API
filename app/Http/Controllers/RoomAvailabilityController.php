@@ -111,30 +111,39 @@ class RoomAvailabilityController extends Controller
         // Get reservation id for the selected customer
         $reservations = Reservation::where(['customer_id' => $customerId->customer_id])->get();
 
-        if($reservations->isNotEmpty()){
+        if($reservations->isNotEmpty() ){
             foreach($reservations as $reservation){
                 // Getting roomAvailability details for each reservation with availability 1 if the reservations has made.
                 $roomAvailablilityDetail = RoomAvailability::where([
                     'reservation_id' => $reservation['id'], 
                     'availability'=>'1'
                     ])->get();
-
+                
+                if($roomAvailablilityDetail->isNotEmpty()){
                     // Get room and roomCategory details
                     $room = Room::where(['id'=>$roomAvailablilityDetail[0]['room_id']])->get();
                     $room->map(function ($roomCat) {
                         $roomCat->roomCategory->id;
                     });
-                    
+                                            
                     // attached room/roomCategory details to roomAvailability
                     $roomAvailablilityDetail[0]['room_id'] = $room;
-                    
-                // trim is used to remove [] from each object 
-                // json_decode is used to convert the string to array
-                array_push($totalRoomDetails,json_decode(trim($roomAvailablilityDetail, '[]')));
+                                            
+                    // trim is used to remove [] from each object 
+                    // json_decode is used to convert the string to array
+                    array_push($totalRoomDetails,json_decode(trim($roomAvailablilityDetail, '[]')));
+                }
+               
             }
             
-            return $this->jsonResponse(true, 'List of rooms for transaction.', $totalRoomDetails);
+            if($totalRoomDetails !=null){
+                return $this->jsonResponse(true, 'List of rooms for transaction.', $totalRoomDetails);
+            }else{
+                return $this->jsonResponse(false, 'No reservation has made for this customer');
+            }
         }else{
+
+            // For customer who have never made the reservation
             return $this->jsonResponse(false, 'No reservation has made for this customer');
         }
     }

@@ -40,6 +40,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('/invoices', 'InvoiceController');
     Route::apiResource('/user', 'UserController');
 
+
     Route::post('/booked_rooms', 'BookingController@storeBookedRoom');
     Route::get('/booked_rooms', 'BookingController@getBookedRoom');
     Route::get('/booked_rooms/{{id}}', 'BookingController@showBookedRoom');
