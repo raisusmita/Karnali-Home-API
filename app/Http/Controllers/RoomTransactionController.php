@@ -66,7 +66,7 @@ class RoomTransactionController extends Controller
                 $roomTransaction = RoomTransaction::create($roomTransactionParams);
 
                 // Update roomAvailability info
-                $roomAvailability= RoomAvailability::where(['reservation_id'=> $roomDetail['reservation_id']])->update([
+                $roomAvailability= RoomAvailability::where(['reservation_id'=> $roomDetail['reservation_id'], 'room_id'=>$roomDetail['room_id']])->update([
                     "availability" => "0",
                     "check_in_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomDetail['check_in_date']),
                     "check_out_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomDetail['check_out_date']),
@@ -93,6 +93,51 @@ class RoomTransactionController extends Controller
     public function show(RoomTransaction $roomTransaction)
     {
         return $this->jsonResponse(true, 'Data of an individual room transaction.', $roomTransaction);
+    }
+
+    public function updateRoomTransaction(Request $request)
+    {
+        try{
+            DB::beginTransaction();
+
+            $roomTransaction = $request->all();
+
+            // Subtracting todayDate from checkInDate to calculate number of days stayed
+            $checkInDate = new \DateTime($roomTransaction['check_in_date']);
+            $checkOutDate = new \DateTime($roomTransaction['check_out_date']);
+            $interval = $checkOutDate->diff($checkInDate);
+            $days = $interval->format('%a');
+
+
+            // Update room transaction
+            $roomAvailability= RoomTransaction::where(['reservation_id'=> $roomTransaction['reservation_id']])->update([
+                "number_of_days"=> $days,
+                "total_amount"=>$days * $roomTransaction['rate']
+            ]);
+
+            // Update roomAvailability info
+            $roomAvailability= RoomAvailability::where(['reservation_id'=> $roomTransaction['reservation_id']])->update([
+                "check_in_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomTransaction['check_in_date']),
+                "check_out_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomTransaction['check_out_date']),
+            ]);
+
+            // Update reservation checkIn/checkOut Date
+            $roomAvailability= Reservation::where(['id'=> $roomTransaction['reservation_id']])->update([
+                "check_in_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomTransaction['check_in_date']),
+                "check_out_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomTransaction['check_out_date']),
+            ]);
+
+
+            DB::commit();
+
+            // $roomTransaction->update($this->validateRequest());
+            return $this->jsonResponse(true, 'Room Transaction has been updated.', $roomTransaction);
+
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+        }
     }
 
     public function update(RoomTransaction $roomTransaction)
