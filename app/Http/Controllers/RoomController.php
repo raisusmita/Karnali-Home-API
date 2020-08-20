@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Model\Room;
+use App\Model\RoomCategory;
+
 
 class RoomController extends Controller
 {
@@ -10,6 +12,9 @@ class RoomController extends Controller
     {
         $room = Room::all();
         if ($room->isNotEmpty()) {
+            $room->map(function ($room) {
+                $room->roomCategory;
+            });
             return $this->jsonResponse(true, 'List of Rooms', $room);
         } else {
             return $this->jsonResponse(false, 'There is no any room yet');

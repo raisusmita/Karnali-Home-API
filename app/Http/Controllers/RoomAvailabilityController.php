@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Model\Room;
 use App\Model\RoomAvailability;
+use App\Model\Reservation;
 use Illuminate\Http\Request;
 
 class RoomAvailabilityController extends Controller
@@ -12,12 +13,12 @@ class RoomAvailabilityController extends Controller
     public function getAvailableRoom()
     {
         // getting unavailable data to filter available
-
         $unAvailableRoom = RoomAvailability::unavailable()->get();
         $roomIds = [];
         foreach ($unAvailableRoom as $av) {
             array_push($roomIds, $av->room_id);
         }
+
         $room = Room::whereNotIn('id', $roomIds)->get();
         $room->map(function ($roomCat) {
             $roomCat->roomCategory->id;
@@ -25,6 +26,21 @@ class RoomAvailabilityController extends Controller
         // $room = $room->groupBy('room_category_id');
 
         return $this->jsonResponse(true, 'Available Rooms.', $room);
+    }
+
+    public function getUnavailableRoom()
+    {
+        // getting unavailable data 
+        $unAvailableRoom = RoomAvailability::unavailable()->get();
+        $roomIds = [];
+        foreach ($unAvailableRoom as $av) {
+            array_push($roomIds, $av->room_id);
+        }
+        $room = Room::whereIn('id', $roomIds)->get();
+        $room->map(function ($roomCat) {
+            $roomCat->roomCategory->id;
+        });
+        return $this->jsonResponse(true, 'UnAvailable Rooms.', $room);
     }
 
     public function getAvailableRoomByDate()
@@ -41,13 +57,14 @@ class RoomAvailabilityController extends Controller
                 array_push($roomIds, $av->room_id);
             }
             $availableRoom = Room::whereNotIn('id', $roomIds)->get();
+
             $availableRoom->map(function ($roomCat) {
                 $roomCat->roomCategory->id;
             });
             $availableRoom = $availableRoom->groupBy('room_category_id');
             return $this->jsonResponse(true, 'Available Rooms by date.', $availableRoom);
         } else {
-            return $this->jsonResponse(true, 'invalud Date.');
+            return $this->jsonResponse(true, 'invalid Date.');
         }
     }
 
@@ -85,6 +102,50 @@ class RoomAvailabilityController extends Controller
                 'check_out_date' => $reservation->check_out_date
             ]);
         return $this->jsonResponse(true, 'Room Availability has been updated.');
+    }
+
+    public function getRoomByCustomerId()
+    {
+        $customerId = request();
+        $totalRoomDetails =array();
+        // Get reservation id for the selected customer
+        $reservations = Reservation::where(['customer_id' => $customerId->customer_id])->get();
+
+        if($reservations->isNotEmpty() ){
+            foreach($reservations as $reservation){
+                // Getting roomAvailability details for each reservation with availability 1 if the reservations has made.
+                $roomAvailablilityDetail = RoomAvailability::where([
+                    'reservation_id' => $reservation['id'], 
+                    'availability'=>'1'
+                    ])->get();
+                
+                if($roomAvailablilityDetail->isNotEmpty()){
+                    // Get room and roomCategory details
+                    $room = Room::where(['id'=>$roomAvailablilityDetail[0]['room_id']])->get();
+                    $room->map(function ($roomCat) {
+                        $roomCat->roomCategory->id;
+                    });
+                                            
+                    // attached room/roomCategory details to roomAvailability
+                    $roomAvailablilityDetail[0]['room_id'] = $room;
+                                            
+                    // trim is used to remove [] from each object 
+                    // json_decode is used to convert the string to array
+                    array_push($totalRoomDetails,json_decode(trim($roomAvailablilityDetail, '[]')));
+                }
+               
+            }
+            
+            if($totalRoomDetails !=null){
+                return $this->jsonResponse(true, 'List of rooms for transaction.', $totalRoomDetails);
+            }else{
+                return $this->jsonResponse(false, 'No reservation has made for this customer');
+            }
+        }else{
+
+            // For customer who have never made the reservation
+            return $this->jsonResponse(false, 'No reservation has made for this customer');
+        }
     }
 
     private function validateRequest()

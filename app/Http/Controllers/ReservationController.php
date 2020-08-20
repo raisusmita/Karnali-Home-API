@@ -133,7 +133,7 @@ class ReservationController extends Controller
     {
         try{
             DB::beginTransaction();
-            // First indexisparams for reservationUpdate
+            // First index is params for reservationUpdate
             $reservationParams =  array(
                 "id" => $request[0]['reservation_id'],
                 'check_in_date' => Carbon::createFromFormat('Y-m-d\TH:i:s+', $request[0]['check_in_date']),
