@@ -32,8 +32,7 @@ class FoodHeaderController extends Controller
     private function validateRequest()
     {
         return request()->validate([
-            'main_food_category_id' => 'required',
-            'sub_food_name' => 'required',
+            'food_header' => 'required',
         ]);
     }
 
