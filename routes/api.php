@@ -42,15 +42,20 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('/subFood', 'SubFoodCategoryController');
     Route::apiResource('/foodHeader', 'FoodHeaderController');
 
+
     Route::post('/booked_rooms', 'BookingController@storeBookedRoom');
     Route::get('/booked_rooms', 'BookingController@getBookedRoom');
     Route::get('/booked_rooms/{{id}}', 'BookingController@showBookedRoom');
     Route::post('/editRoomCategory', 'RoomCategoryController@editRoomCategory');
     Route::post('/editCustomer', 'CustomerController@editCustomer');
+    Route::post('/editRoomTransaction', 'RoomTransactionController@updateRoomTransaction');
+
 
     Route::get('/available', 'RoomAvailabilityController@getAvailableRoom');
+    Route::get('/unavailable', 'RoomAvailabilityController@getUnavailableRoom');
     Route::post('/availableRoomByDate', 'RoomAvailabilityController@getAvailableRoomByDate');
     Route::post('/availableRoomByBookingId', 'RoomAvailabilityController@getRoomByBookingId');
+    Route::post('/roomListByCustomerId', 'RoomAvailabilityController@getRoomByCustomerId');
     Route::post('/availableRoomByBooking', 'RoomAvailabilityController@storeRoomAvailability');
     Route::post('/bookingToReservation', 'RoomAvailabilityController@updateBookingToReservation');
 });
