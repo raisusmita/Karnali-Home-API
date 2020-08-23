@@ -40,6 +40,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('/user', 'UserController');
     Route::apiResource('/mainFood', 'MainFoodCategoryController');
     Route::apiResource('/subFood', 'SubFoodCategoryController');
+    Route::post('/subFoodById', 'SubFoodCategoryController@getSubAndFoodItemsById');
+
+    // subFoodById
     Route::apiResource('/foodHeader', 'FoodHeaderController');
 
 
