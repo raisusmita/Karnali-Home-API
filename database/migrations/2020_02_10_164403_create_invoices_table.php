@@ -20,6 +20,7 @@ class CreateInvoicesTable extends Migration
             $table->integer('discount')->default(0);
             $table->integer('service_charge');
             $table->integer('tax');
+            $table->decimal('sub_total', 50, 2);
             $table->decimal('grand_total', 50, 2);
             $table->timestamps();
         });
