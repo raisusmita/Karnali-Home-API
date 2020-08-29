@@ -22,6 +22,7 @@ class CreateBookingsTable extends Migration
             $table->integer('number_of_rooms');
             $table->integer('number_of_adult');
             $table->integer('number_of_child');
+            $table->enum('status', array('active', 'complete', 'cancelled'));
             $table->dateTime('check_in_date');
             $table->dateTime('check_out_date');
             $table->timestamps();

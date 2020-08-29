@@ -37,6 +37,17 @@ class BookingController extends Controller
         }
     }
 
+    public function getActiveBooking()
+    {
+        $booking = Booking::where(['status'=>'active'])->get();
+        if ($booking->isNotEmpty()) {
+            
+            return $this->jsonResponse(true, 'Lists of Bookings.', $booking);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any Bookings yet.');
+        }
+    }
+
     public function store()
     {
         try{

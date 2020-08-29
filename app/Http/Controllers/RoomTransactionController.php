@@ -76,6 +76,7 @@ class RoomTransactionController extends Controller
                 $roomAvailability= Reservation::where(['id'=> $roomDetail['reservation_id']])->update([
                     "check_in_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomDetail['check_in_date']),
                     "check_out_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomDetail['check_out_date']),
+                    "status"=>'complete'
                 ]);
 
             };
