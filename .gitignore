@@ -5,3 +5,5 @@
 /vendor
 .env.backup
 .phpunit.result.cache
+.env
+.env.example
