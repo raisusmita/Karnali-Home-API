@@ -38,6 +38,25 @@ class BookingController extends Controller
         }
     }
 
+    public function getBookingList(Request $request){
+
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totalBooking = Booking::where('status','!=','cancelled')->get()->count();
+
+        $booking = Booking::where('status','!=','cancelled')->skip($skip)->take($limit)->get();
+        if ($booking->isNotEmpty()) {
+            $booking->map(function ($booking) {
+                $booking->Customer;
+                $booking->RoomCategory;
+                $booking->Rooms;
+            });
+
+                        
+            return $this->jsonResponse(false, 'Currently, there is no any BookedRooms yet.', $booking, $totalBooking);
+        }
+    }
+
     public function getActiveBooking()
     {
         $booking = Booking::where(['status'=>'active'])->get();
@@ -224,20 +243,7 @@ class BookingController extends Controller
             DB::rollback();
         }
     }
-
-    public function validateRequest()
-    {
-        return request()->validate([
-            'customer_id' => 'required',
-            'room_category_id' => 'required',
-            'number_of_rooms' => 'required',
-            'number_of_adult' => 'required',
-            'number_of_child' => 'required',
-            'check_in_date' => 'required',
-            'check_out_date' => 'required',
-        ]);
-    }
-
+    
     public function getBookedRoom()
     {
         $booking = Booking::where('status','!=','cancelled')->get();
@@ -247,17 +253,31 @@ class BookingController extends Controller
                 $booking->RoomCategory;
                 $booking->Rooms;
             });
-                        
+            
             return $this->jsonResponse(false, 'Currently, there is no any BookedRooms yet.', $booking);
         }
     }
-
-    private function jsonResponse($success = false, $message = '', $data = null)
+    
+        public function validateRequest()
+        {
+            return request()->validate([
+                'customer_id' => 'required',
+                'room_category_id' => 'required',
+                'number_of_rooms' => 'required',
+                'number_of_adult' => 'required',
+                'number_of_child' => 'required',
+                'check_in_date' => 'required',
+                'check_out_date' => 'required',
+            ]);
+        }
+    
+    private function jsonResponse($success = false, $message = '', $data = null, $totalCount=0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
+            'totalCount'=>$totalCount
         ]);
     }
 
