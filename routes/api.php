@@ -42,6 +42,10 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('/subFood', 'SubFoodCategoryController');
     Route::apiResource('/foodHeader', 'FoodHeaderController');
 
+    Route::apiResource('/mainBar', 'MainBarCategoryController');
+    Route::apiResource('/subBar', 'SubBarCategoryController');
+    Route::apiResource('/bar', 'BarItemsController');
+
 
     Route::post('/booked_rooms', 'BookingController@storeBookedRoom');
     Route::get('/booked_rooms', 'BookingController@getBookedRoom');
