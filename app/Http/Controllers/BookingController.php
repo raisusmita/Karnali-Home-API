@@ -23,6 +23,7 @@ class BookingController extends Controller
 
     public function index()
     {
+        
         $booking = Booking::all();
         
         if ($booking->isNotEmpty()) {
@@ -180,6 +181,30 @@ class BookingController extends Controller
         }
     }
 
+
+    public function bookingCancelled(Request $request){
+
+        try{
+            DB::beginTransaction();
+            $booking = $request->all();
+
+            RoomAvailability::where(['booking_id'=>$booking['bookingId']])->update([
+                'availability'=> '0',
+                'status'=>'cancelled'
+                ]);
+
+            Booking::where(['id'=>$booking['bookingId']])->update([
+                'status'=>'cancelled'
+            ]);
+            DB::commit();
+            return $this->jsonResponse(true, 'Booking has been cancelled successfully.', $booking);
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+        }
+    }
+
     public function destroy(Booking $booking)
     {
         try{
@@ -215,8 +240,7 @@ class BookingController extends Controller
 
     public function getBookedRoom()
     {
-        $booking = Booking::all();
-       
+        $booking = Booking::where('status','!=','cancelled')->get();
         if ($booking->isNotEmpty()) {
             $booking->map(function ($booking) {
                 $booking->Customer;
