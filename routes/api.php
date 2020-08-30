@@ -57,6 +57,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/activeBooking', 'BookingController@getActiveBooking');
 
     Route::post('/bookingList', 'BookingController@getBookingList');
+    Route::post('/roomCategoryList', 'RoomCategoryController@getRoomCategoryList');
+
 
     Route::get('/available', 'RoomAvailabilityController@getAvailableRoom');
     Route::get('/unavailable', 'RoomAvailabilityController@getUnavailableRoom');
