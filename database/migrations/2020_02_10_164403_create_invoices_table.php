@@ -18,6 +18,10 @@ class CreateInvoicesTable extends Migration
             $table->string('invoice_number');
             $table->integer('vat')->default(13);
             $table->integer('discount')->default(0);
+            $table->integer('service_charge');
+            $table->integer('tax');
+            $table->decimal('sub_total', 50, 2);
+            $table->decimal('grand_total', 50, 2);
             $table->timestamps();
         });
     }

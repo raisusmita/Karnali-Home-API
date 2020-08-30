@@ -9,6 +9,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Services\RoomAvailabilityServices;
 use App\Model\RoomAvailability;
+use App\Model\Booking;
+
 
 
 
@@ -87,6 +89,10 @@ class ReservationController extends Controller
                       "check_out_date" => $all[$i]['check_out_date'],
                       "status" => "reserved",
                       "availability"=>"1",
+                    ]);
+
+                    $booking = Booking::where(['id'=> $all[0]['booking_id']])->update([
+                        "status"=>"complete"
                     ]);
                 }
             }

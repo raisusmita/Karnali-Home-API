@@ -12,11 +12,18 @@ class CustomerController extends Controller
     {
         $customer = Customer::all();
         if ($customer->isNotEmpty()) {
+
+            
             $customer->map(function ($customer) {
-                $customer->bookings;
-                $customer->roomAvailabilityBooking;
+
                 $customer->identity_image_first = $customer->identity_image_first ? asset('storage/' . $customer->identity_image_first) : "";
                 $customer->identity_image_second = $customer->identity_image_second ? asset('storage/' . $customer->identity_image_second) : "";
+                // $activeBooking= Booking::where(['status'=>'active', 'customer_id'=>$customer->id])->exists();
+
+                // if($activeBooking){
+                $customer->booking;
+                // }
+
             });
             return $this->jsonResponse(true, 'Lists of Customers.', $customer);
         
