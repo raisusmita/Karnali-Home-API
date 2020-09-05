@@ -17,16 +17,34 @@ class RoomTransactionController extends Controller
     public function index()
     {
         $roomTransaction = RoomTransaction::all();
-        $roomTransaction->map(function($roomTransaction){
-            $roomTransaction->reservation->room->roomCategory;
-            $roomTransaction->customer;
-        });
         if ($roomTransaction->isNotEmpty()) {
+            $roomTransaction->map(function($roomTransaction){
+                $roomTransaction->reservation->room->roomCategory;
+                $roomTransaction->customer;
+            });
             return $this->jsonResponse(true, 'Lists of Room Transactions.', $roomTransaction);
         } else {
             return $this->jsonResponse(false, 'Currently, there is no any Room Transactions yet.', $roomTransaction);
         }
     }
+
+    public function getRoomTransactionList(Request $request){
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totalRoomTransaction = RoomTransaction::get()->count();
+
+        $roomTransaction = RoomTransaction::skip($skip)->take($limit)->get();
+        if ($roomTransaction->isNotEmpty()) {
+            $roomTransaction->map(function($roomTransaction){
+                $roomTransaction->reservation->room->roomCategory;
+                $roomTransaction->customer;
+            });
+            return $this->jsonResponse(true, 'Lists of Room Transactions.', $roomTransaction, $totalRoomTransaction);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any Room Transactions yet.', $roomTransaction, $totalRoomTransaction);
+        }
+    }
+
 
     public function store(Request $request)
 
@@ -166,12 +184,13 @@ class RoomTransactionController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalRoomTransaction=0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
+            'totalCount'=>$totalRoomTransaction
         ]);
     }
 }
