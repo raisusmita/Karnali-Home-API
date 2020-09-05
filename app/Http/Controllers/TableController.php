@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Table;
+use Illuminate\Http\Request;
 
 class TableController extends Controller
 {
@@ -16,6 +17,20 @@ class TableController extends Controller
             return $this->jsonResponse(false, 'Currently, there is no any table yet.', $table);
         }
     }
+
+    public function getTableList(Request $request){
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totaltable = Table::get()->count();
+
+        $table = Table::skip($skip)->take($limit)->get();
+        if ($table->isNotEmpty()) {
+            return $this->jsonResponse(true, 'Lists of Table.', $table, $totaltable);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any table yet.', $table, $totaltable);
+        }
+    }
+
 
     public function store()
     {
@@ -47,12 +62,13 @@ class TableController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null)
+    private function jsonResponse($success = false, $message = '', $data = null, $totaltable=0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
+            'totalCount'=>$totaltable
         ]);
     }
 }
