@@ -30,6 +30,28 @@ class BarItemsController extends Controller
         }
     }
 
+    public function getBarItemList(Request $request){
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totalBarItems = BarItems::get()->count();
+
+        $bar = BarItems::skip($skip)->take($limit)->get();
+        if ($bar->isNotEmpty()) {
+            $bar->map(function ($bar) {
+                if ($bar->sub_bar_category_id != null) {
+                    $bar->subBarCategory;
+                    $bar->subBarCategory->mainBarCategory;
+                }
+                if ($bar->main_bar_category_id != null) {
+                    $bar->mainBarCategory;
+                }
+            });
+            return $this->jsonResponse(true, 'Lists of bars.', $bar, $totalBarItems);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any bar yet.', $bar, $totalBarItems);
+        }
+    }
+
     public function store()
     {
         $bar = BarItems::create($this->validateRequest());
@@ -84,12 +106,13 @@ class BarItemsController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalBarItems=0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
+            'totalCount'=>$totalBarItems
         ]);
     }
 }

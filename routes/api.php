@@ -66,6 +66,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/mainFoodList', 'MainFoodCategoryController@getMainFoodList');
     Route::post('/subFoodList', 'SubFoodCategoryController@getSubFoodList');
     Route::post('/headerFoodList', 'FoodHeaderController@getFoodHeaderList');
+    Route::post('/barItemList', 'BarItemsController@getBarItemList');
+    Route::post('/mainBarList', 'MainBarCategoryController@getMainBarList');
+    Route::post('/subBarList', 'SubBarCategoryController@getSubBarList');
 
 
 

@@ -17,6 +17,19 @@ class MainBarCategoryController extends Controller
         }
     }
 
+    public function getMainBarList(Request $request){
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totalMainBar = MainBarCategory::get()->count();
+
+        $mainBar = MainBarCategory::skip($skip)->take($limit)->get();
+        if ($mainBar->isNotEmpty()) {
+            return $this->jsonResponse(true, 'Lists of main bars.', $mainBar, $totalMainBar);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any main bar yet.', $mainBar, $totalMainBar);
+        }
+    }
+
     public function store()
     {
         $mainBar = MainBarCategory::create($this->validateRequest());
@@ -46,12 +59,13 @@ class MainBarCategoryController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalMainBar=0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
+            'totalCount'=>$totalMainBar
         ]);
     }
 }
