@@ -17,6 +17,19 @@ class FoodHeaderController extends Controller
         }
     }
 
+    public function getFoodHeaderList(Request $request){
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totalFoodHeader = FoodHeader::get()->count();
+
+        $foodHeader = FoodHeader::skip($skip)->take($limit)->get();
+        if ($foodHeader->isNotEmpty()) {
+            return $this->jsonResponse(true, 'Lists of foods headers.', $foodHeader, $totalFoodHeader);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any food headers yet.', $foodHeader, $totalFoodHeader);
+        }
+    }
+
     public function store()
     {
         $foodHeader = FoodHeader::create($this->validateRequest());
@@ -36,12 +49,13 @@ class FoodHeaderController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalFoodHeader=0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
+            'totalCount'=>$totalFoodHeader
         ]);
     }
 }

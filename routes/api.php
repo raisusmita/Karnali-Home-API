@@ -62,6 +62,13 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/roomList', 'RoomController@getRoomList');
     Route::post('/customerList', 'CustomerController@getCustomerList');
     Route::post('/reservationList', 'ReservationController@getReservationList');
+    Route::post('/foodItemList', 'FoodItemsController@getFoodItemList');
+    Route::post('/mainFoodList', 'MainFoodCategoryController@getMainFoodList');
+    Route::post('/subFoodList', 'SubFoodCategoryController@getSubFoodList');
+    Route::post('/headerFoodList', 'FoodHeaderController@getFoodHeaderList');
+
+
+
 
 
 

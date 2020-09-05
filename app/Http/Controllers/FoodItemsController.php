@@ -31,6 +31,31 @@ class FoodItemsController extends Controller
         }
     }
 
+    public function getFoodItemList(Request $request){
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totalFoodItem = FoodItems::get()->count();
+
+        $foodItem = FoodItems::skip($skip)->take($limit)->get();
+        if ($foodItem->isNotEmpty()) {
+            $foodItem->map(function ($foodItem) {
+                if ($foodItem->sub_food_category_id != null) {
+                    $foodItem->subFoodCategory;
+                    $foodItem->subFoodCategory->mainFoodCategory;
+                }
+                if ($foodItem->main_food_category_id != null) {
+                    $foodItem->mainFoodCategory;
+                }
+                if ($foodItem->food_header_id != null) {
+                    $foodItem->foodHeader;
+                }
+            });
+            return $this->jsonResponse(true, 'Lists of foods.', $foodItem, $totalFoodItem);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any food yet.', $food, $totalFoodItem);
+        }
+    }
+
     public function store()
     {
         $food = FoodItems::create($this->validateRequest());
@@ -85,12 +110,13 @@ class FoodItemsController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalFoodItem=0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
+            'totalCount'=>$totalFoodItem
         ]);
     }
 }
