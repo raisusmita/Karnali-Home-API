@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Model\Customer;
 use App\Model\Booking;
 use Illuminate\Http\Request;
@@ -14,11 +15,11 @@ class CustomerController extends Controller
         $customer = Customer::all();
         if ($customer->isNotEmpty()) {
 
-            
+
             $customer->map(function ($customer) {
 
-                $customer->identity_image_first = $customer->identity_image_first ? asset('storage/' . $customer->identity_image_first) : "";
-                $customer->identity_image_second = $customer->identity_image_second ? asset('storage/' . $customer->identity_image_second) : "";
+                $customer->identity_image_first = $customer->identity_image_first ? asset('api/storage/' . $customer->identity_image_first) : "";
+                $customer->identity_image_second = $customer->identity_image_second ? asset('api/storage/' . $customer->identity_image_second) : "";
                 // $activeBooking= Booking::where(['status'=>'active', 'customer_id'=>$customer->id])->exists();
 
                 // if($activeBooking){
@@ -27,29 +28,28 @@ class CustomerController extends Controller
 
             });
             return $this->jsonResponse(true, 'Lists of Customers.', $customer);
-        
         } else {
             return $this->jsonResponse(false, 'Currently, there is no any Customers yet.');
         }
     }
 
-    
-    public function getCustomerList(Request $request){
 
-        $skip =$request->skip;
-        $limit=$request->limit;
+    public function getCustomerList(Request $request)
+    {
+
+        $skip = $request->skip;
+        $limit = $request->limit;
         $totalCustomer = Customer::get()->count();
 
         // using where clause just to get data in required format
-        $customer = Customer::where('id','!=', 0)->skip($skip)->take($limit)->get();
+        $customer = Customer::where('id', '!=', 0)->skip($skip)->take($limit)->get();
         if ($customer->isNotEmpty()) {
             $customer->map(function ($customer) {
-                $customer->identity_image_first = $customer->identity_image_first ? asset('storage/' . $customer->identity_image_first) : "";
-                $customer->identity_image_second = $customer->identity_image_second ? asset('storage/' . $customer->identity_image_second) : "";
+                $customer->identity_image_first = $customer->identity_image_first ? asset('api/storage/' . $customer->identity_image_first) : "";
+                $customer->identity_image_second = $customer->identity_image_second ? asset('api/storage/' . $customer->identity_image_second) : "";
                 $customer->booking;
             });
             return $this->jsonResponse(true, 'Lists of Customers.', $customer, $totalCustomer);
-        
         } else {
             return $this->jsonResponse(false, 'Currently, there is no any Customers yet.');
         }
@@ -114,13 +114,13 @@ class CustomerController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null, $totalCustomer=0)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalCustomer = 0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
             'data' => $data,
-            'totalCount'=>$totalCustomer
+            'totalCount' => $totalCustomer
         ]);
     }
 }

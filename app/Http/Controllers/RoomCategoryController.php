@@ -13,7 +13,7 @@ class RoomCategoryController extends Controller
         $roomCategory = RoomCategory::all();
         if ($roomCategory->isNotEmpty()) {
             $roomCategory->map(function ($roomCategory) {
-                $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
+                $roomCategory->image = $roomCategory->image ? asset('api/storage/' . $roomCategory->image) : "";
             });
             return $this->jsonResponse(true, 'Lists of Room Category.', $roomCategory);
         } else {
@@ -21,17 +21,18 @@ class RoomCategoryController extends Controller
         }
     }
 
-    public function getRoomCategoryList(Request $request){
+    public function getRoomCategoryList(Request $request)
+    {
 
-        $skip =$request->skip;
-        $limit=$request->limit;
+        $skip = $request->skip;
+        $limit = $request->limit;
         $totalRoomCategory = RoomCategory::get()->count();
 
         // using where clause just to get data in required format
-        $roomCategory = RoomCategory::where('id','!=', 0)->skip($skip)->take($limit)->get();
+        $roomCategory = RoomCategory::where('id', '!=', 0)->skip($skip)->take($limit)->get();
         if ($roomCategory->isNotEmpty()) {
             $roomCategory->map(function ($roomCategory) {
-                $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
+                $roomCategory->image = $roomCategory->image ? asset('api/storage/' . $roomCategory->image) : "";
             });
             return $this->jsonResponse(true, 'Lists of Room Category.', $roomCategory, $totalRoomCategory);
         } else {
@@ -48,7 +49,7 @@ class RoomCategoryController extends Controller
 
     public function show(RoomCategory $roomCategory)
     {
-        $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
+        $roomCategory->image = $roomCategory->image ? asset('api/storage/' . $roomCategory->image) : "";
         return $this->jsonResponse(true, 'Data of an individual Room Category.', $roomCategory);
     }
 
@@ -95,13 +96,13 @@ class RoomCategoryController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null, $totalCount=0)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalCount = 0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
             'data' => $data,
-            'totalCount'=>$totalCount
+            'totalCount' => $totalCount
 
         ]);
     }
