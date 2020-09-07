@@ -56,10 +56,29 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/editRoomTransaction', 'RoomTransactionController@updateRoomTransaction');
     Route::get('/activeBooking', 'BookingController@getActiveBooking');
 
+    // Get data based on pagination
     Route::post('/bookingList', 'BookingController@getBookingList');
     Route::post('/roomCategoryList', 'RoomCategoryController@getRoomCategoryList');
     Route::post('/roomList', 'RoomController@getRoomList');
     Route::post('/customerList', 'CustomerController@getCustomerList');
+    Route::post('/reservationList', 'ReservationController@getReservationList');
+    Route::post('/foodItemList', 'FoodItemsController@getFoodItemList');
+    Route::post('/mainFoodList', 'MainFoodCategoryController@getMainFoodList');
+    Route::post('/subFoodList', 'SubFoodCategoryController@getSubFoodList');
+    Route::post('/headerFoodList', 'FoodHeaderController@getFoodHeaderList');
+    Route::post('/barItemList', 'BarItemsController@getBarItemList');
+    Route::post('/mainBarList', 'MainBarCategoryController@getMainBarList');
+    Route::post('/subBarList', 'SubBarCategoryController@getSubBarList');
+    Route::post('/tableList', 'TableController@getTableList');
+    Route::post('/roomTransactionList', 'RoomTransactionController@getRoomTransactionList');
+    Route::post('/userList', 'UserController@getUserList');
+
+
+
+    
+
+
+
 
 
 

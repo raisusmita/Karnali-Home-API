@@ -19,6 +19,20 @@ class UserController extends Controller
         }
     }
 
+    public function getUserList(Request $request){
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totalUser = User::get()->count();
+
+        $user = User::skip($skip)->take($limit)->get();
+        if ($user->isNotEmpty()) {
+            return $this->jsonResponse(true, 'Lists of Users.', $user, $totalUser);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any Users.', $user, $totalUser);
+        }
+    }
+
+
     public function store()
     {
         $user = User::create($this->validateUserRequest());
@@ -110,12 +124,13 @@ class UserController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalUser=0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
+            'totalCount'=>$totalUser
         ]);
     }
 }

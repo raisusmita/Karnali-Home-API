@@ -18,6 +18,20 @@ class SubBarCategoryController extends Controller
         }
     }
 
+    public function getSubBarList(Request $request){
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totalSubBar = SubBarCategory::get()->count();
+
+        $subBar = SubBarCategory::skip($skip)->take($limit)->get();
+        if ($subBar->isNotEmpty()) {
+            return $this->jsonResponse(true, 'Lists of sub bars.', $subBar, $totalSubBar);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any sub bar yet.', $subBar, $totalSubBar);
+        }
+    }
+
+
     public function store()
     {
         $subBar = SubBarCategory::create($this->validateRequest());
@@ -38,12 +52,13 @@ class SubBarCategoryController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalSubBar=0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
+            'totalCount'=>$totalSubBar
         ]);
     }
 }
