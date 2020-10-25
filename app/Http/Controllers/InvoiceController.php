@@ -76,8 +76,8 @@ class InvoiceController extends Controller
                 "checkOutDate" => $transactionDetail[0]['reservation']->check_out_date,
                 "numberOfDays" => $transactionDetail[0]->number_of_days,
                 "rate"=> $transactionDetail[0]->rate,
-                "amount"=> $transactionDetail[0]->total_amount,
-                "subtotal"=>$total_amount
+                "amount"=> number_format($transactionDetail[0]->total_amount,2),
+                "subtotal"=>number_format($total_amount,2)
 
             );
 
@@ -98,8 +98,8 @@ class InvoiceController extends Controller
             "tax" =>$tax,
             "vat" => $vAT,
             "discount" => $discount,
-            "sub_total"=> $total_amount,
-            "grand_total"=> $total_amount + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount,
+            "sub_total"=> number_format($total_amount,2),
+            "grand_total"=> number_format(($total_amount + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),2),
         );
 
         
