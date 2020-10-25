@@ -98,8 +98,8 @@ class InvoiceController extends Controller
             "tax" =>$tax,
             "vat" => $vAT,
             "discount" => $discount,
-            "sub_total"=> number_format($total_amount,2),
-            "grand_total"=> number_format(($total_amount + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),2),
+            "sub_total"=> (double)$total_amount,
+            "grand_total"=> (double)($total_amount + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),
         );
 
         
