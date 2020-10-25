@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Model\Room;
 use App\Model\RoomCategory;
+use Illuminate\Http\Request;
 
 
 class RoomController extends Controller
@@ -20,6 +21,25 @@ class RoomController extends Controller
             return $this->jsonResponse(false, 'There is no any room yet');
         }
     }
+
+    public function getRoomList(Request $request){
+
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totalRoom = Room::get()->count();
+
+        // using where clause just to get data in required format
+        $room = Room::where('id','!=', 0)->skip($skip)->take($limit)->get();
+        if ($room->isNotEmpty()) {
+            $room->map(function ($room) {
+                $room->roomCategory;
+            });
+            return $this->jsonResponse(true, 'List of Rooms', $room, $totalRoom);
+        } else {
+            return $this->jsonResponse(false, 'There is no any room yet');
+        }
+    }
+
     public function getRoomBasedOnCategory()
     {
         $category = request();
@@ -65,12 +85,13 @@ class RoomController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalRoom=0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
+            'totalCount'=>$totalRoom
         ]);
     }
 }

@@ -9,6 +9,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Services\RoomAvailabilityServices;
 use App\Model\RoomAvailability;
+use App\Model\Booking;
+
 
 
 
@@ -33,6 +35,25 @@ class ReservationController extends Controller
                 // ------------------------------------
             });
             return $this->jsonResponse(true, 'Lists of Reservation.', $reservation);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any Reservation yet.');
+        }
+    }
+
+    public function getReservationList(Request $request){
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totalReservation = Reservation::where('status','!=','cancelled')->get()->count();
+
+        $reservation = Reservation::where('status','!=','cancelled')->skip($skip)->take($limit)->get();
+        if ($reservation->isNotEmpty()) {
+            $reservation->map(function ($reservation) {
+                $reservation->Room;
+                $reservation->Room->RoomCategory;
+                $reservation->Customer;
+                $reservation->Booking;
+            });
+            return $this->jsonResponse(true, 'Lists of Reservation.', $reservation, $totalReservation);
         } else {
             return $this->jsonResponse(false, 'Currently, there is no any Reservation yet.');
         }
@@ -87,6 +108,10 @@ class ReservationController extends Controller
                       "check_out_date" => $all[$i]['check_out_date'],
                       "status" => "reserved",
                       "availability"=>"1",
+                    ]);
+
+                    $booking = Booking::where(['id'=> $all[0]['booking_id']])->update([
+                        "status"=>"complete"
                     ]);
                 }
             }
@@ -195,12 +220,14 @@ class ReservationController extends Controller
         }
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalCount=0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
+            'totalCount'=>$totalCount
+
         ]);
     }
 }

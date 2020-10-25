@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Model\RoomCategory;
 use Intervention\Image\Facades\Image;
+use Illuminate\Http\Request;
 
 class RoomCategoryController extends Controller
 {
@@ -17,6 +18,24 @@ class RoomCategoryController extends Controller
             return $this->jsonResponse(true, 'Lists of Room Category.', $roomCategory);
         } else {
             return $this->jsonResponse(false, 'Currently, there is no any Room Category.', $roomCategory);
+        }
+    }
+
+    public function getRoomCategoryList(Request $request){
+
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totalRoomCategory = RoomCategory::get()->count();
+
+        // using where clause just to get data in required format
+        $roomCategory = RoomCategory::where('id','!=', 0)->skip($skip)->take($limit)->get();
+        if ($roomCategory->isNotEmpty()) {
+            $roomCategory->map(function ($roomCategory) {
+                $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
+            });
+            return $this->jsonResponse(true, 'Lists of Room Category.', $roomCategory, $totalRoomCategory);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any Room Category.', $roomCategory, $totalRoomCategory);
         }
     }
 
@@ -76,12 +95,14 @@ class RoomCategoryController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalCount=0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
+            'totalCount'=>$totalCount
+
         ]);
     }
 }

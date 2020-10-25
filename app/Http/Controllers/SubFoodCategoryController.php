@@ -18,6 +18,19 @@ class SubFoodCategoryController extends Controller
         }
     }
 
+    public function getSubFoodList(Request $request){
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totalSubFood = SubFoodCategory::get()->count();
+
+        $subFood = SubFoodCategory::skip($skip)->take($limit)->get();
+        if ($subFood->isNotEmpty()) {
+            return $this->jsonResponse(true, 'Lists of sub foods.', $subFood, $totalSubFood);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any sub food yet.', $subFood, $totalSubFood);
+        }
+    }
+
     public function store()
     {
         $subFood = SubFoodCategory::create($this->validateRequest());
@@ -55,12 +68,13 @@ class SubFoodCategoryController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalSubFood=0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
+            'totalCount'=>$totalSubFood
         ]);
     }
 }

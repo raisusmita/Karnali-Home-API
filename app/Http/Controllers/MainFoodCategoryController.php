@@ -17,6 +17,19 @@ class MainFoodCategoryController extends Controller
         }
     }
 
+    public function getMainFoodList(Request $request){
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totalMainFood = MainFoodCategory::get()->count();
+
+        $mainFood = MainFoodCategory::skip($skip)->take($limit)->get();
+        if ($mainFood->isNotEmpty()) {
+            return $this->jsonResponse(true, 'Lists of main foods.', $mainFood, $totalMainFood);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any main food yet.', $mainFood, $totalMainFood);
+        }
+    }
+
     public function store()
     {
         $mainFood = MainFoodCategory::create($this->validateRequest());
@@ -46,12 +59,13 @@ class MainFoodCategoryController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalMainFood =0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
+            'totalCount'=>$totalMainFood
         ]);
     }
 }
