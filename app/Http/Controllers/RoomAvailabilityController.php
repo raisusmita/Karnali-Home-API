@@ -50,7 +50,7 @@ class RoomAvailabilityController extends Controller
         if ($dateValue->check_in_date < $dateValue->check_out_date) {
             $unAvailableRoom = RoomAvailability::whereBetween('check_in_date', [date($format, strtotime($dateValue->check_in_date)), date($format, strtotime($dateValue->check_out_date))])
                 ->orWhereBetween('check_out_date', [date($format, strtotime($dateValue->check_in_date)), date($format, strtotime($dateValue->check_out_date))])
-                ->unavailable()
+                //->unavailable()
                 ->get();
             $roomIds = [];
             foreach ($unAvailableRoom as $av) {
