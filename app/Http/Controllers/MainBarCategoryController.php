@@ -22,7 +22,7 @@ class MainBarCategoryController extends Controller
         $limit=$request->limit;
         $totalMainBar = MainBarCategory::get()->count();
 
-        $mainBar = MainBarCategory::skip($skip)->take($limit)->get();
+        $mainBar = MainBarCategory::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($mainBar->isNotEmpty()) {
             return $this->jsonResponse(true, 'Lists of main bars.', $mainBar, $totalMainBar);
         } else {

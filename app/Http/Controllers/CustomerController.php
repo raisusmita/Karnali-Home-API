@@ -41,7 +41,7 @@ class CustomerController extends Controller
         $totalCustomer = Customer::get()->count();
 
         // using where clause just to get data in required format
-        $customer = Customer::where('id','!=', 0)->skip($skip)->take($limit)->get();
+        $customer = Customer::where('id','!=', 0)->skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($customer->isNotEmpty()) {
             $customer->map(function ($customer) {
                 $customer->identity_image_first = $customer->identity_image_first ? asset('storage/' . $customer->identity_image_first) : "";

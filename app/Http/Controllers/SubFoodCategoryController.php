@@ -22,7 +22,7 @@ class SubFoodCategoryController extends Controller
         $limit=$request->limit;
         $totalSubFood = SubFoodCategory::get()->count();
 
-        $subFood = SubFoodCategory::skip($skip)->take($limit)->get();
+        $subFood = SubFoodCategory::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($subFood->isNotEmpty()) {
             return $this->jsonResponse(true, 'Lists of sub foods.', $subFood, $totalSubFood);
         } else {

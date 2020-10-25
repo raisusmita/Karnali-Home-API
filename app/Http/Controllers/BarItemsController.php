@@ -35,7 +35,7 @@ class BarItemsController extends Controller
         $limit=$request->limit;
         $totalBarItems = BarItems::get()->count();
 
-        $bar = BarItems::skip($skip)->take($limit)->get();
+        $bar = BarItems::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($bar->isNotEmpty()) {
             $bar->map(function ($bar) {
                 if ($bar->sub_bar_category_id != null) {

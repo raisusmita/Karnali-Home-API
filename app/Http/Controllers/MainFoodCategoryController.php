@@ -22,7 +22,7 @@ class MainFoodCategoryController extends Controller
         $limit=$request->limit;
         $totalMainFood = MainFoodCategory::get()->count();
 
-        $mainFood = MainFoodCategory::skip($skip)->take($limit)->get();
+        $mainFood = MainFoodCategory::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($mainFood->isNotEmpty()) {
             return $this->jsonResponse(true, 'Lists of main foods.', $mainFood, $totalMainFood);
         } else {

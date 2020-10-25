@@ -44,7 +44,7 @@ class BookingController extends Controller
         $limit=$request->limit;
         $totalBooking = Booking::where('status','!=','cancelled')->get()->count();
 
-        $booking = Booking::where('status','!=','cancelled')->skip($skip)->take($limit)->get();
+        $booking = Booking::where('status','!=','cancelled')->skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($booking->isNotEmpty()) {
             $booking->map(function ($booking) {
                 $booking->Customer;
