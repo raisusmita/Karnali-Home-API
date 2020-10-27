@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class FoodOrder extends Model
 {
     protected $guarded =[];
-    
+
     public function room()
     {
         return $this->belongsTo(Room::class);
@@ -27,7 +27,5 @@ class FoodOrder extends Model
     {
         return $this->belongsTo(Invoice::class);
     }
-
-
 }
 

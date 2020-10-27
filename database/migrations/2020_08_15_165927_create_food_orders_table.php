@@ -15,8 +15,8 @@ class CreateFoodOrdersTable extends Migration
     {
         Schema::create('food_orders', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('food_id');
-            $table->foreign('food_id')->references('id')->on('foods');
+            $table->unsignedBigInteger('food_items_id');
+            $table->foreign('food_items_id')->references('id')->on('food_items');
             $table->unsignedBigInteger('reservation_id')->nullable();
             $table->foreign('reservation_id')->references('id')->on('reservations');
             $table->unsignedBigInteger('table_id')->nullable();
