@@ -30,7 +30,9 @@ class Room extends Model
     }
 
     public function rooms()
-{
-    return $this->belongsToMany(Room::class, 'room_availabilities');
-}
+    {
+        return $this->belongsToMany(Room::class, 'room_availabilities');
+    }
+
+
 }

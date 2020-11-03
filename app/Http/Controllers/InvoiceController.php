@@ -7,6 +7,7 @@ use App\Model\Charge;
 use App\Model\RoomTransaction;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceController extends Controller
 {
@@ -21,11 +22,26 @@ class InvoiceController extends Controller
         }
     }
 
+    
+    public function getInvoiceList(Request $request){
+
+        $skip =$request->skip;
+        $limit=$request->limit;
+        $totalInvoice = Invoice::get()->count();
+
+        // using where clause just to get data in required format
+        $invoice = Invoice::where('id','!=', 0)->skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
+        if ($invoice->isNotEmpty()) {
+            
+            return $this->jsonResponse(true, 'List of Invoices.', $invoice, $totalInvoice);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any invoice.', $invoice, $totalInvoice);
+        }
+    }
+
     public function store(Request $request)
     {
-        $transactions = $request->all();
-        $charges = Charge::all();
-
+        
         $tax = 0;
         $discount = 0; 
         $serviceCharge = 0;
@@ -35,32 +51,33 @@ class InvoiceController extends Controller
         $transactionDetail = [];
         $initialTransactionDetail=[];
         $finalTransactionDetail=[];
+        
+        $transactions = $request->all();
 
-        // Extracting charges value from charge table
-        foreach($charges as $charge){
-           if($charge['charges'] == 'Tax'){
-               $tax = $charge['value'] ;
-           }
-           else if($charge['charges'] == 'Discount'){
-            $discount = $charge['value'] ;
-           }
-           else if($charge['charges'] == 'Service charge'){
-            $serviceCharge = $charge['value'] ;
-           }
-           else if($charge['charges'] == 'VAT'){
-            $vAT = $charge['value'] ;
-           }
+        if(($transactions[0]['callFrom'])=='transaction'){
+            $charges = Charge::all();
+            // Extracting charges value from charge table
+            foreach($charges as $charge){
+                if($charge['charges'] == 'Tax'){
+                    $tax = $charge['value'] ;
+                }
+                else if($charge['charges'] == 'Discount'){
+                    $discount = $charge['value'] ;
+                }
+                else if($charge['charges'] == 'Service charge'){
+                    $serviceCharge = $charge['value'] ;
+                }
+                else if($charge['charges'] == 'VAT'){
+                    $vAT = $charge['value'] ;
+                }
+            }
+            // Calculating total amount from all transactions 
+            // Also storing each transactions number to generate invoiceNumber later
+            $transactionNumber = $transactionNumber . $transactions[0]['transaction_id'];
         }
-      
 
-        // Calculating total amount from all transactions 
-        // Also storing each transactions number to generate invoiceNumber later
         foreach($transactions as $transaction){
-
-
             $total_amount = (double)$total_amount + (double)$transaction['amount'];
-            $transactionNumber = $transactionNumber . $transaction['transaction_id'];
-
             // Retrieve all the necessary data
             $transactionDetail = RoomTransaction::where(['id'=>$transaction['transaction_id']])->get();
             $transactionDetail[0]->reservation;
@@ -78,51 +95,118 @@ class InvoiceController extends Controller
                 "rate"=> $transactionDetail[0]->rate,
                 "amount"=> number_format($transactionDetail[0]->total_amount,2),
                 "subtotal"=>number_format($total_amount,2)
+            );
+            array_push($finalTransactionDetail, $initialTransactionDetail);
+        }
+
+        // invoice is only created when call from transaction
+        if(($transactions[0]['callFrom'])=='invoice'){
+            $invoice =array(
+                    "invoice_number"=> $transaction['invoice_number'],
+                    "service_charge"=>$transaction['service_charge'],
+                    "tax"=> $transaction['tax'],
+                    "vat"=>$transaction['vat'],
+                    "discount"=> $transaction['discount'],
+                    "sub_total"=>$transaction['sub_total'],
+                    "grand_total"=>$transaction['grand_total'],
+                    "id"=> $transaction['invoice_id'],
+                    "created_at"=> $transaction['created_at']
 
             );
 
+            // Store invoice related data in previously made final array
+            $initialTransactionDetail= array("invoice"=>$invoice);
             array_push($finalTransactionDetail, $initialTransactionDetail);
 
+        }else{
+            // Actual calculation for each charges
+            $appliedVAT = (double)($vAT/100)* $total_amount;
+            $appliedDiscount = (double)($discount/100)* $total_amount;
+            $appliedTax = (double)($tax/100)* $total_amount;
+            $appliedServiceCharge = (double)($serviceCharge/100)* $total_amount;
+            
+            // Params for Invoice
+            $invoiceParams =  array(
+                "invoice_number" => 'INV00'. $transactionNumber,
+                "service_charge" => $serviceCharge,
+                "tax" =>$tax,
+                "vat" => $vAT,
+                "discount" => $discount,
+                "sub_total"=> (double)$total_amount,
+                "grand_total"=> (double)($total_amount + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),
+            );
+            
+            // insert into invoice table
+            $invoice = Invoice::create($invoiceParams);
+            
+            // Store invoice related data in previously made final array
+            $initialTransactionDetail= array("invoice"=>$invoice);
+            array_push($finalTransactionDetail, $initialTransactionDetail);
+                                
+            $invoiceId = $invoice['id'];
+            $invoiceNumber = $invoice['invoice_number'];
+            
+            // Update room transaction 
+            foreach($transactions as $transaction){
+                $roomAvailability= RoomTransaction::where(['id'=> $transaction['transaction_id']])->update([
+                    "invoice_id" => $invoiceId
+                ]);
+            }
         }
-
-        // Actual calculation for each charges
-        $appliedVAT = (double)($vAT/100)* $total_amount;
-        $appliedDiscount = (double)($discount/100)* $total_amount;
-        $appliedTax = (double)($tax/100)* $total_amount;
-        $appliedServiceCharge = (double)($serviceCharge/100)* $total_amount;
-
-         // Params for Invoice
-         $invoiceParams =  array(
-            "invoice_number" => 'INV00'. $transactionNumber,
-            "service_charge" => $serviceCharge,
-            "tax" =>$tax,
-            "vat" => $vAT,
-            "discount" => $discount,
-            "sub_total"=> (double)$total_amount,
-            "grand_total"=> (double)($total_amount + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),
-        );
-
-        
-        // insert into invoice table
-        $invoice = Invoice::create($invoiceParams);
-        
-        // Store invoice related data in previously made final array
-        $initialTransactionDetail= array("invoice"=>$invoice);
-        array_push($finalTransactionDetail, $initialTransactionDetail);
-        
-        $invoiceId = $invoice['id'];
-        $invoiceNumber = $invoice['invoice_number'];
-
-         // Update room transaction 
-         foreach($transactions as $transaction){
-
-            $roomAvailability= RoomTransaction::where(['id'=> $transaction['transaction_id']])->update([
-                "invoice_id" => $invoiceId
-            ]);
-        }
-        
-      
         return $this->jsonResponse(true, 'Invoice has been created successfully.', $finalTransactionDetail);
+    }
+
+    public function invoiceDetail(Request $request){
+        $invoiceId = $request->invoiceId;
+        $initialInvoiceDetail=[];
+        $finalInvoiceDetail=[];
+
+        //get required data
+        $invoices = DB::table('invoices')
+        ->select('room_transactions.id As transaction_id','invoices.created_at As invoice_date','invoices.*','room_transactions.*','reservations.*','rooms.*','customers.*','room_categories.*')
+        ->join('room_transactions', 'invoices.id', '=', 'room_transactions.invoice_id')
+        ->join('reservations', 'reservations.id', '=', 'room_transactions.reservation_id')
+        ->join('rooms', 'rooms.id', '=', 'reservations.room_id')
+        ->join('customers', 'customers.id', '=', 'reservations.customer_id')
+        ->join('room_categories', 'room_categories.id', '=', 'rooms.room_category_id')
+        ->where('invoices.id', $invoiceId)
+        ->get();
+
+        // Parsing the string to array and decode back to array
+        $encoded = json_encode( $invoices, true);
+        $decoded = json_decode( $encoded, true);
+
+        if (isset($decoded)) {
+            foreach($decoded as $invoice){
+                $initialInvoiceDetail =  array(
+                    "callFrom"=> "invoice",
+                    "address"=>$invoice['address'],
+                    "amount"=> number_format($invoice['total_amount'],2),
+                    "check_in_date"=>$invoice['check_in_date'],
+                    "check_out_date"=> $invoice['check_out_date'],
+                    "first_name"=>$invoice['first_name'],
+                    "middle_name"=>$invoice['middle_name'],
+                    "last_name"=>$invoice['last_name'],
+                    "invoice_number"=> $invoice['invoice_number'],
+                    "no_of_days"=> $invoice['number_of_days'],
+                    "rate"=> $invoice['rate'],
+                    "reservation_id"=>  $invoice['reservation_id'],
+                    "transaction_id"=> $invoice['transaction_id'],
+                    "room_category"=> $invoice['room_category'],
+                    "room_number"=> $invoice['room_number'],
+                    "invoice_id"=> $invoice['invoice_id'],
+                    "service_charge"=> $invoice['service_charge'],
+                    "tax"=> $invoice['tax'],
+                    "vat"=> $invoice['vat'],
+                    "discount"=> $invoice['discount'],
+                    "sub_total"=> number_format($invoice['sub_total'],2),
+                    "grand_total"=>number_format($invoice['grand_total'],2),
+                    "created_at"=>$invoice['invoice_date'],
+                    );
+                array_push($finalInvoiceDetail, $initialInvoiceDetail);
+            }
+        }
+       return $this->jsonResponse(true, 'List of invoice details.', $finalInvoiceDetail);
     }
 
     public function show(Invoice $invoice)
@@ -161,3 +245,5 @@ class InvoiceController extends Controller
         ]);
     }
 }
+
+
