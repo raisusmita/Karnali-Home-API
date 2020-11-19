@@ -17,8 +17,8 @@ class CreateFoodOrdersTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('food_items_id');
             $table->foreign('food_items_id')->references('id')->on('food_items');
-            $table->unsignedBigInteger('reservation_id')->nullable();
-            $table->foreign('reservation_id')->references('id')->on('reservations');
+            $table->unsignedBigInteger('room_id')->nullable();
+            $table->foreign('room_id')->references('id')->on('rooms');
             $table->unsignedBigInteger('table_id')->nullable();
             $table->foreign('table_id')->references('id')->on('tables');
             $table->unsignedBigInteger('invoice_id')->nullable();
