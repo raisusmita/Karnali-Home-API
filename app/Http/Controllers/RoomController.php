@@ -29,7 +29,7 @@ class RoomController extends Controller
         $totalRoom = Room::get()->count();
 
         // using where clause just to get data in required format
-        $room = Room::where('id','!=', 0)->skip($skip)->take($limit)->get();
+        $room = Room::where('id','!=', 0)->skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($room->isNotEmpty()) {
             $room->map(function ($room) {
                 $room->roomCategory;

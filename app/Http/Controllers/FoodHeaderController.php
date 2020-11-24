@@ -22,7 +22,7 @@ class FoodHeaderController extends Controller
         $limit=$request->limit;
         $totalFoodHeader = FoodHeader::get()->count();
 
-        $foodHeader = FoodHeader::skip($skip)->take($limit)->get();
+        $foodHeader = FoodHeader::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($foodHeader->isNotEmpty()) {
             return $this->jsonResponse(true, 'Lists of foods headers.', $foodHeader, $totalFoodHeader);
         } else {

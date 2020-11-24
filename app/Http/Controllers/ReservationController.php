@@ -45,7 +45,7 @@ class ReservationController extends Controller
         $limit=$request->limit;
         $totalReservation = Reservation::where('status','!=','cancelled')->get()->count();
 
-        $reservation = Reservation::where('status','!=','cancelled')->skip($skip)->take($limit)->get();
+        $reservation = Reservation::where('status','!=','cancelled')->skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($reservation->isNotEmpty()) {
             $reservation->map(function ($reservation) {
                 $reservation->Room;

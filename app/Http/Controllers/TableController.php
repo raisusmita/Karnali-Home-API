@@ -23,7 +23,7 @@ class TableController extends Controller
         $limit=$request->limit;
         $totaltable = Table::get()->count();
 
-        $table = Table::skip($skip)->take($limit)->get();
+        $table = Table::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($table->isNotEmpty()) {
             return $this->jsonResponse(true, 'Lists of Table.', $table, $totaltable);
         } else {

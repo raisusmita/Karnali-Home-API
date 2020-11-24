@@ -75,6 +75,12 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/tableList', 'TableController@getTableList');
     Route::post('/roomTransactionList', 'RoomTransactionController@getRoomTransactionList');
     Route::post('/userList', 'UserController@getUserList');
+    Route::post('/invoiceList', 'InvoiceController@getInvoiceList');
+    Route::post('/invoiceDetail', 'InvoiceController@invoiceDetail');
+
+    
+
+    
 
 
     Route::get('/available', 'RoomAvailabilityController@getAvailableRoom');
