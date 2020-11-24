@@ -52,7 +52,7 @@ class FoodItemsController extends Controller
             });
             return $this->jsonResponse(true, 'Lists of foods.', $foodItem, $totalFoodItem);
         } else {
-            return $this->jsonResponse(false, 'Currently, there is no any food yet.', $food, $totalFoodItem);
+            return $this->jsonResponse(false, 'Currently, there is no any food yet.', $foodItem, $totalFoodItem);
         }
     }
 

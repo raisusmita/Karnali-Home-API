@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\FoodItems;
 use App\Model\SubFoodCategory;
 use Illuminate\Http\Request;
 
@@ -40,6 +41,23 @@ class SubFoodCategoryController extends Controller
     {
         $subFood->update($this->validateRequest());
         return $this->jsonResponse(true, 'Sub food category has been updated.', $subFood);
+    }
+
+    public function getSubAndFoodItemsById()
+    {
+        $foodList = array(
+            "subFood" => [],
+            "foodItems" => []
+        );
+        $subFood = SubFoodCategory::where('main_food_category_id', request()->id)->get();
+        foreach ($subFood as $food) {
+            $foodItemsData =  FoodItems::where('main_food_category_id', request()->id)->where('sub_food_category_id', $food->id)->get()->groupBy('food_header_id');
+            $food['foodItems'] = $foodItemsData;
+        }
+        $foodItems = FoodItems::where('main_food_category_id', request()->id)->where('sub_food_category_id', null)->get()->groupBy('food_header_id');
+        $foodList["subFood"] = $subFood;
+        $foodList["foodItems"] = $foodItems;
+        return $this->jsonResponse(true, 'Lists of sub foods.', $foodList);
     }
 
     private function validateRequest()

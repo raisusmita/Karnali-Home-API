@@ -15,10 +15,10 @@ class CreateFoodOrdersTable extends Migration
     {
         Schema::create('food_orders', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('food_id');
-            $table->foreign('food_id')->references('id')->on('foods');
-            $table->unsignedBigInteger('reservation_id')->nullable();
-            $table->foreign('reservation_id')->references('id')->on('reservations');
+            $table->unsignedBigInteger('food_items_id');
+            $table->foreign('food_items_id')->references('id')->on('food_items');
+            $table->unsignedBigInteger('room_id')->nullable();
+            $table->foreign('room_id')->references('id')->on('rooms');
             $table->unsignedBigInteger('table_id')->nullable();
             $table->foreign('table_id')->references('id')->on('tables');
             $table->unsignedBigInteger('invoice_id')->nullable();
