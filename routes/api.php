@@ -30,26 +30,64 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/room_category/room', 'RoomController@getRoomBasedOnCategory');
     Route::apiResource('/room_transactions', 'RoomTransactionController');
 
-
     Route::apiResource('/reservations', 'ReservationController');
     Route::apiResource('/booking', 'BookingController');
     Route::apiResource('/customer', 'CustomerController');
-    Route::apiResource('/food', 'FoodController');
+    Route::apiResource('/food', 'FoodItemsController');
     Route::apiResource('/food_orders', 'FoodOrderController');
     Route::apiResource('/tables', 'TableController');
     Route::apiResource('/invoices', 'InvoiceController');
     Route::apiResource('/user', 'UserController');
+    Route::apiResource('/mainFood', 'MainFoodCategoryController');
+    Route::apiResource('/subFood', 'SubFoodCategoryController');
+    Route::apiResource('/foodHeader', 'FoodHeaderController');
+
+    Route::apiResource('/mainBar', 'MainBarCategoryController');
+    Route::apiResource('/subBar', 'SubBarCategoryController');
+    Route::apiResource('/bar', 'BarItemsController');
+
 
     Route::post('/booked_rooms', 'BookingController@storeBookedRoom');
+    Route::post('/bookingCancelled', 'BookingController@bookingCancelled');
     Route::get('/booked_rooms', 'BookingController@getBookedRoom');
     Route::get('/booked_rooms/{{id}}', 'BookingController@showBookedRoom');
     Route::post('/editRoomCategory', 'RoomCategoryController@editRoomCategory');
     Route::post('/editCustomer', 'CustomerController@editCustomer');
+    Route::post('/editRoomTransaction', 'RoomTransactionController@updateRoomTransaction');
+    Route::get('/activeBooking', 'BookingController@getActiveBooking');
+
+    // Get data based on pagination
+    Route::post('/bookingList', 'BookingController@getBookingList');
+    Route::post('/roomCategoryList', 'RoomCategoryController@getRoomCategoryList');
+    Route::post('/roomList', 'RoomController@getRoomList');
+    Route::post('/customerList', 'CustomerController@getCustomerList');
+    Route::post('/reservationList', 'ReservationController@getReservationList');
+    Route::post('/foodItemList', 'FoodItemsController@getFoodItemList');
+    Route::post('/mainFoodList', 'MainFoodCategoryController@getMainFoodList');
+    Route::post('/subFoodList', 'SubFoodCategoryController@getSubFoodList');
+    Route::post('/headerFoodList', 'FoodHeaderController@getFoodHeaderList');
+    Route::post('/barItemList', 'BarItemsController@getBarItemList');
+    Route::post('/mainBarList', 'MainBarCategoryController@getMainBarList');
+    Route::post('/subBarList', 'SubBarCategoryController@getSubBarList');
+    Route::post('/tableList', 'TableController@getTableList');
+    Route::post('/roomTransactionList', 'RoomTransactionController@getRoomTransactionList');
+    Route::post('/userList', 'UserController@getUserList');
+
+
+
+    
+
+
+
+
+
 
 
     Route::get('/available', 'RoomAvailabilityController@getAvailableRoom');
+    Route::get('/unavailable', 'RoomAvailabilityController@getUnavailableRoom');
     Route::post('/availableRoomByDate', 'RoomAvailabilityController@getAvailableRoomByDate');
     Route::post('/availableRoomByBookingId', 'RoomAvailabilityController@getRoomByBookingId');
+    Route::post('/roomListByCustomerId', 'RoomAvailabilityController@getRoomByCustomerId');
     Route::post('/availableRoomByBooking', 'RoomAvailabilityController@storeRoomAvailability');
     Route::post('/bookingToReservation', 'RoomAvailabilityController@updateBookingToReservation');
 });
