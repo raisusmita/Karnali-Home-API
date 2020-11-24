@@ -34,12 +34,15 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('/booking', 'BookingController');
     Route::apiResource('/customer', 'CustomerController');
     Route::apiResource('/food', 'FoodItemsController');
-    Route::apiResource('/food_orders', 'FoodOrderController');
+    Route::apiResource('/foodOrder', 'FoodOrderController');
     Route::apiResource('/tables', 'TableController');
     Route::apiResource('/invoices', 'InvoiceController');
     Route::apiResource('/user', 'UserController');
     Route::apiResource('/mainFood', 'MainFoodCategoryController');
     Route::apiResource('/subFood', 'SubFoodCategoryController');
+    Route::post('/subFoodById', 'SubFoodCategoryController@getSubAndFoodItemsById');
+
+    // subFoodById
     Route::apiResource('/foodHeader', 'FoodHeaderController');
 
     Route::apiResource('/mainBar', 'MainBarCategoryController');
@@ -72,15 +75,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/tableList', 'TableController@getTableList');
     Route::post('/roomTransactionList', 'RoomTransactionController@getRoomTransactionList');
     Route::post('/userList', 'UserController@getUserList');
-
-
-
-    
-
-
-
-
-
 
 
     Route::get('/available', 'RoomAvailabilityController@getAvailableRoom');

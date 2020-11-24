@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\FoodOrder;
+use Illuminate\Support\Carbon;
 
 class FoodOrderController extends Controller
 {
@@ -19,7 +20,13 @@ class FoodOrderController extends Controller
 
     public function store()
     {
-        $foodOrder = FoodOrder::create($this->validateRequest());
+        $foodOrderData = array_map(
+            function ($foodOrderDetail) {
+                $foodOrderDetail['created_at'] =Carbon::now();
+                return $foodOrderDetail;
+            }, request()->all()
+        );
+        $foodOrder = FoodOrder::insert($foodOrderData);
         return $this->jsonResponse(true, 'Food Order has been created successfully.', $foodOrder);
     }
 
@@ -28,11 +35,11 @@ class FoodOrderController extends Controller
         return $this->jsonResponse(true, 'Data of an individual Food Order.', $foodOrder);
     }
 
-    public function update(FoodOrder $foodOrder)
-    {
-        $foodOrder->update($this->validateRequest());
-        return $this->jsonResponse(true, 'FoodOrder has been updated.', $foodOrder);
-    }
+    // public function update(FoodOrder $foodOrder)
+    // {
+    //     $foodOrder->update($this->validateRequest());
+    //     return $this->jsonResponse(true, 'FoodOrder has been updated.', $foodOrder);
+    // }
 
     public function destroy(FoodOrder $foodOrder)
     {
@@ -43,14 +50,19 @@ class FoodOrderController extends Controller
     public function validateRequest()
     {
         return request()->validate([
-            'food_id' => 'required',
-            'reservation_id' => 'nullable|sometimes',
-            'table_id' => 'nullable|sometimes',
-            'invoice_id' => 'nullabel|sometimes',
-            'quantity' => 'required',
-            'price' => 'required',
-            'total_amount' => 'required',
+            '*.food_items_id' => 'required',
+            '*.room_id' => 'required_without:*.table_id',
+            '*.table_id' => 'required_without:*.room_id',
+            '*.invoice_id' => 'nullabel|sometimes',
+            '*.quantity' => 'required',
+            '*.price' => 'required',
+            '*.total_amount' => 'required',
+            
+            // '*.created_at' => 'required',
+            // '*.updated_at' => 'required',
+
         ]);
+        
     }
 
     private function jsonResponse($success = false, $message = '', $data = null)
