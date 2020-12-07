@@ -3,74 +3,83 @@
 namespace App\Http\Controllers;
 
 use App\Model\FoodOrder;
-use Illuminate\Support\Carbon;
+use Illuminate\Http\Request;
 
 class FoodOrderController extends Controller
 {
-
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
-        $foodOrder = FoodOrder::all();
-        if ($foodOrder->isNotEmpty()) {
-            return $this->jsonResponse(true, 'Lists of Food Order.', $foodOrder);
-        } else {
-            return $this->jsonResponse(false, 'Currently, there is no any Food Order yet.');
-        }
+        //
     }
 
-    public function store()
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
     {
-        $foodOrderData = array_map(
-            function ($foodOrderDetail) {
-                $foodOrderDetail['created_at'] =Carbon::now();
-                return $foodOrderDetail;
-            }, request()->all()
-        );
-        $foodOrder = FoodOrder::insert($foodOrderData);
-        return $this->jsonResponse(true, 'Food Order has been created successfully.', $foodOrder);
+        //
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\FoodOrder  $foodOrder
+     * @return \Illuminate\Http\Response
+     */
     public function show(FoodOrder $foodOrder)
     {
-        return $this->jsonResponse(true, 'Data of an individual Food Order.', $foodOrder);
+        //
     }
 
-    // public function update(FoodOrder $foodOrder)
-    // {
-    //     $foodOrder->update($this->validateRequest());
-    //     return $this->jsonResponse(true, 'FoodOrder has been updated.', $foodOrder);
-    // }
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\FoodOrder  $foodOrder
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(FoodOrder $foodOrder)
+    {
+        //
+    }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\FoodOrder  $foodOrder
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, FoodOrder $foodOrder)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\FoodOrder  $foodOrder
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(FoodOrder $foodOrder)
     {
-        $foodOrder->delete();
-        return $this->jsonResponse(true, 'Food Order has been deleted successfully.');
-    }
-
-    public function validateRequest()
-    {
-        return request()->validate([
-            '*.food_items_id' => 'required',
-            '*.room_id' => 'required_without:*.table_id',
-            '*.table_id' => 'required_without:*.room_id',
-            '*.invoice_id' => 'nullabel|sometimes',
-            '*.quantity' => 'required',
-            '*.price' => 'required',
-            '*.total_amount' => 'required',
-            
-            // '*.created_at' => 'required',
-            // '*.updated_at' => 'required',
-
-        ]);
-        
-    }
-
-    private function jsonResponse($success = false, $message = '', $data = null)
-    {
-        return response()->json([
-            'success' => $success,
-            'message' => $message,
-            'data' => $data
-        ]);
+        //
     }
 }

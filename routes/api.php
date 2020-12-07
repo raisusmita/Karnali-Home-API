@@ -34,7 +34,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('/booking', 'BookingController');
     Route::apiResource('/customer', 'CustomerController');
     Route::apiResource('/food', 'FoodItemsController');
-    Route::apiResource('/foodOrder', 'FoodOrderController');
+    Route::apiResource('/foodOrderList', 'FoodOrderListController');
     Route::apiResource('/tables', 'TableController');
     Route::apiResource('/invoices', 'InvoiceController');
     Route::apiResource('/user', 'UserController');

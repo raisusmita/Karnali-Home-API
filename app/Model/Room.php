@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Room extends Model
 {
-    protected $guarded =[];
+    protected $guarded = [];
 
     public function roomCategory()
     {
@@ -18,19 +18,19 @@ class Room extends Model
         return $this->hasMany(Reservation::class);
     }
 
-    public function foodOrders()
+    public function foodOrderLists()
     {
-        return $this->hasMany(FoodOrder::class);
+        return $this->hasMany(FoodOrderList::class);
     }
 
-    
+
     public function roomAvailabilities()
     {
         return $this->hasMany(RoomAvailability::class);
     }
 
     public function rooms()
-{
-    return $this->belongsToMany(Room::class, 'room_availabilities');
-}
+    {
+        return $this->belongsToMany(Room::class, 'room_availabilities');
+    }
 }
