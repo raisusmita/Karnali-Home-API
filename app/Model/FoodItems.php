@@ -22,4 +22,11 @@ class FoodItems extends Model
     {
         return $this->belongsTo(FoodHeader::class);
     }
+
+    public function foodOrder()
+    {
+        return $this->belongsTo(FoodOrder::class);
+    }
+
+
 }

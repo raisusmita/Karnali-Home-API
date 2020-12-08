@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Model\Room;
+use App\Model\FoodItems;
 use App\Model\RoomAvailability;
 use App\Model\Reservation;
 use Illuminate\Http\Request;
+
 
 class RoomAvailabilityController extends Controller
 {
@@ -109,6 +111,7 @@ class RoomAvailabilityController extends Controller
         $customerId = request();
         $totalRoomDetails =array();
         // Get reservation id for the selected customer
+
         $reservations = Reservation::where(['customer_id' => $customerId->customer_id])->get();
 
         if($reservations->isNotEmpty() ){
@@ -124,7 +127,12 @@ class RoomAvailabilityController extends Controller
                     $room = Room::where(['id'=>$roomAvailablilityDetail[0]['room_id']])->get();
                     $room->map(function ($roomCat) {
                         $roomCat->roomCategory->id;
+                        $roomCat->foodOrders->map(function ($order){
+                          $order->FoodItems;
+                        });
+                        
                     });
+                    
                                             
                     // attached room/roomCategory details to roomAvailability
                     $roomAvailablilityDetail[0]['room_id'] = $room;

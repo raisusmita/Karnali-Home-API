@@ -27,5 +27,10 @@ class FoodOrder extends Model
     {
         return $this->belongsTo(Invoice::class);
     }
+
+    public function foodItems()
+    {
+        return $this->belongsTo(FoodItems::class);
+    }
 }
 
