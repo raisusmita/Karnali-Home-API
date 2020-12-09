@@ -32,4 +32,9 @@ class FoodOrderList extends Model
     {
         return $this->belongsTo(FoodOrder::class);
     }
+
+    public function foodItems()
+    {
+        return $this->belongsTo(FoodItems::class);
+    }
 }
