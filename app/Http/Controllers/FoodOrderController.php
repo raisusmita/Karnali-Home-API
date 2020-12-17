@@ -83,7 +83,8 @@ class FoodOrderController extends Controller
      */
     public function destroy(FoodOrder $foodOrder)
     {
-        //
+        $foodOrder->delete();
+        return $this->jsonResponse(true, 'Food Order has been deleted successfully.');
     }
 
     private function validateOrderItemRequest()

@@ -16,7 +16,7 @@ class CreateFoodOrderListsTable extends Migration
         Schema::create('food_order_lists', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('food_order_id');
-            $table->foreign('food_order_id')->references('id')->on('food_orders');
+            $table->foreign('food_order_id')->references('id')->on('food_orders')->onDelete('cascade');
             $table->unsignedBigInteger('food_items_id');
             $table->foreign('food_items_id')->references('id')->on('food_items');
             $table->unsignedBigInteger('room_id')->nullable();
