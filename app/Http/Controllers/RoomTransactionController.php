@@ -16,7 +16,7 @@ class RoomTransactionController extends Controller
 {
     public function index()
     {
-        $roomTransaction = RoomTransaction::all();
+        $roomTransaction = RoomTransaction::orderBy('id', 'DESC')->get();
         if ($roomTransaction->isNotEmpty()) {
             $roomTransaction->map(function($roomTransaction){
                 $roomTransaction->reservation->room->roomCategory;
@@ -33,11 +33,13 @@ class RoomTransactionController extends Controller
         $limit=$request->limit;
         $totalRoomTransaction = RoomTransaction::get()->count();
 
-        $roomTransaction = RoomTransaction::skip($skip)->take($limit)->get();
+        $roomTransaction = RoomTransaction::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($roomTransaction->isNotEmpty()) {
             $roomTransaction->map(function($roomTransaction){
                 $roomTransaction->reservation->room->roomCategory;
                 $roomTransaction->customer;
+                $roomTransaction->invoice;
+
             });
             return $this->jsonResponse(true, 'Lists of Room Transactions.', $roomTransaction, $totalRoomTransaction);
         } else {

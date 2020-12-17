@@ -37,7 +37,7 @@ class FoodItemsController extends Controller
         $limit = $request->limit;
         $totalFoodItem = FoodItems::get()->count();
 
-        $foodItem = FoodItems::skip($skip)->take($limit)->get();
+        $foodItem = FoodItems::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($foodItem->isNotEmpty()) {
             $foodItem->map(function ($foodItem) {
                 if ($foodItem->sub_food_category_id != null) {

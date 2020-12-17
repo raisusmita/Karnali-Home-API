@@ -17,4 +17,9 @@ class Invoice extends Model
     {
         return $this->hasMany(RoomTransaction::class);
     }
+
+    public function reservations()
+    {
+        return $this->belongsToMany(Reservation::class, 'room_transactions');
+    }
 }

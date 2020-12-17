@@ -23,7 +23,7 @@ class SubBarCategoryController extends Controller
         $limit=$request->limit;
         $totalSubBar = SubBarCategory::get()->count();
 
-        $subBar = SubBarCategory::skip($skip)->take($limit)->get();
+        $subBar = SubBarCategory::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($subBar->isNotEmpty()) {
             return $this->jsonResponse(true, 'Lists of sub bars.', $subBar, $totalSubBar);
         } else {
