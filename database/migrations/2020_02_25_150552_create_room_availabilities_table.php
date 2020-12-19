@@ -23,7 +23,7 @@ class CreateRoomAvailabilitiesTable extends Migration
             $table->foreign('room_id')->references('id')->on('rooms');
             $table->dateTime('check_in_date');
             $table->dateTime('check_out_date');
-            $table->enum('status', array('booked', 'reserved', 'cancelled', 'done'));
+            $table->enum('status', array('booked', 'reserved','transact', 'cancelled', 'done'));
             $table->enum('availability', array(0, 1)); // 0 means available 1 means booked or reserved
             $table->timestamps();
         });
