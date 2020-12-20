@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Model\RoomTransaction;
+use App\Model\Room;
+use App\Model\FoodOrder;
 use Illuminate\Http\Request;
 use App\Model\RoomCategory;
 use App\Model\Reservation;
@@ -41,6 +43,23 @@ class RoomTransactionController extends Controller
                 $roomTransaction->invoice;
 
             });
+            return $this->jsonResponse(true, 'Lists of Room Transactions.', $roomTransaction, $totalRoomTransaction);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any Room Transactions yet.', $roomTransaction, $totalRoomTransaction);
+        }
+    }
+
+    
+    public function getRoomTransactionDetailByRoomId(Request $request){
+        $roomId = $request->roomId;
+        
+        $room = Room::where(['id'=>$roomId])->get();
+        if ($room->isNotEmpty()) {
+            $room->map(function($room){
+                $room->roomCategory;
+                
+            });
+            return $room;
             return $this->jsonResponse(true, 'Lists of Room Transactions.', $roomTransaction, $totalRoomTransaction);
         } else {
             return $this->jsonResponse(false, 'Currently, there is no any Room Transactions yet.', $roomTransaction, $totalRoomTransaction);
@@ -87,8 +106,7 @@ class RoomTransactionController extends Controller
 
                 // Update roomAvailability info
                 $roomAvailability= RoomAvailability::where(['reservation_id'=> $roomDetail['reservation_id'], 'room_id'=>$roomDetail['room_id']])->update([
-                    "availability" => "0",
-                    "status"=>"done",
+                    "status"=>"transact",
                     "check_in_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomDetail['check_in_date']),
                     "check_out_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomDetail['check_out_date']),
                 ]);
@@ -110,6 +128,25 @@ class RoomTransactionController extends Controller
         {
             DB::rollback();
         }
+    }
+
+    public function getFoodDetailForRoom(Request $request){
+        $params = $request->all();
+        $roomId = $params['roomId'];
+        $reservationId = $params['reservationId'];
+
+        $reservation = Reservation::where('id',$reservationId)->get();
+        $checkInDate = $reservation[0]->check_in_date;
+        $checkOutDate = $reservation[0]->check_out_date;
+
+        $foodOrder = FoodOrder::where('room_id', $roomId)->
+        whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
+
+        $foodOrder->map(function ($order){
+            $order->FoodItems;
+          });
+
+        return  $foodOrder;
     }
 
     public function show(RoomTransaction $roomTransaction)

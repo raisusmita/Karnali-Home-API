@@ -74,20 +74,18 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/subBarList', 'SubBarCategoryController@getSubBarList');
     Route::post('/tableList', 'TableController@getTableList');
     Route::post('/roomTransactionList', 'RoomTransactionController@getRoomTransactionList');
+    Route::post('/roomTransactionDetailByRoomId', 'RoomTransactionController@getRoomTransactionDetailByRoomId');
+    Route::post('/foodDetailForRoom', 'RoomTransactionController@getFoodDetailForRoom');
+
     Route::post('/userList', 'UserController@getUserList');
     Route::post('/invoiceList', 'InvoiceController@getInvoiceList');
     Route::post('/invoiceDetail', 'InvoiceController@invoiceDetail');
-
-    
-
-    
-
 
     Route::get('/available', 'RoomAvailabilityController@getAvailableRoom');
     Route::get('/unavailable', 'RoomAvailabilityController@getUnavailableRoom');
     Route::post('/availableRoomByDate', 'RoomAvailabilityController@getAvailableRoomByDate');
     Route::post('/availableRoomByBookingId', 'RoomAvailabilityController@getRoomByBookingId');
-    Route::post('/roomListByCustomerId', 'RoomAvailabilityController@getRoomByCustomerId');
+    Route::post('/roomListByCustomerId', 'RoomAvailabilityController@getRoomDetailByCustomerId');
     Route::post('/availableRoomByBooking', 'RoomAvailabilityController@storeRoomAvailability');
     Route::post('/bookingToReservation', 'RoomAvailabilityController@updateBookingToReservation');
 });

@@ -106,7 +106,7 @@ class RoomAvailabilityController extends Controller
         return $this->jsonResponse(true, 'Room Availability has been updated.');
     }
 
-    public function getRoomByCustomerId()
+    public function getRoomDetailByCustomerId()
     {
         $customerId = request();
         $totalRoomDetails =array();
@@ -119,18 +119,14 @@ class RoomAvailabilityController extends Controller
                 // Getting roomAvailability details for each reservation with availability 1 if the reservations has made.
                 $roomAvailablilityDetail = RoomAvailability::where([
                     'reservation_id' => $reservation['id'], 
-                    'availability'=>'1'
+                    'status'=>'reserved'
                     ])->get();
                 
                 if($roomAvailablilityDetail->isNotEmpty()){
-                    // Get room and roomCategory details
+                    // Get room, roomCategory and food details
                     $room = Room::where(['id'=>$roomAvailablilityDetail[0]['room_id']])->get();
                     $room->map(function ($roomCat) {
                         $roomCat->roomCategory->id;
-                        $roomCat->foodOrders->map(function ($order){
-                          $order->FoodItems;
-                        });
-                        
                     });
                     
                                             
