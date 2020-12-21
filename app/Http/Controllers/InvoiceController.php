@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Model\Invoice;
 use App\Model\Charge;
+use App\Model\Reservation;
 use App\Model\RoomTransaction;
+use App\Model\FoodOrder;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\DB;
@@ -47,14 +49,27 @@ class InvoiceController extends Controller
         $serviceCharge = 0;
         $vAT = 0;
         $total_amount = 0;
+        $foodTotal =0;
         $transactionNumber = '';
         $transactionDetail = [];
         $initialTransactionDetail=[];
         $finalTransactionDetail=[];
-        
         $transactions = $request->all();
 
         if(($transactions[0]['callFrom'])=='transaction'){
+             // Get Food Order for updating the invoice id in food order table 
+            $roomId = $transactions[0]['room_id'];
+            $reservationId = $transactions[0]['reservation_id'];
+            $reservation = Reservation::where('id',$reservationId)->get();
+            $checkInDate = $reservation[0]->check_in_date;
+            $checkOutDate = $reservation[0]->check_out_date;
+            $foodOrders = FoodOrder::where('room_id', $roomId)->
+            whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
+
+            foreach($foodOrders as $foodOrder){
+                $foodTotal = $foodTotal + ((double)$foodOrder->price * (double)$foodOrder->quantity);
+            }
+
             $charges = Charge::all();
             // Extracting charges value from charge table
             foreach($charges as $charge){
@@ -132,8 +147,8 @@ class InvoiceController extends Controller
                 "tax" =>$tax,
                 "vat" => $vAT,
                 "discount" => $discount,
-                "sub_total"=> (double)$total_amount,
-                "grand_total"=> (double)($total_amount + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),
+                "sub_total"=> (double)$total_amount + (double)$foodTotal,
+                "grand_total"=> (double)(($total_amount +(double)$foodTotal) + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),
             );
             
             // insert into invoice table
@@ -150,6 +165,13 @@ class InvoiceController extends Controller
             foreach($transactions as $transaction){
                 $roomAvailability= RoomTransaction::where(['id'=> $transaction['transaction_id']])->update([
                     "invoice_id" => $invoiceId
+                ]);
+            }
+
+            // Update food items 
+            foreach($foodOrders as $foodOrder){
+                $foodItem = FoodOrder::where(['id'=>$foodOrder['id']])->update([
+                    "invoice_id"=>$invoiceId
                 ]);
             }
         }
