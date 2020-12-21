@@ -149,6 +149,18 @@ class RoomTransactionController extends Controller
         return  $foodOrder;
     }
 
+    public function getFoodDetailForTable(Request $request){
+        $params = $request->all();
+        $tableId = $params['table_id'];
+
+        $foodOrder = FoodOrder::where(['table_id'=>$tableId, 'invoice_id'=>null])->get();
+        $foodOrder->map(function ($order){
+            $order->FoodItems;
+          });
+
+        return  $foodOrder;
+    }
+
     public function show(RoomTransaction $roomTransaction)
     {
         return $this->jsonResponse(true, 'Data of an individual room transaction.', $roomTransaction);

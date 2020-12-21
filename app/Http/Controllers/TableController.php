@@ -24,6 +24,10 @@ class TableController extends Controller
         $totaltable = Table::get()->count();
 
         $table = Table::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
+        $table->map(function($foodOrder){
+            $foodOrder->foodOrders;
+        });
+
         if ($table->isNotEmpty()) {
             return $this->jsonResponse(true, 'Lists of Table.', $table, $totaltable);
         } else {

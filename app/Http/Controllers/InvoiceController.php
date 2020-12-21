@@ -51,6 +51,7 @@ class InvoiceController extends Controller
         $total_amount = 0;
         $foodTotal =0;
         $transactionNumber = '';
+        $tableNumber = '';
         $transactionDetail = [];
         $initialTransactionDetail=[];
         $finalTransactionDetail=[];
@@ -91,30 +92,33 @@ class InvoiceController extends Controller
             $transactionNumber = $transactionNumber . $transactions[0]['transaction_id'];
         }
 
-        foreach($transactions as $transaction){
-            $total_amount = (double)$total_amount + (double)$transaction['amount'];
-            // Retrieve all the necessary data
-            $transactionDetail = RoomTransaction::where(['id'=>$transaction['transaction_id']])->get();
-            $transactionDetail[0]->reservation;
-            $transactionDetail[0]['reservation']->room;
-            $transactionDetail[0]['reservation']['room']->roomCategory;
-            $roomDetail = $transactionDetail[0]['reservation']['room'];
-
-            // Re-arrange the data and store in an array
-            $initialTransactionDetail =  array(
-                "roomNumber" => $transactionDetail[0]['reservation']['room']->room_number,
-                "roomDetail" => $transactionDetail[0]['reservation']['room'],
-                "checkInDate" =>$transactionDetail[0]['reservation']->check_in_date,
-                "checkOutDate" => $transactionDetail[0]['reservation']->check_out_date,
-                "numberOfDays" => $transactionDetail[0]->number_of_days,
-                "rate"=> $transactionDetail[0]->rate,
-                "amount"=> number_format($transactionDetail[0]->total_amount,2),
-                "subtotal"=>number_format($total_amount,2)
-            );
-            array_push($finalTransactionDetail, $initialTransactionDetail);
+        if(($transactions[0]['callFrom'])=='transaction' || ($transactions[0]['callFrom'])=='invoice'){
+            foreach($transactions as $transaction){
+                $total_amount = (double)$total_amount + (double)$transaction['amount'];
+                // Retrieve all the necessary data
+                $transactionDetail = RoomTransaction::where(['id'=>$transaction['transaction_id']])->get();
+                $transactionDetail[0]->reservation;
+                $transactionDetail[0]['reservation']->room;
+                $transactionDetail[0]['reservation']['room']->roomCategory;
+                $roomDetail = $transactionDetail[0]['reservation']['room'];
+    
+                // Re-arrange the data and store in an array
+                $initialTransactionDetail =  array(
+                    "roomNumber" => $transactionDetail[0]['reservation']['room']->room_number,
+                    "roomDetail" => $transactionDetail[0]['reservation']['room'],
+                    "checkInDate" =>$transactionDetail[0]['reservation']->check_in_date,
+                    "checkOutDate" => $transactionDetail[0]['reservation']->check_out_date,
+                    "numberOfDays" => $transactionDetail[0]->number_of_days,
+                    "rate"=> $transactionDetail[0]->rate,
+                    "amount"=> number_format($transactionDetail[0]->total_amount,2),
+                    "subtotal"=>number_format($total_amount,2)
+                );
+                array_push($finalTransactionDetail, $initialTransactionDetail);
+            }
         }
 
-        // invoice is only created when call from transaction
+
+        // invoice is only created when call from transaction and table transaction
         if(($transactions[0]['callFrom'])=='invoice'){
             $invoice =array(
                     "invoice_number"=> $transaction['invoice_number'],
@@ -134,23 +138,44 @@ class InvoiceController extends Controller
             array_push($finalTransactionDetail, $initialTransactionDetail);
 
         }else{
-            // Actual calculation for each charges
-            $appliedVAT = (double)($vAT/100)* $total_amount;
-            $appliedDiscount = (double)($discount/100)* $total_amount;
-            $appliedTax = (double)($tax/100)* $total_amount;
-            $appliedServiceCharge = (double)($serviceCharge/100)* $total_amount;
-            
-            // Params for Invoice
-            $invoiceParams =  array(
-                "invoice_number" => 'INV00'. $transactionNumber,
+                    
+             // Actual calculation for each charges
+             $appliedVAT = (double)($vAT/100)* $total_amount;
+             $appliedDiscount = (double)($discount/100)* $total_amount;
+             $appliedTax = (double)($tax/100)* $total_amount;
+             $appliedServiceCharge = (double)($serviceCharge/100)* $total_amount;
+
+            if(($transactions[0]['callFrom'])=='transaction'){
+                // Params for Invoice
+                $invoiceParams =  array(
+                    "invoice_number" => 'INV00'. $transactionNumber,
+                    "service_charge" => $serviceCharge,
+                    "tax" =>$tax,
+                    "vat" => $vAT,
+                    "discount" => $discount,
+                    "sub_total"=> (double)$total_amount + (double)$foodTotal,
+                    "grand_total"=> (double)(($total_amount +(double)$foodTotal) + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),
+                );
+            }else if(($transactions[0]['callFrom'])=='tableTransaction'){
+                $tableNumber = $transactions[0]['table_id'];
+                $tableId = $transactions[0]['table_id'];
+
+                $foodOrders = FoodOrder::where(['table_id'=>$tableId, 'invoice_id'=>null])->get();
+                foreach($foodOrders as $foodOrder){
+                    $foodTotal = $foodTotal + ((double)$foodOrder->price * (double)$foodOrder->quantity);
+                }
+                // Params for Invoice
+                $invoiceParams =  array(
+                "invoice_number" => 'INVTAB00'. $tableNumber,
                 "service_charge" => $serviceCharge,
                 "tax" =>$tax,
                 "vat" => $vAT,
                 "discount" => $discount,
-                "sub_total"=> (double)$total_amount + (double)$foodTotal,
-                "grand_total"=> (double)(($total_amount +(double)$foodTotal) + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),
-            );
-            
+                "sub_total"=> (double)$foodTotal,
+                "grand_total"=> (double)($foodTotal + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),
+                );
+            }
+
             // insert into invoice table
             $invoice = Invoice::create($invoiceParams);
             
@@ -161,11 +186,13 @@ class InvoiceController extends Controller
             $invoiceId = $invoice['id'];
             $invoiceNumber = $invoice['invoice_number'];
             
-            // Update room transaction 
-            foreach($transactions as $transaction){
-                $roomAvailability= RoomTransaction::where(['id'=> $transaction['transaction_id']])->update([
-                    "invoice_id" => $invoiceId
-                ]);
+            if(($transactions[0]['callFrom'])=='transaction'){
+                // Update room transaction 
+                foreach($transactions as $transaction){
+                    $roomAvailability= RoomTransaction::where(['id'=> $transaction['transaction_id']])->update([
+                        "invoice_id" => $invoiceId
+                    ]);
+                }
             }
 
             // Update food items 
@@ -174,6 +201,7 @@ class InvoiceController extends Controller
                     "invoice_id"=>$invoiceId
                 ]);
             }
+
         }
         return $this->jsonResponse(true, 'Invoice has been created successfully.', $finalTransactionDetail);
     }
