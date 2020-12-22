@@ -31,9 +31,10 @@ class FoodItemsController extends Controller
         }
     }
 
-    public function getFoodItemList(Request $request){
-        $skip =$request->skip;
-        $limit=$request->limit;
+    public function getFoodItemList(Request $request)
+    {
+        $skip = $request->skip;
+        $limit = $request->limit;
         $totalFoodItem = FoodItems::get()->count();
 
         $foodItem = FoodItems::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
@@ -110,13 +111,13 @@ class FoodItemsController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null, $totalFoodItem=0)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalFoodItem = 0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
             'data' => $data,
-            'totalCount'=>$totalFoodItem
+            'totalCount' => $totalFoodItem
         ]);
     }
 }
