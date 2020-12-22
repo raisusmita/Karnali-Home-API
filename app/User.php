@@ -11,6 +11,11 @@ class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
+    public function scopeNonAdmin($query)
+    {
+        return $query->where('role', '<>', 'admin');
+    }
+
     /**
      * The attributes that are mass assignable.
      *
