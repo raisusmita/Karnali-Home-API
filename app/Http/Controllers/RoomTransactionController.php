@@ -153,7 +153,7 @@ class RoomTransactionController extends Controller
         $params = $request->all();
         $tableId = $params['table_id'];
 
-        $foodOrder = FoodOrder::where(['table_id'=>$tableId, 'invoice_id'=>null])->get();
+        $foodOrder = FoodOrder::where(['table_id'=>$tableId, 'status'=>'due'])->get();
         $foodOrder->map(function ($order){
             $order->FoodItems;
           });

@@ -211,7 +211,8 @@ class InvoiceController extends Controller
                     
                     foreach($foodOrders as $foodOrder){
                         $foodItem = FoodOrder::where(['id'=>$foodOrder['id']])->update([
-                            "invoice_id"=>$invoiceId
+                            "invoice_id"=>$invoiceId,
+                            "status"=>"paid"
                         ]);
                     }
                 }
