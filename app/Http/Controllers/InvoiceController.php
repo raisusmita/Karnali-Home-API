@@ -157,13 +157,19 @@ class InvoiceController extends Controller
                     "grand_total"=> (double)(($total_amount +(double)$foodTotal) + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),
                 );
             }else if(($transactions[0]['callFrom'])=='tableTransaction'){
-                $tableNumber = $transactions[0]['table_id'];
-                $tableId = $transactions[0]['table_id'];
 
-                $foodOrders = FoodOrder::where(['table_id'=>$tableId, 'invoice_id'=>null])->get();
-                foreach($foodOrders as $foodOrder){
-                    $foodTotal = $foodTotal + ((double)$foodOrder->price * (double)$foodOrder->quantity);
+
+
+                foreach($transactions as $transaction){
+                    $tableNumber = $transaction['table_id'];
+                    $tableId = $transaction['table_id'];
+                    $foodOrders = FoodOrder::where(['table_id'=>$tableId, 'invoice_id'=>null])->get();
+                    
+                    foreach($foodOrders as $foodOrder){
+                        $foodTotal = $foodTotal + ((double)$foodOrder->price * (double)$foodOrder->quantity);
+                    }
                 }
+
                 // Params for Invoice
                 $invoiceParams =  array(
                 "invoice_number" => 'INVTAB00'. $tableNumber,
@@ -175,6 +181,7 @@ class InvoiceController extends Controller
                 "grand_total"=> (double)($foodTotal + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),
                 );
             }
+
 
             // insert into invoice table
             $invoice = Invoice::create($invoiceParams);
@@ -196,10 +203,24 @@ class InvoiceController extends Controller
             }
 
             // Update food items 
-            foreach($foodOrders as $foodOrder){
-                $foodItem = FoodOrder::where(['id'=>$foodOrder['id']])->update([
-                    "invoice_id"=>$invoiceId
-                ]);
+            if(($transactions[0]['callFrom'])=='tableTransaction'){
+                foreach($transactions as $transaction){
+                    $tableNumber = $transaction['table_id'];
+                    $tableId = $transaction['table_id'];
+                    $foodOrders = FoodOrder::where(['table_id'=>$tableId, 'invoice_id'=>null])->get();
+                    
+                    foreach($foodOrders as $foodOrder){
+                        $foodItem = FoodOrder::where(['id'=>$foodOrder['id']])->update([
+                            "invoice_id"=>$invoiceId
+                        ]);
+                    }
+                }
+            }else{
+                foreach($foodOrders as $foodOrder){
+                    $foodItem = FoodOrder::where(['id'=>$foodOrder['id']])->update([
+                        "invoice_id"=>$invoiceId
+                    ]);
+                }
             }
 
         }
