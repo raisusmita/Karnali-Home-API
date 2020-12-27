@@ -146,7 +146,11 @@ class RoomTransactionController extends Controller
             $order->FoodItems;
           });
 
-        return  $foodOrder;
+          if ($foodOrder->isNotEmpty()) {
+            return $this->jsonResponse(true, 'List of Food Order made by room.', $foodOrder);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any food order.', $foodOrder);
+        }
     }
 
     public function getFoodDetailForTable(Request $request){
@@ -158,7 +162,11 @@ class RoomTransactionController extends Controller
             $order->FoodItems;
           });
 
-        return  $foodOrder;
+        if ($foodOrder->isNotEmpty()) {
+            return $this->jsonResponse(true, 'List of Food Order made by table.', $foodOrder);
+        } else {
+            return $this->jsonResponse(false, 'Currently, there is no any food order.', $foodOrder);
+        }
     }
 
     public function show(RoomTransaction $roomTransaction)
