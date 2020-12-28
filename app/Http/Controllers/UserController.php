@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -19,12 +20,12 @@ class UserController extends Controller
         }
     }
 
-    public function getUserList(Request $request){
-        $skip =$request->skip;
-        $limit=$request->limit;
-        $totalUser = User::get()->count();
-
-        $user = User::skip($skip)->take($limit)->get();
+    public function getUserList(Request $request)
+    {
+        $skip = $request->skip;
+        $limit = $request->limit;
+        $totalUser = User::nonAdmin()->count();
+        $user = User::nonAdmin()->skip($skip)->take($limit)->get();
         if ($user->isNotEmpty()) {
             return $this->jsonResponse(true, 'Lists of Users.', $user, $totalUser);
         } else {
@@ -120,17 +121,20 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email',
             'password' => 'required|min:6',
-            'role' => 'required',
+            'role' => [
+                'required',
+                Rule::in(['manager', 'owner', 'operator', 'chef', 'waiter'])
+            ],
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null, $totalUser=0)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalUser = 0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
             'data' => $data,
-            'totalCount'=>$totalUser
+            'totalCount' => $totalUser
         ]);
     }
 }
