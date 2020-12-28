@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Reservation extends Model
 {
-    protected $guarded =[];
+    protected $guarded = [];
 
     public function room()
     {
@@ -23,25 +23,26 @@ class Reservation extends Model
         return $this->hasOne(RoomTransaction::class);
     }
 
-    public function foodOrders()
+    public function foodOrderLists()
     {
-        return $this->hasMany(FoodOrder::class);
+        return $this->hasMany(FoodOrderList::class);
     }
 
-    public function booking(){
+    public function booking()
+    {
         return $this->belongsTo(Booking::class);
     }
 
     // public function setCheckInDateAttribute( $pass ) {
-    
+
     //     $this->attributes['check_in_date'] = date('Y-m-d h:i:s', strtotime(request()->check_in_date));
-    
+
     // } 
 
-    
+
     // public function setCheckOutDateAttribute( $pass ) {
-    
+
     //     $this->attributes['check_out_date'] = date('Y-m-d h:i:s', strtotime(request()->check_out_date));
-    
+
     // }
 }

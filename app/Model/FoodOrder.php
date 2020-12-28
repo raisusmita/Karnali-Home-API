@@ -6,26 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class FoodOrder extends Model
 {
-    protected $guarded =[];
+    //
+    protected $guarded = [];
 
-    public function room()
+    public function foodOrderLists()
     {
-        return $this->belongsTo(Room::class);
-    }
-
-    public function reservation()
-    {
-        return $this->belongsTo(Reservation::class);
-    }
-
-    public function table()
-    {
-        return $this->belongsTo(Table::class);
-    }
-
-    public function invoice()
-    {
-        return $this->belongsTo(Invoice::class);
+        return $this->hasMany(FoodOrderList::class);
     }
 
     public function foodItems()
@@ -33,4 +19,3 @@ class FoodOrder extends Model
         return $this->belongsTo(FoodItems::class);
     }
 }
-
