@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Model\RoomTransaction;
 use App\Model\Room;
-use App\Model\FoodOrder;
+use App\Model\FoodOrderList;
 use Illuminate\Http\Request;
 use App\Model\RoomCategory;
 use App\Model\Reservation;
@@ -139,14 +139,14 @@ class RoomTransactionController extends Controller
         $checkInDate = $reservation[0]->check_in_date;
         $checkOutDate = $reservation[0]->check_out_date;
 
-        $foodOrder = FoodOrder::where('room_id', $roomId)->
+        $foodOrderList = FoodOrderList::where('room_id', $roomId)->
         whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
 
-        $foodOrder->map(function ($order){
+        $foodOrderList->map(function ($order){
             $order->FoodItems;
           });
 
-        return $foodOrder;
+        return $foodOrderList;
 
         //   if ($foodOrder->isNotEmpty()) {
         //     return $this->jsonResponse(true, 'List of Food Order made by room.', $foodOrder);
@@ -159,12 +159,12 @@ class RoomTransactionController extends Controller
         $params = $request->all();
         $tableId = $params['table_id'];
 
-        $foodOrder = FoodOrder::where(['table_id'=>$tableId, 'status'=>'due'])->get();
-        $foodOrder->map(function ($order){
+        $foodOrderList = FoodOrderList::where(['table_id'=>$tableId, 'status'=>'due'])->get();
+        $foodOrderList->map(function ($order){
             $order->FoodItems;
           });
         
-        return $foodOrder;
+        return $foodOrderList;
 
 
         // if ($foodOrder->isNotEmpty()) {

@@ -6,7 +6,7 @@ use App\Model\Invoice;
 use App\Model\Charge;
 use App\Model\Reservation;
 use App\Model\RoomTransaction;
-use App\Model\FoodOrder;
+use App\Model\FoodOrderList;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\DB;
@@ -64,11 +64,11 @@ class InvoiceController extends Controller
             $reservation = Reservation::where('id',$reservationId)->get();
             $checkInDate = $reservation[0]->check_in_date;
             $checkOutDate = $reservation[0]->check_out_date;
-            $foodOrders = FoodOrder::where('room_id', $roomId)->
+            $foodOrderLists = FoodOrderList::where('room_id', $roomId)->
             whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
 
-            foreach($foodOrders as $foodOrder){
-                $foodTotal = $foodTotal + ((double)$foodOrder->price * (double)$foodOrder->quantity);
+            foreach($foodOrderLists as $foodOrderList){
+                $foodTotal = $foodTotal + ((double)$foodOrderList->price * (double)$foodOrderList->quantity);
             }
 
             $charges = Charge::all();
@@ -163,10 +163,10 @@ class InvoiceController extends Controller
                 foreach($transactions as $transaction){
                     $tableNumber = $transaction['table_id'];
                     $tableId = $transaction['table_id'];
-                    $foodOrders = FoodOrder::where(['table_id'=>$tableId, 'invoice_id'=>null])->get();
+                    $foodOrderLists = FoodOrderList::where(['table_id'=>$tableId, 'invoice_id'=>null])->get();
                     
-                    foreach($foodOrders as $foodOrder){
-                        $foodTotal = $foodTotal + ((double)$foodOrder->price * (double)$foodOrder->quantity);
+                    foreach($foodOrderLists as $foodOrderList){
+                        $foodTotal = $foodTotal + ((double)$foodOrderList->price * (double)$foodOrderList->quantity);
                     }
                 }
 
@@ -207,18 +207,18 @@ class InvoiceController extends Controller
                 foreach($transactions as $transaction){
                     $tableNumber = $transaction['table_id'];
                     $tableId = $transaction['table_id'];
-                    $foodOrders = FoodOrder::where(['table_id'=>$tableId, 'invoice_id'=>null])->get();
+                    $foodOrderLists = FoodOrderList::where(['table_id'=>$tableId, 'invoice_id'=>null])->get();
                     
-                    foreach($foodOrders as $foodOrder){
-                        $foodItem = FoodOrder::where(['id'=>$foodOrder['id']])->update([
+                    foreach($foodOrderLists as $foodOrderList){
+                        $foodItem = FoodOrderList::where(['id'=>$foodOrderList['id']])->update([
                             "invoice_id"=>$invoiceId,
                             "status"=>"paid"
                         ]);
                     }
                 }
             }else{
-                foreach($foodOrders as $foodOrder){
-                    $foodItem = FoodOrder::where(['id'=>$foodOrder['id']])->update([
+                foreach($foodOrderLists as $foodOrderList){
+                    $foodItem = FoodOrderList::where(['id'=>$foodOrderList['id']])->update([
                         "invoice_id"=>$invoiceId
                     ]);
                 }
