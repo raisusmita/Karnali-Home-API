@@ -17,8 +17,8 @@ class CustomerController extends Controller
             
             $customer->map(function ($customer) {
 
-                $customer->identity_image_first = $customer->identity_image_first ? asset('storage/' . $customer->identity_image_first) : "";
-                $customer->identity_image_second = $customer->identity_image_second ? asset('storage/' . $customer->identity_image_second) : "";
+                $customer->identity_image_first = $customer->identity_image_first ? asset('api/storage/' . $customer->identity_image_first) : "";
+                $customer->identity_image_second = $customer->identity_image_second ? asset('api/storage/' . $customer->identity_image_second) : "";
                 // $activeBooking= Booking::where(['status'=>'active', 'customer_id'=>$customer->id])->exists();
 
                 // if($activeBooking){
@@ -44,8 +44,8 @@ class CustomerController extends Controller
         $customer = Customer::where('id','!=', 0)->skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($customer->isNotEmpty()) {
             $customer->map(function ($customer) {
-                $customer->identity_image_first = $customer->identity_image_first ? asset('storage/' . $customer->identity_image_first) : "";
-                $customer->identity_image_second = $customer->identity_image_second ? asset('storage/' . $customer->identity_image_second) : "";
+                $customer->identity_image_first = $customer->identity_image_first ? asset('api/storage/' . $customer->identity_image_first) : "";
+                $customer->identity_image_second = $customer->identity_image_second ? asset('api/storage/' . $customer->identity_image_second) : "";
                 $customer->booking;
             });
             return $this->jsonResponse(true, 'Lists of Customers.', $customer, $totalCustomer);

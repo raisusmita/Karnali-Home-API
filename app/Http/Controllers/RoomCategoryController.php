@@ -13,7 +13,7 @@ class RoomCategoryController extends Controller
         $roomCategory = RoomCategory::all();
         if ($roomCategory->isNotEmpty()) {
             $roomCategory->map(function ($roomCategory) {
-                $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
+                $roomCategory->image = $roomCategory->image ? asset('api/storage/' . $roomCategory->image) : "";
             });
             return $this->jsonResponse(true, 'Lists of Room Category.', $roomCategory);
         } else {
@@ -31,7 +31,7 @@ class RoomCategoryController extends Controller
         $roomCategory = RoomCategory::where('id','!=', 0)->skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($roomCategory->isNotEmpty()) {
             $roomCategory->map(function ($roomCategory) {
-                $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
+                $roomCategory->image = $roomCategory->image ? asset('api/storage/' . $roomCategory->image) : "";
             });
             return $this->jsonResponse(true, 'Lists of Room Category.', $roomCategory, $totalRoomCategory);
         } else {
@@ -48,7 +48,7 @@ class RoomCategoryController extends Controller
 
     public function show(RoomCategory $roomCategory)
     {
-        $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
+        $roomCategory->image = $roomCategory->image ? asset('api/storage/' . $roomCategory->image) : "";
         return $this->jsonResponse(true, 'Data of an individual Room Category.', $roomCategory);
     }
 
