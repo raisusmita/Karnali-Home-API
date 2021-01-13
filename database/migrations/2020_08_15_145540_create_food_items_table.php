@@ -20,8 +20,6 @@ class CreateFoodItemsTable extends Migration
             $table->unsignedBigInteger('sub_food_category_id')->nullable();
             $table->foreign('sub_food_category_id')->references('id')->on('sub_food_categories');
             $table->string('food_name');
-            $table->unsignedBigInteger('food_header_id')->nullable();
-            $table->foreign('food_header_id')->references('id')->on('food_headers');
             $table->double('price');
             $table->timestamps();
         });

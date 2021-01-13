@@ -18,9 +18,10 @@ class SubFoodCategoryController extends Controller
         }
     }
 
-    public function getSubFoodList(Request $request){
-        $skip =$request->skip;
-        $limit=$request->limit;
+    public function getSubFoodList(Request $request)
+    {
+        $skip = $request->skip;
+        $limit = $request->limit;
         $totalSubFood = SubFoodCategory::get()->count();
 
         $subFood = SubFoodCategory::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
@@ -51,10 +52,10 @@ class SubFoodCategoryController extends Controller
         );
         $subFood = SubFoodCategory::where('main_food_category_id', request()->id)->get();
         foreach ($subFood as $food) {
-            $foodItemsData =  FoodItems::where('main_food_category_id', request()->id)->where('sub_food_category_id', $food->id)->get()->groupBy('food_header_id');
+            $foodItemsData =  FoodItems::where('main_food_category_id', request()->id)->where('sub_food_category_id', $food->id)->get();
             $food['foodItems'] = $foodItemsData;
         }
-        $foodItems = FoodItems::where('main_food_category_id', request()->id)->where('sub_food_category_id', null)->get()->groupBy('food_header_id');
+        $foodItems = FoodItems::where('main_food_category_id', request()->id)->where('sub_food_category_id', null)->get();
         $foodList["subFood"] = $subFood;
         $foodList["foodItems"] = $foodItems;
         return $this->jsonResponse(true, 'Lists of sub foods.', $foodList);
@@ -68,13 +69,13 @@ class SubFoodCategoryController extends Controller
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null, $totalSubFood=0)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalSubFood = 0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
             'data' => $data,
-            'totalCount'=>$totalSubFood
+            'totalCount' => $totalSubFood
         ]);
     }
 }
