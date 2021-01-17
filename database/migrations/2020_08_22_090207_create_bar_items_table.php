@@ -17,8 +17,6 @@ class CreateBarItemsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('main_bar_category_id')->nullable();
             $table->foreign('main_bar_category_id')->references('id')->on('main_bar_categories');
-            $table->unsignedBigInteger('sub_bar_category_id')->nullable();
-            $table->foreign('sub_bar_category_id')->references('id')->on('sub_bar_categories');
             $table->string('bar_name');
             $table->enum('quantity', ['30ML', '60ML', 'QRT', 'HALF', 'FULL', 'GLASS', 'PER PC', 'PACKET'])->nullable();
             $table->double('price');

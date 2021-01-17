@@ -12,9 +12,4 @@ class BarItems extends Model
     {
         return $this->belongsTo(MainBarCategory::class);
     }
-
-    public function subBarCategory()
-    {
-        return $this->belongsTo(SubBarCategory::class);
-    }
 }

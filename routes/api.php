@@ -47,7 +47,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     // subFoodById
 
     Route::apiResource('/mainBar', 'MainBarCategoryController');
-    Route::apiResource('/subBar', 'SubBarCategoryController');
     Route::apiResource('/bar', 'BarItemsController');
 
     Route::post('/booked_rooms', 'BookingController@storeBookedRoom');
@@ -70,7 +69,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/subFoodList', 'SubFoodCategoryController@getSubFoodList');
     Route::post('/barItemList', 'BarItemsController@getBarItemList');
     Route::post('/mainBarList', 'MainBarCategoryController@getMainBarList');
-    Route::post('/subBarList', 'SubBarCategoryController@getSubBarList');
     Route::post('/tableList', 'TableController@getTableList');
     Route::post('/roomTransactionList', 'RoomTransactionController@getRoomTransactionList');
     Route::post('/roomTransactionDetailByRoomId', 'RoomTransactionController@getRoomTransactionDetailByRoomId');
