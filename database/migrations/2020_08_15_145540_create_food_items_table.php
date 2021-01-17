@@ -21,6 +21,7 @@ class CreateFoodItemsTable extends Migration
             $table->foreign('sub_food_category_id')->references('id')->on('sub_food_categories');
             $table->string('food_name');
             $table->double('price');
+            $table->text('details')->nullable();
             $table->timestamps();
         });
     }

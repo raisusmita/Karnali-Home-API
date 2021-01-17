@@ -67,16 +67,6 @@ class BarItemsController extends Controller
         return $this->jsonResponse(true, 'BarItems has been deleted successfully.');
     }
 
-    public function getMainBarCategory()
-    {
-        $mainBar = MainBarCategory::all();
-        if ($mainBar->isNotEmpty()) {
-            return $this->jsonResponse(true, 'Lists of main bars.', $mainBar);
-        } else {
-            return $this->jsonResponse(false, 'Currently, there is no any main bar yet.', $mainBar);
-        }
-    }
-
     private function validateRequest()
     {
         return request()->validate([
