@@ -21,7 +21,7 @@ class FoodOrderController extends Controller
             $skip = 0;
             $limit = 10;
         }
-        $totalFoodItem = FoodOrderList::get()->count();
+        $totalFoodItem = FoodOrder::get()->count();
         $foodOrder = FoodOrder::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         $foodOrder->map(function ($foodOrderItem) {
             $foodOrderItem->FoodOrderLists->map(function ($foodItem) {
@@ -30,6 +30,22 @@ class FoodOrderController extends Controller
                     $foodItem->Room;
                 } else {
                     $foodItem->Table;
+                }
+            });
+            $foodOrderItem->BarOrderLists->map(function ($barItem) {
+                $barItem->BarItems;
+                if ($barItem->room_id) {
+                    $barItem->Room;
+                } else {
+                    $barItem->Table;
+                }
+            });
+            $foodOrderItem->CoffeeOrderLists->map(function ($coffeeItem) {
+                $coffeeItem->CoffeeItems;
+                if ($coffeeItem->room_id) {
+                    $coffeeItem->Room;
+                } else {
+                    $coffeeItem->Table;
                 }
             });
         });

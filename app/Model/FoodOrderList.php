@@ -37,4 +37,14 @@ class FoodOrderList extends Model
     {
         return $this->belongsTo(FoodItems::class);
     }
+
+    public function coffeeItems()
+    {
+        return $this->belongsTo(CoffeeItems::class);
+    }
+
+    public function barItems()
+    {
+        return $this->belongsTo(BarItems::class);
+    }
 }
