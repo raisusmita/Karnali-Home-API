@@ -44,6 +44,16 @@ class BarItemsController extends Controller
         }
     }
 
+    public function getBarItemsById()
+    {
+        $barList = array(
+            "barItems" => []
+        );
+        $barItems = BarItems::where('main_bar_category_id', request()->id)->get();
+        $barList["barItems"] = $barItems;
+        return $this->jsonResponse(true, 'Lists of sub bars.', $barList);
+    }
+
     public function store()
     {
         $bar = BarItems::create($this->validateRequest());

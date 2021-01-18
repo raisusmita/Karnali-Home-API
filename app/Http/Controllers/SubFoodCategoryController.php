@@ -52,7 +52,7 @@ class SubFoodCategoryController extends Controller
         );
         $subFood = SubFoodCategory::where('main_food_category_id', request()->id)->get();
         foreach ($subFood as $food) {
-            $foodItemsData =  FoodItems::where('main_food_category_id', request()->id)->where('sub_food_category_id', $food->id)->get();
+            $foodItemsData =  FoodItems::where('sub_food_category_id', $food->id)->get();
             $food['foodItems'] = $foodItemsData;
         }
         $foodItems = FoodItems::where('main_food_category_id', request()->id)->where('sub_food_category_id', null)->get();

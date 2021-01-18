@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\BarOrderList;
+use App\Model\CoffeeOrderList;
 use App\Model\FoodOrder;
 use App\Model\FoodOrderList;
 use Illuminate\Http\Request;
@@ -47,9 +49,28 @@ class FoodOrderController extends Controller
                 $foodOrderListDetail['created_at'] = Carbon::now();
                 return $foodOrderListDetail;
             },
-            request()->all()
+            request()->input('food')
         );
-        $foodOrderList = FoodOrderList::insert($foodOrderListData);
+        $foodOrderList['food'] = FoodOrderList::insert($foodOrderListData);
+        $barOrderListData = array_map(
+            function ($foodOrderListDetail) use ($orderId) {
+                $foodOrderListDetail['food_order_id'] = $orderId;
+                $foodOrderListDetail['created_at'] = Carbon::now();
+                return $foodOrderListDetail;
+            },
+            request()->input('bar')
+        );
+        $foodOrderList['bar'] = BarOrderList::insert($barOrderListData);
+
+        $coffeeOrderListData = array_map(
+            function ($foodOrderListDetail) use ($orderId) {
+                $foodOrderListDetail['food_order_id'] = $orderId;
+                $foodOrderListDetail['created_at'] = Carbon::now();
+                return $foodOrderListDetail;
+            },
+            request()->input('coffee')
+        );
+        $foodOrderList['coffee'] = CoffeeOrderList::insert($coffeeOrderListData);
         return $this->jsonResponse(true, 'Food Order has been created successfully.', $foodOrderList);
     }
 

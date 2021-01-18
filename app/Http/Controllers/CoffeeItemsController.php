@@ -41,6 +41,16 @@ class CoffeeItemsController extends Controller
         }
     }
 
+    public function getCoffeeItemsById()
+    {
+        $coffeeList = array(
+            "coffeeItems" => []
+        );
+        $coffeeItems = CoffeeItems::where('main_coffee_category_id', request()->id)->get();
+        $coffeeList["coffeeItems"] = $coffeeItems;
+        return $this->jsonResponse(true, 'Lists of sub coffees.', $coffeeList);
+    }
+
     public function store()
     {
         $coffee = CoffeeItems::create($this->validateRequest());
