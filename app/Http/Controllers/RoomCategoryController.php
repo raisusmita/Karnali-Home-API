@@ -14,6 +14,7 @@ class RoomCategoryController extends Controller
         if ($roomCategory->isNotEmpty()) {
             $roomCategory->map(function ($roomCategory) {
                 $roomCategory->image = $roomCategory->image ? asset('storage/' . $roomCategory->image) : "";
+                $roomCategory->rooms;
             });
             return $this->jsonResponse(true, 'Lists of Room Category.', $roomCategory);
         } else {
