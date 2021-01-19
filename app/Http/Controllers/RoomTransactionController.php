@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Model\RoomTransaction;
 use App\Model\Room;
 use App\Model\FoodOrderList;
+use App\Model\CoffeeOrderList;
+use App\Model\BarOrderList;
 use Illuminate\Http\Request;
 use App\Model\RoomCategory;
 use App\Model\Reservation;
@@ -139,14 +141,32 @@ class RoomTransactionController extends Controller
         $checkInDate = $reservation[0]->check_in_date;
         $checkOutDate = $reservation[0]->check_out_date;
 
+        //Get FoodOderList
         $foodOrderList = FoodOrderList::where('room_id', $roomId)->
         whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
-
         $foodOrderList->map(function ($order){
             $order->FoodItems;
+        });
+
+        //Get CoffeeOrderList
+        $coffeeOrderList = CoffeeOrderList::where('room_id', $roomId)->
+        whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
+        $coffeeOrderList->map(function ($order){
+            $order->CoffeeItems;
           });
 
-        return $foodOrderList;
+        //Get BarOrderList
+        $barOrderList = BarOrderList::where('room_id', $roomId)->
+        whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
+        $barOrderList->map(function ($order){
+            $order->BarItems;
+        });
+        
+        // toBase() is used to restrict the remove of multiple object having same id during merge
+        $firstMergeOrderList = $foodOrderList->toBase()->merge($coffeeOrderList);
+        $allOrderList = $firstMergeOrderList->toBase()->merge($barOrderList);
+
+        return $allOrderList;
 
         //   if ($foodOrder->isNotEmpty()) {
         //     return $this->jsonResponse(true, 'List of Food Order made by room.', $foodOrder);
