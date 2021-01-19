@@ -13,12 +13,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $admin = [
+            [
+                'name' => 'Sanjeep Lama',
+                'email' => 'sanjeeplama24@gmail.com',
+                'password' => Hash::make('sanjeep123'),
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Susmita Rai',
+                'email' => 'susmitathulung53@gmail.com',
+                'password' => Hash::make('susu123'),
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Prakash Dahal',
+                'email' => 'dahalprakash1720@gmail.com',
+                'password' => Hash::make('pr@kA$#53'),
+                'role' => 'admin',
+            ]
+
+        ];
         // $this->call(UsersTableSeeder::class);
-        DB::table('users')->insert([
-            'name' => 'Admin',
-            'email' => 'admin@admin.com',
-            'password' => Hash::make('admin'),
-            'role' => 'admin',
-        ]);
+        DB::table('users')->insert($admin);
     }
 }

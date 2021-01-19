@@ -8,13 +8,14 @@ class BarItems extends Model
 {
     //
     protected $guarded = [];
+
     public function mainBarCategory()
     {
         return $this->belongsTo(MainBarCategory::class);
     }
 
-    public function subBarCategory()
+    public function barOrderList()
     {
-        return $this->belongsTo(SubBarCategory::class);
+        return $this->belongsTo(BarOrderList::class);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\BarOrderList;
+use App\Model\CoffeeOrderList;
 use App\Model\FoodOrder;
 use App\Model\FoodOrderList;
 use Illuminate\Http\Request;
@@ -19,7 +21,7 @@ class FoodOrderController extends Controller
             $skip = 0;
             $limit = 10;
         }
-        $totalFoodItem = FoodOrderList::get()->count();
+        $totalFoodItem = FoodOrder::get()->count();
         $foodOrder = FoodOrder::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         $foodOrder->map(function ($foodOrderItem) {
             $foodOrderItem->FoodOrderLists->map(function ($foodItem) {
@@ -28,6 +30,22 @@ class FoodOrderController extends Controller
                     $foodItem->Room;
                 } else {
                     $foodItem->Table;
+                }
+            });
+            $foodOrderItem->BarOrderLists->map(function ($barItem) {
+                $barItem->BarItems;
+                if ($barItem->room_id) {
+                    $barItem->Room;
+                } else {
+                    $barItem->Table;
+                }
+            });
+            $foodOrderItem->CoffeeOrderLists->map(function ($coffeeItem) {
+                $coffeeItem->CoffeeItems;
+                if ($coffeeItem->room_id) {
+                    $coffeeItem->Room;
+                } else {
+                    $coffeeItem->Table;
                 }
             });
         });
@@ -47,9 +65,28 @@ class FoodOrderController extends Controller
                 $foodOrderListDetail['created_at'] = Carbon::now();
                 return $foodOrderListDetail;
             },
-            request()->all()
+            request()->input('food')
         );
-        $foodOrderList = FoodOrderList::insert($foodOrderListData);
+        $foodOrderList['food'] = FoodOrderList::insert($foodOrderListData);
+        $barOrderListData = array_map(
+            function ($foodOrderListDetail) use ($orderId) {
+                $foodOrderListDetail['food_order_id'] = $orderId;
+                $foodOrderListDetail['created_at'] = Carbon::now();
+                return $foodOrderListDetail;
+            },
+            request()->input('bar')
+        );
+        $foodOrderList['bar'] = BarOrderList::insert($barOrderListData);
+
+        $coffeeOrderListData = array_map(
+            function ($foodOrderListDetail) use ($orderId) {
+                $foodOrderListDetail['food_order_id'] = $orderId;
+                $foodOrderListDetail['created_at'] = Carbon::now();
+                return $foodOrderListDetail;
+            },
+            request()->input('coffee')
+        );
+        $foodOrderList['coffee'] = CoffeeOrderList::insert($coffeeOrderListData);
         return $this->jsonResponse(true, 'Food Order has been created successfully.', $foodOrderList);
     }
 

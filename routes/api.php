@@ -43,14 +43,16 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('/mainFood', 'MainFoodCategoryController');
     Route::apiResource('/subFood', 'SubFoodCategoryController');
     Route::post('/subFoodById', 'SubFoodCategoryController@getSubAndFoodItemsById');
+    Route::post('/barItemById', 'BarItemsController@getBarItemsById');
+    Route::post('/coffeeItemById', 'CoffeeItemsController@getCoffeeItemsById');
 
     // subFoodById
-    Route::apiResource('/foodHeader', 'FoodHeaderController');
 
     Route::apiResource('/mainBar', 'MainBarCategoryController');
-    Route::apiResource('/subBar', 'SubBarCategoryController');
-    Route::apiResource('/bar', 'BarItemsController');
+    Route::apiResource('/mainCoffee', 'MainCoffeeCategoryController');
 
+    Route::apiResource('/bar', 'BarItemsController');
+    Route::apiResource('/coffee', 'CoffeeItemsController');
 
     Route::post('/booked_rooms', 'BookingController@storeBookedRoom');
     Route::post('/bookingCancelled', 'BookingController@bookingCancelled');
@@ -70,10 +72,10 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/foodItemList', 'FoodItemsController@getFoodItemList');
     Route::post('/mainFoodList', 'MainFoodCategoryController@getMainFoodList');
     Route::post('/subFoodList', 'SubFoodCategoryController@getSubFoodList');
-    Route::post('/headerFoodList', 'FoodHeaderController@getFoodHeaderList');
     Route::post('/barItemList', 'BarItemsController@getBarItemList');
+    Route::post('/coffeeItemList', 'CoffeeItemsController@getCoffeeItemList');
     Route::post('/mainBarList', 'MainBarCategoryController@getMainBarList');
-    Route::post('/subBarList', 'SubBarCategoryController@getSubBarList');
+    Route::post('/mainCoffeeList', 'MainCoffeeCategoryController@getMainCoffeeList');
     Route::post('/tableList', 'TableController@getTableList');
     Route::post('/roomTransactionList', 'RoomTransactionController@getRoomTransactionList');
     Route::post('/roomTransactionDetailByRoomId', 'RoomTransactionController@getRoomTransactionDetailByRoomId');
