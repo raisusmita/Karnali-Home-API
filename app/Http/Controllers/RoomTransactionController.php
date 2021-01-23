@@ -111,6 +111,7 @@ class RoomTransactionController extends Controller
                     "status"=>"transact",
                     "check_in_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomDetail['check_in_date']),
                     "check_out_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomDetail['check_out_date']),
+                    "availability"=>'0'
                 ]);
 
                 // Update reservation checkIn/checkOut Date
