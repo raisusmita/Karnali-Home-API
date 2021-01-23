@@ -25,7 +25,6 @@ Route::middleware('cors')->group(function () {
 Route::post('/login', 'UserController@login');
 
 Route::group(['middleware' => 'auth:api'], function () {
-    Route::apiResource('/room_categories', 'RoomCategoryController');
     Route::apiResource('/rooms', 'RoomController');
     Route::post('/room_category/room', 'RoomController@getRoomBasedOnCategory');
     Route::apiResource('/room_transactions', 'RoomTransactionController');
@@ -88,9 +87,13 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::get('/available', 'RoomAvailabilityController@getAvailableRoom');
     Route::get('/unavailable', 'RoomAvailabilityController@getUnavailableRoom');
-    Route::post('/availableRoomByDate', 'RoomAvailabilityController@getAvailableRoomByDate');
     Route::post('/availableRoomByBookingId', 'RoomAvailabilityController@getRoomByBookingId');
     Route::post('/roomListByCustomerId', 'RoomAvailabilityController@getRoomDetailByCustomerId');
     Route::post('/availableRoomByBooking', 'RoomAvailabilityController@storeRoomAvailability');
     Route::post('/bookingToReservation', 'RoomAvailabilityController@updateBookingToReservation');
 });
+
+
+Route::apiResource('/room_categories', 'RoomCategoryController');
+Route::post('/availableRoomByDate', 'RoomAvailabilityController@getAvailableRoomByDate');
+
