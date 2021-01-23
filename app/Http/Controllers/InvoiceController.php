@@ -45,7 +45,6 @@ class InvoiceController extends Controller
 
     public function getFoodTotalByRoom($checkInDate, $checkOutDate, $roomId){
         $foodTotal =0;
-
         // Get food order list
         $foodOrderLists = FoodOrderList::where('room_id', $roomId)->
         whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
@@ -58,7 +57,6 @@ class InvoiceController extends Controller
 
     public function getBarTotalByRoom($checkInDate, $checkOutDate, $roomId){
         $barTotal =0;
-
         // Get bar order list
         $barOrderLists = BarOrderList::where('room_id', $roomId)->
         whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
@@ -72,7 +70,6 @@ class InvoiceController extends Controller
 
     public function getCoffeeTotalByRoom($checkInDate, $checkOutDate, $roomId){
         $coffeeTotal =0;
-
         // Get coffee order list
         $coffeeOrderLists = CoffeeOrderList::where('room_id', $roomId)->
         whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
@@ -83,7 +80,8 @@ class InvoiceController extends Controller
         return [$coffeeTotal, $coffeeOrderLists];
     }
 
-    public function invoiceParamsTableTransaction($transactions){
+    public function getFoodTotalByTable($transactions){
+        $foodTotal =0;
         foreach($transactions as $transaction){
             $tableNumber = $transaction['table_id'];
             $tableId = $transaction['table_id'];
@@ -93,41 +91,76 @@ class InvoiceController extends Controller
                 $foodTotal = $foodTotal + ((double)$foodOrderList->price * (double)$foodOrderList->quantity);
             }
         }
-
-        // Params for Invoice
-        $invoiceParams =  array(
-        "invoice_number" => 'INVTAB00'. $tableNumber,
-        "service_charge" => $serviceCharge,
-        "tax" =>$tax,
-        "vat" => $vAT,
-        "discount" => $discount,
-        "sub_total"=> (double)$foodTotal+ (double)$barTotal +(double)$coffeeTotal ,
-        "grand_total"=> (double)($foodTotal + $barTotal + $coffeeTotal + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),
-        );
-
-        return $invoiceParams;
+        return [$foodTotal, $foodOrderLists];
     }
 
-    public function updateOrderLists($invoiceId, $foodOrderLists, $barOrderLists, $coffeeOrderLists){
+    public function getBarTotalByTable($transactions){
+        $barTotal =0;
+        foreach($transactions as $transaction){
+            $tableNumber = $transaction['table_id'];
+            $tableId = $transaction['table_id'];
+            $barOrderLists = BarOrderList::where(['table_id'=>$tableId, 'invoice_id'=>null])->get();
+            
+            foreach($barOrderLists as $barOrderList){
+                $barTotal = $barTotal + ((double)$barOrderList->price * (double)$barOrderList->quantity);
+            }
+        }
+        return [$barTotal, $barOrderLists];
+    }
 
+    public function getCoffeeTotalByTable($transactions){
+        $coffeeTotal =0;
+        foreach($transactions as $transaction){
+            $tableNumber = $transaction['table_id'];
+            $tableId = $transaction['table_id'];
+            $coffeeOrderLists = CoffeeOrderList::where(['table_id'=>$tableId, 'invoice_id'=>null])->get();
+            
+            foreach($coffeeOrderLists as $coffeeOrderList){
+                $coffeeTotal = $coffeeTotal + ((double)$coffeeOrderList->price * (double)$coffeeOrderList->quantity);
+            }
+        }
+        return [$coffeeTotal, $coffeeOrderLists];
+    }
+
+    public function updateOrderListsByRoom($invoiceId, $foodOrderLists, $barOrderLists, $coffeeOrderLists){
         // Update Food Order List
         foreach($foodOrderLists as $foodOrderList){
             $foodItem = FoodOrderList::where(['id'=>$foodOrderList['id']])->update([
                 "invoice_id"=>$invoiceId
             ]);
         }
-
         // Update Bar Order List
         foreach($barOrderLists as $barOrderList){
             $barItem = BarOrderList::where(['id'=>$barOrderList['id']])->update([
                 "invoice_id"=>$invoiceId
             ]);
         }
-
         // Update Coffee Order List
         foreach($coffeeOrderLists as $coffeeOrderList){
             $coffeeItem = CoffeeOrderList::where(['id'=>$coffeeOrderList['id']])->update([
                 "invoice_id"=>$invoiceId
+            ]);
+        }
+    }
+
+    public function updateOrderListsByTable($transactions, $invoiceId){
+        foreach($transactions as $transaction){
+            $tableNumber = $transaction['table_id'];
+            $tableId = $transaction['table_id'];
+            // Update Food Order List
+            $foodItem = FoodOrderList::where(['table_id'=>$tableId, 'invoice_id'=>null])->update([
+                "invoice_id"=>$invoiceId,
+                "status"=>"paid"
+            ]);
+            // Update Bar Order List
+            $barItem = BarOrderList::where(['table_id'=>$tableId, 'invoice_id'=>null])->update([
+                "invoice_id"=>$invoiceId,
+                "status"=>"paid"
+            ]);
+            // Update Coffee Order List
+            $coffeeItem = CoffeeOrderList::where(['table_id'=>$tableId, 'invoice_id'=>null ])->update([
+               "invoice_id"=>$invoiceId,
+                "status"=>"paid"
             ]);
         }
     }
@@ -258,7 +291,31 @@ class InvoiceController extends Controller
                         "grand_total"=> (double)(($total_amount +(double)$foodTotal) + (double)$barTotal +(double)$coffeeTotal + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),
                     );
                 }else if(($transactions[0]['callFrom'])=='tableTransaction'){
-                    $invoiceParams =$this->invoiceParamsTableTransaction($transactions, $foodTotal,$barTotal,$coffeeTotal);
+                    //Get Food total amount and order lists
+                    $foodOrderDetail= $this->getFoodTotalByTable($transactions);
+                    $foodTotal= $foodOrderDetail[0];
+                    $foodOrderLists = $foodOrderDetail[1];
+
+                    //Get Bar total amount and order lists
+                    $barOrderDetail= $this->getBarTotalByTable($transactions);
+                    $barTotal= $barOrderDetail[0];
+                    $barOrderLists = $barOrderDetail[1];
+
+                    //Get Coffee total amount and order lists
+                    $coffeeOrderDetail= $this->getCoffeeTotalByTable($transactions);
+                    $coffeeTotal= $coffeeOrderDetail[0];
+                    $coffeeOrderLists = $coffeeOrderDetail[1];
+
+                    // Params for Invoice
+                    $invoiceParams =  array(
+                        "invoice_number" => 'INVTAB00'. $tableNumber,
+                        "service_charge" => $serviceCharge,
+                        "tax" =>$tax,
+                        "vat" => $vAT,
+                        "discount" => $discount,
+                        "sub_total"=> (double)$foodTotal+ (double)$barTotal +(double)$coffeeTotal ,
+                        "grand_total"=> (double)($foodTotal + $barTotal + $coffeeTotal + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),
+                        );
                 }
 
                 // insert into invoice table
@@ -282,20 +339,9 @@ class InvoiceController extends Controller
 
                 // Update food items 
                 if(($transactions[0]['callFrom'])=='tableTransaction'){
-                    foreach($transactions as $transaction){
-                        $tableNumber = $transaction['table_id'];
-                        $tableId = $transaction['table_id'];
-                        $foodOrderLists = FoodOrderList::where(['table_id'=>$tableId, 'invoice_id'=>null])->get();
-                        
-                        foreach($foodOrderLists as $foodOrderList){
-                            $foodItem = FoodOrderList::where(['id'=>$foodOrderList['id']])->update([
-                                "invoice_id"=>$invoiceId,
-                                "status"=>"paid"
-                            ]);
-                        }
-                    }
+                    $this->updateOrderListsByTable($transactions, $invoiceId);
                 }else{
-                    $this->updateOrderLists($invoiceId, $foodOrderLists, $barOrderLists, $coffeeOrderLists);
+                    $this->updateOrderListsByRoom($invoiceId, $foodOrderLists, $barOrderLists, $coffeeOrderLists);
                 }
             }
             return $this->jsonResponse(true, 'Invoice has been created successfully.', $finalTransactionDetail);

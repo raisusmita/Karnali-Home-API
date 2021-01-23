@@ -61,7 +61,6 @@ class RoomTransactionController extends Controller
                 $room->roomCategory;
                 
             });
-            return $room;
             return $this->jsonResponse(true, 'Lists of Room Transactions.', $roomTransaction, $totalRoomTransaction);
         } else {
             return $this->jsonResponse(false, 'Currently, there is no any Room Transactions yet.', $roomTransaction, $totalRoomTransaction);
@@ -180,12 +179,30 @@ class RoomTransactionController extends Controller
         $params = $request->all();
         $tableId = $params['table_id'];
 
+        //Get FoodOrderList
         $foodOrderList = FoodOrderList::where(['table_id'=>$tableId, 'status'=>'due'])->get();
         $foodOrderList->map(function ($order){
             $order->FoodItems;
-          });
+        });
+
+        //Get CoffeeOrderList
+        $coffeeOrderList = CoffeeOrderList::where(['table_id'=>$tableId, 'status'=>'due'])->get();
+        $coffeeOrderList->map(function ($order){
+            $order->CoffeeItems;
+        });
+
+        //Get BarOrderList
+        $barOrderList = BarOrderList::where(['table_id'=>$tableId, 'status'=>'due'])->get();
+        $barOrderList->map(function ($order){
+            $order->BarItems;
+        });
         
-        return $foodOrderList;
+
+        // toBase() is used to restrict the remove of multiple object having same id during merge
+        $firstMergeOrderList = $foodOrderList->toBase()->merge($coffeeOrderList);
+        $allOrderList = $firstMergeOrderList->toBase()->merge($barOrderList);
+        
+        return $allOrderList;
 
 
         // if ($foodOrder->isNotEmpty()) {
