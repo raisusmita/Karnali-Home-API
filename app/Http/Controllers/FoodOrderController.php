@@ -92,8 +92,8 @@ class FoodOrderController extends Controller
 
     public function update(FoodOrder $foodOrder)
     {
-        FoodOrderList::where('food_order_id', $foodOrder->id)->delete();
         $foodOrderID = $foodOrder->id;
+        FoodOrderList::where('food_order_id', $foodOrder->id)->delete();
         $foodOrderListData = array_map(
             function ($foodOrderListDetail) use ($foodOrderID) {
                 $foodOrderListDetail['food_order_id'] = $foodOrderID;
@@ -106,9 +106,43 @@ class FoodOrderController extends Controller
                 }
                 return $foodOrderListDetail;
             },
-            request()->all()
+            request()->input('food')
         );
-        $foodOrderList = FoodOrderList::insert($foodOrderListData);
+        $foodOrderList['food'] = FoodOrderList::insert($foodOrderListData);
+
+        CoffeeOrderList::where('food_order_id', $foodOrder->id)->delete();
+        $coffeeOrderListData = array_map(
+            function ($coffeeOrderListDetail) use ($foodOrderID) {
+                $coffeeOrderListDetail['food_order_id'] = $foodOrderID;
+                $coffeeOrderListDetail['updated_at'] = Carbon::now();
+                if (!array_key_exists('created_at', $coffeeOrderListDetail)) {
+                    $coffeeOrderListDetail['created_at'] = Carbon::now();
+                }
+                if (!array_key_exists('invoice_id', $coffeeOrderListDetail)) {
+                    $coffeeOrderListDetail['invoice_id'] = null;
+                }
+                return $coffeeOrderListDetail;
+            },
+            request()->input('coffee')
+        );
+        $foodOrderList['coffee'] = CoffeeOrderList::insert($coffeeOrderListData);
+
+        BarOrderList::where('food_order_id', $foodOrder->id)->delete();
+        $barOrderListData = array_map(
+            function ($barOrderListDetail) use ($foodOrderID) {
+                $barOrderListDetail['food_order_id'] = $foodOrderID;
+                $barOrderListDetail['updated_at'] = Carbon::now();
+                if (!array_key_exists('created_at', $barOrderListDetail)) {
+                    $barOrderListDetail['created_at'] = Carbon::now();
+                }
+                if (!array_key_exists('invoice_id', $barOrderListDetail)) {
+                    $barOrderListDetail['invoice_id'] = null;
+                }
+                return $barOrderListDetail;
+            },
+            request()->input('bar')
+        );
+        $foodOrderList['bar'] = BarOrderList::insert($barOrderListData);
         return $this->jsonResponse(true, 'Food order has been updated.', $foodOrderList);
     }
 
