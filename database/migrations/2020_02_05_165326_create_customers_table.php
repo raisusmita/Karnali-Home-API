@@ -24,11 +24,11 @@ class CreateCustomersTable extends Migration
             $table->date('date_of_birth');
             $table->string('phone');
             $table->string('email')->nullable();
-            $table->string('profession');
-            $table->enum('identity_type', ['passport', 'liscence', 'citizenship', 'id_card']);
-            $table->string('identity_number');
-            $table->string('identity_image_first');
-            $table->string('identity_image_second');
+            $table->string('profession')->nullable();
+            $table->enum('identity_type', ['passport', 'liscence', 'citizenship', 'id_card'])->nullable();
+            $table->string('identity_number')->nullable();
+            $table->string('identity_image_first')->nullable();
+            $table->string('identity_image_second')->nullable();
             // $table->enum('customer_type', array(0, 1)); //->default(1) // We can set Default value to one since we may have large reserving customer
             $table->timestamps();
         });
