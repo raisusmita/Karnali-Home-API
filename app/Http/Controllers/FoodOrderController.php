@@ -92,8 +92,8 @@ class FoodOrderController extends Controller
 
     public function update(FoodOrder $foodOrder)
     {
-        FoodOrderList::where('food_order_id', $foodOrder->id)->delete();
         $foodOrderID = $foodOrder->id;
+        FoodOrderList::where('food_order_id', $foodOrder->id)->delete();
         $foodOrderListData = array_map(
             function ($foodOrderListDetail) use ($foodOrderID) {
                 $foodOrderListDetail['food_order_id'] = $foodOrderID;
@@ -106,15 +106,85 @@ class FoodOrderController extends Controller
                 }
                 return $foodOrderListDetail;
             },
-            request()->all()
+            request()->input('food')
         );
-        $foodOrderList = FoodOrderList::insert($foodOrderListData);
+        $foodOrderList['food'] = FoodOrderList::insert($foodOrderListData);
+
+        CoffeeOrderList::where('food_order_id', $foodOrder->id)->delete();
+        $coffeeOrderListData = array_map(
+            function ($coffeeOrderListDetail) use ($foodOrderID) {
+                $coffeeOrderListDetail['food_order_id'] = $foodOrderID;
+                $coffeeOrderListDetail['updated_at'] = Carbon::now();
+                if (!array_key_exists('created_at', $coffeeOrderListDetail)) {
+                    $coffeeOrderListDetail['created_at'] = Carbon::now();
+                }
+                if (!array_key_exists('invoice_id', $coffeeOrderListDetail)) {
+                    $coffeeOrderListDetail['invoice_id'] = null;
+                }
+                return $coffeeOrderListDetail;
+            },
+            request()->input('coffee')
+        );
+        $foodOrderList['coffee'] = CoffeeOrderList::insert($coffeeOrderListData);
+
+        BarOrderList::where('food_order_id', $foodOrder->id)->delete();
+        $barOrderListData = array_map(
+            function ($barOrderListDetail) use ($foodOrderID) {
+                $barOrderListDetail['food_order_id'] = $foodOrderID;
+                $barOrderListDetail['updated_at'] = Carbon::now();
+                if (!array_key_exists('created_at', $barOrderListDetail)) {
+                    $barOrderListDetail['created_at'] = Carbon::now();
+                }
+                if (!array_key_exists('invoice_id', $barOrderListDetail)) {
+                    $barOrderListDetail['invoice_id'] = null;
+                }
+                return $barOrderListDetail;
+            },
+            request()->input('bar')
+        );
+        $foodOrderList['bar'] = BarOrderList::insert($barOrderListData);
         return $this->jsonResponse(true, 'Food order has been updated.', $foodOrderList);
     }
 
     public function destroy(FoodOrder $foodOrder)
     {
         $foodOrder->delete();
+        return $this->jsonResponse(true, 'Food Order has been deleted successfully.');
+    }
+
+    public function deleteSingleFoodOrder()
+    {
+        if (request()->input('food')) {
+            $food = FoodOrderList::find(request()->input('food'));
+            $foodOrder = FoodOrder::find($food->food_order_id);
+            $bar = $foodOrder->BarOrderLists;
+            $coffee = $foodOrder->CoffeeOrderLists;
+            if (count($bar) < 1 && count($coffee) < 1) {
+                $foodOrder->delete();
+            } else {
+                $food->delete();
+            }
+        } else if (request()->input('bar')) {
+            $bar = BarOrderList::find(request()->input('bar'));
+            $foodOrder = FoodOrder::find($bar->food_order_id);
+            $food = $foodOrder->FoodOrderLists;
+            $coffee = $foodOrder->CoffeeOrderLists;
+            if (count($food) < 1 && count($coffee) < 1) {
+                $foodOrder->delete();
+            } else {
+                $bar->delete();
+            }
+        } else {
+            $coffee = CoffeeOrderList::find(request()->input('coffee'));
+            $foodOrder = FoodOrder::find($coffee->food_order_id);
+            $food = $foodOrder->FoodOrderLists;
+            $bar = $foodOrder->BarOrderLists;
+            if (count($food) < 1 && count($bar) < 1) {
+                $foodOrder->delete();
+            } else {
+                $coffee->delete();
+            }
+        }
         return $this->jsonResponse(true, 'Food Order has been deleted successfully.');
     }
 
