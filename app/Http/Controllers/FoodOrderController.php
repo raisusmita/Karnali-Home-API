@@ -152,6 +152,42 @@ class FoodOrderController extends Controller
         return $this->jsonResponse(true, 'Food Order has been deleted successfully.');
     }
 
+    public function deleteSingleFoodOrder()
+    {
+        if (request()->input('food')) {
+            $food = FoodOrderList::find(request()->input('food'));
+            $foodOrder = FoodOrder::find($food->food_order_id);
+            $bar = $foodOrder->BarOrderLists;
+            $coffee = $foodOrder->CoffeeOrderLists;
+            if (count($bar) < 1 && count($coffee) < 1) {
+                $foodOrder->delete();
+            } else {
+                $food->delete();
+            }
+        } else if (request()->input('bar')) {
+            $bar = BarOrderList::find(request()->input('bar'));
+            $foodOrder = FoodOrder::find($bar->food_order_id);
+            $food = $foodOrder->FoodOrderLists;
+            $coffee = $foodOrder->CoffeeOrderLists;
+            if (count($food) < 1 && count($coffee) < 1) {
+                $foodOrder->delete();
+            } else {
+                $bar->delete();
+            }
+        } else {
+            $coffee = CoffeeOrderList::find(request()->input('coffee'));
+            $foodOrder = FoodOrder::find($coffee->food_order_id);
+            $food = $foodOrder->FoodOrderLists;
+            $bar = $foodOrder->BarOrderLists;
+            if (count($food) < 1 && count($bar) < 1) {
+                $foodOrder->delete();
+            } else {
+                $coffee->delete();
+            }
+        }
+        return $this->jsonResponse(true, 'Food Order has been deleted successfully.');
+    }
+
     // Todo: user validation in coming future.
     // private function validateOrderItemRequest()
     // {
