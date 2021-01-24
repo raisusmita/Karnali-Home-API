@@ -12,4 +12,14 @@ class Table extends Model
     {
         return $this->hasMany(FoodOrderList::class);
     }
+
+    public function barOrderLists()
+    {
+        return $this->hasMany(BarOrderList::class);
+    }
+
+    public function coffeeOrderLists()
+    {
+        return $this->hasMany(CoffeeOrderList::class);
+    }
 }
