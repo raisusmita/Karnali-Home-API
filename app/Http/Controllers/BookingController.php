@@ -75,6 +75,11 @@ class BookingController extends Controller
     {
         // try{
         //     DB::beginTransaction();
+
+        // return getType($request->check_out_date);
+        // return $request->check_out_date;
+
+
             $message = '';
             $room = [];
             $availableRoomParams = [];
@@ -152,10 +157,44 @@ class BookingController extends Controller
         $customerDetail = $allDetail['customer'];
         $customer = Customer::create($customerDetail);
         $customerId =$customer->id;
-
         $bookingDetail = $allDetail['booking'];
         $bookingDates = $allDetail['bookingDates'];
+        foreach( $bookingDetail as $key => $value )
+        {
+            if($value['number_of_rooms']){
+                $bookingParams =  array(
+                    "customer_id" => $customerId,
+                    "room_category_id" => $key,
+                    "number_of_rooms" =>$value['number_of_rooms'],
+                    "number_of_adult" => $value['number_of_adults'],
+                    "number_of_child" => $value['number_of_children'],
+                    "check_in_date"=> $bookingDates['checkInDate'],
+                    "check_out_date"=>  $bookingDates['checkOutDate'], 
+                    "status"=> "active"
+                );
+                $request = new Request();
+                $request->replace($bookingParams);
+                return $this->store( $request);
+            }
+        }
+    }
 
+    
+    // "check_in_date"=> date('Y-m-d H:i:s', strtotime($bookingDates['checkInDate'])),
+    // "check_out_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $bookingDates['checkOutDate']), 
+
+    public function test(Request $request){
+        $message = '';
+        $room = [];
+        $availableRoomParams = [];
+        $totalRooms = [];
+
+        $allDetail = $request->all();
+        $customerDetail = $allDetail['customer'];
+        $customer = Customer::create($customerDetail);
+        $customerId =$customer->id;
+        $bookingDetail = $allDetail['booking'];
+        $bookingDates = $allDetail['bookingDates'];
 
         foreach( $bookingDetail as $key => $value )
         {
@@ -166,16 +205,75 @@ class BookingController extends Controller
                     "number_of_rooms" =>$value['number_of_rooms'],
                     "number_of_adult" => $value['number_of_adults'],
                     "number_of_child" => $value['number_of_children'],
-                    "check_in_date"=>datetime( $bookingDates['checkInDate']),
-                    "check_out_date"=>datetime( $bookingDates['checkOutDate']),
+                    "check_in_date"=> $bookingDates['checkInDate'],
+                    "check_out_date"=> "2021-01-26T17:15:00.000Z", 
                     "status"=> "active"
                 );
                 $request = new Request();
                 $request->replace($bookingParams);
-                return $this->store( $request);
+             
+                // Create room booking
+                $booking = Booking::create($this->validateRequest($request));
+                // Get available room 
+                $availableRoom = $this->roomAvailabilityService->getAvailableRoom();
+                // Parsing the string to array and decode back to array
+                $encoded = json_encode( $availableRoom, true);
+                $decoded = json_decode( $encoded, true);
+                $RoomData = $decoded['original'];
+                if (is_array($RoomData) || is_object($RoomData)){
+                    // Store rooms that belongs to booked room category
+                    foreach ($RoomData['data'] as $data)
+                    {
+                        if($data['room_category_id'] == $booking->room_category_id){
+                            array_push($room, $data);
+                        }
+                    }
+                    if(count($room)>0){
+                        // Creating params to insert rooms in roomAvailable table for "number of rooms" booking input 
+                        for ($i=0; $i < $booking->number_of_rooms ; $i++) { 
+                            $availableRoomParams =  array(
+                                "reservation_id" => null,
+                                "room_id" => $room[$i]['id'],
+                                "check_in_date" => $booking->check_in_date,
+                                "check_out_date" => $booking->check_out_date,
+                                "status" => "booked",
+                                "availability"=> "1",
+                                "booking_id" => $booking->id,
+                                "availability"=>"1",
+                                "created_at" => $booking->created_at,
+                                "updated_at" => $booking->updated_at,
+                            );
+                            array_push($totalRooms, $availableRoomParams);
+                        } 
+                        // Inserting into room availability 
+                        $roomAvailavleData= $this->roomAvailabilityService->storeRoomAvailability($totalRooms);
+                    }
+                    
+                    $userEmail = $booking->customer->email;
+      
+                    if ($booking && $userEmail && $roomAvailavleData) {
+                        Mail::to($userEmail)->send(new BookingMail($booking->check_in_date, $booking->check_out_date));
+                        $message = 'Booking has been created successfully.';
+                    } else if ($booking) {
+                        $message = 'Booking has been created successfully. But email failed';
+                    } else {
+                        $message = 'Booking failed';
+                    }
+    
+                    DB::commit();
+                    return $this->jsonResponse(true, $message, $booking);
+                }
+    
+                else{
+                    $message = 'No room is available for booking';
+                    DB::commit();
+    
+                    return $this->jsonResponse(true, $message, $RoomData);
+                }
+    
             }
-
         }
+
     }
 
     public function show(Booking $booking)
