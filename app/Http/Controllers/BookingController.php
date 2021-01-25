@@ -11,14 +11,17 @@ use Illuminate\Support\Facades\Mail;
 use App\Services\RoomAvailabilityServices;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Validator;
 
 
 
 class BookingController extends Controller
 {
-    public function __construct(RoomAvailabilityServices $roomAvailabilityService)
+    protected $CustomerController;
+    public function __construct(RoomAvailabilityServices $roomAvailabilityService, CustomerController $CustomerController )
     {
         $this->roomAvailabilityService= $roomAvailabilityService;
+        $this->CustomerController = $CustomerController;
     }
 
     public function index()
@@ -68,58 +71,51 @@ class BookingController extends Controller
         }
     }
 
-    public function store()
+    public function store(Request $request)
     {
-        try{
-            DB::beginTransaction();
+        // try{
+        //     DB::beginTransaction();
             $message = '';
             $room = [];
             $availableRoomParams = [];
             $totalRooms = [];
-
             // Create room booking
-            $booking = Booking::create($this->validateRequest());
-
+            $booking = Booking::create($this->validateRequest($request));
             // Get available room 
             $availableRoom = $this->roomAvailabilityService->getAvailableRoom();
-
             // Parsing the string to array and decode back to array
             $encoded = json_encode( $availableRoom, true);
             $decoded = json_decode( $encoded, true);
             $RoomData = $decoded['original'];
-
-
             if (is_array($RoomData) || is_object($RoomData)){
-                
                 // Store rooms that belongs to booked room category
                 foreach ($RoomData['data'] as $data)
                 {
                     if($data['room_category_id'] == $booking->room_category_id){
                         array_push($room, $data);
                     }
-
                 }
 
-                // Creating params to insert rooms in roomAvailable table for "number of rooms" booking input 
-                for ($i=0; $i < $booking->number_of_rooms ; $i++) { 
-                    $availableRoomParams =  array(
-                        "reservation_id" => null,
-                        "room_id" => $room[$i]['id'],
-                        "check_in_date" => $booking->check_in_date,
-                        "check_out_date" => $booking->check_out_date,
-                        "status" => "booked",
-                        "availability"=> "1",
-                        "booking_id" => $booking->id,
-                        "availability"=>"1",
-                        "created_at" => $booking->created_at,
-                        "updated_at" => $booking->updated_at,
-                    );
-
-                    array_push($totalRooms, $availableRoomParams);
-
+                if(count($room)>0){
+                    // Creating params to insert rooms in roomAvailable table for "number of rooms" booking input 
+                    for ($i=0; $i < $booking->number_of_rooms ; $i++) { 
+                        $availableRoomParams =  array(
+                            "reservation_id" => null,
+                            "room_id" => $room[$i]['id'],
+                            "check_in_date" => $booking->check_in_date,
+                            "check_out_date" => $booking->check_out_date,
+                            "status" => "booked",
+                            "availability"=> "1",
+                            "booking_id" => $booking->id,
+                            "availability"=>"1",
+                            "created_at" => $booking->created_at,
+                            "updated_at" => $booking->updated_at,
+                        );
+                        array_push($totalRooms, $availableRoomParams);
+                    } 
+                    // Inserting into room availability 
+                    $roomAvailavleData= $this->roomAvailabilityService->storeRoomAvailability($totalRooms);
                 }
-                // Inserting into room availability 
-                $roomAvailavleData= $this->roomAvailabilityService->storeRoomAvailability($totalRooms);
                 
                 $userEmail = $booking->customer->email;
   
@@ -143,12 +139,43 @@ class BookingController extends Controller
                 return $this->jsonResponse(true, $message, $RoomData);
             }
 
-        }
-        catch(\Exception $e)
+        // }
+        // catch(\Exception $e)
+        // {
+        //     DB::rollback();
+        // }
+    }
+
+    public function storeMultipleBooking(Request $request)
+    {
+        $allDetail = $request->all();
+        $customerDetail = $allDetail['customer'];
+        $customer = Customer::create($customerDetail);
+        $customerId =$customer->id;
+
+        $bookingDetail = $allDetail['booking'];
+        $bookingDates = $allDetail['bookingDates'];
+
+
+        foreach( $bookingDetail as $key => $value )
         {
-            DB::rollback();
+            if($value['number_of_rooms']){
+                $bookingParams =  array(
+                    "customer_id" => $customerId,
+                    "room_category_id" => $key,
+                    "number_of_rooms" =>$value['number_of_rooms'],
+                    "number_of_adult" => $value['number_of_adults'],
+                    "number_of_child" => $value['number_of_children'],
+                    "check_in_date"=>datetime( $bookingDates['checkInDate']),
+                    "check_out_date"=>datetime( $bookingDates['checkOutDate']),
+                    "status"=> "active"
+                );
+                $request = new Request();
+                $request->replace($bookingParams);
+                return $this->store( $request);
+            }
+
         }
-        
     }
 
     public function show(Booking $booking)
@@ -200,7 +227,6 @@ class BookingController extends Controller
             DB::rollback();
         }
     }
-
 
     public function bookingCancelled(Request $request){
 
@@ -259,9 +285,9 @@ class BookingController extends Controller
         }
     }
     
-        public function validateRequest()
+        public function validateRequest($request)
         {
-            return request()->validate([
+            $test = $request->validate([
                 'customer_id' => 'required',
                 'room_category_id' => 'required',
                 'number_of_rooms' => 'required',
@@ -270,6 +296,8 @@ class BookingController extends Controller
                 'check_in_date' => 'required',
                 'check_out_date' => 'required',
             ]);
+
+            return $test;
         }
     
     private function jsonResponse($success = false, $message = '', $data = null, $totalCount=0)
