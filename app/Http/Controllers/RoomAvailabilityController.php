@@ -25,7 +25,7 @@ class RoomAvailabilityController extends Controller
         $room->map(function ($roomCat) {
             $roomCat->roomCategory->id;
         });
-        // $room = $room->groupBy('room_category_id');
+        $room = $room->groupBy('room_category_id');
 
         return $this->jsonResponse(true, 'Available Rooms.', $room);
     }
@@ -63,6 +63,7 @@ class RoomAvailabilityController extends Controller
             $availableRoom->map(function ($roomCat) {
                 $roomCat->roomCategory->id;
             });
+
             $availableRoom = $availableRoom->groupBy('room_category_id');
             return $this->jsonResponse(true, 'Available Rooms by date.', $availableRoom);
         } else {
