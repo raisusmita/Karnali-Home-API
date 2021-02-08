@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Model\BarItems;
 use App\Model\MainBarCategory;
-use App\Model\SubBarCategory;
 use Illuminate\Http\Request;
 
 class BarItemsController extends Controller
@@ -15,10 +14,6 @@ class BarItemsController extends Controller
     {
         $bar = BarItems::all();
         $bar->map(function ($bar) {
-            if ($bar->sub_bar_category_id != null) {
-                $bar->subBarCategory;
-                $bar->subBarCategory->mainBarCategory;
-            }
             if ($bar->main_bar_category_id != null) {
                 $bar->mainBarCategory;
             }
@@ -30,18 +25,15 @@ class BarItemsController extends Controller
         }
     }
 
-    public function getBarItemList(Request $request){
-        $skip =$request->skip;
-        $limit=$request->limit;
+    public function getBarItemList(Request $request)
+    {
+        $skip = $request->skip;
+        $limit = $request->limit;
         $totalBarItems = BarItems::get()->count();
 
         $bar = BarItems::skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($bar->isNotEmpty()) {
             $bar->map(function ($bar) {
-                if ($bar->sub_bar_category_id != null) {
-                    $bar->subBarCategory;
-                    $bar->subBarCategory->mainBarCategory;
-                }
                 if ($bar->main_bar_category_id != null) {
                     $bar->mainBarCategory;
                 }
@@ -50,6 +42,16 @@ class BarItemsController extends Controller
         } else {
             return $this->jsonResponse(false, 'Currently, there is no any bar yet.', $bar, $totalBarItems);
         }
+    }
+
+    public function getBarItemsById()
+    {
+        $barList = array(
+            "barItems" => []
+        );
+        $barItems = BarItems::where('main_bar_category_id', request()->id)->get();
+        $barList["barItems"] = $barItems;
+        return $this->jsonResponse(true, 'Lists of sub bars.', $barList);
     }
 
     public function store()
@@ -75,44 +77,23 @@ class BarItemsController extends Controller
         return $this->jsonResponse(true, 'BarItems has been deleted successfully.');
     }
 
-    public function getMainBarCategory()
-    {
-        $mainBar = MainBarCategory::all();
-        if ($mainBar->isNotEmpty()) {
-            return $this->jsonResponse(true, 'Lists of main bars.', $mainBar);
-        } else {
-            return $this->jsonResponse(false, 'Currently, there is no any main bar yet.', $mainBar);
-        }
-    }
-
-    public function getSubBarCategory()
-    {
-        $subBar = SubBarCategory::all();
-        if ($subBar->isNotEmpty()) {
-            return $this->jsonResponse(true, 'Lists of sub bars.', $subBar);
-        } else {
-            return $this->jsonResponse(false, 'Currently, there is no any sub bar yet.', $subBar);
-        }
-    }
-
     private function validateRequest()
     {
         return request()->validate([
             'main_bar_category_id' => 'sometimes',
-            'sub_bar_category_id' => 'sometimes',
             'bar_name' => 'required',
             'quantity' => 'sometimes',
             'price' => 'required',
         ]);
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null, $totalBarItems=0)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalBarItems = 0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
             'data' => $data,
-            'totalCount'=>$totalBarItems
+            'totalCount' => $totalBarItems
         ]);
     }
 }

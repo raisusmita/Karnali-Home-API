@@ -20,9 +20,6 @@ class FoodItemsController extends Controller
             if ($food->main_food_category_id != null) {
                 $food->mainFoodCategory;
             }
-            if ($food->food_header_id != null) {
-                $food->foodHeader;
-            }
         });
         if ($food->isNotEmpty()) {
             return $this->jsonResponse(true, 'Lists of foods.', $food);
@@ -46,9 +43,6 @@ class FoodItemsController extends Controller
                 }
                 if ($foodItem->main_food_category_id != null) {
                     $foodItem->mainFoodCategory;
-                }
-                if ($foodItem->food_header_id != null) {
-                    $foodItem->foodHeader;
                 }
             });
             return $this->jsonResponse(true, 'Lists of foods.', $foodItem, $totalFoodItem);
@@ -105,7 +99,6 @@ class FoodItemsController extends Controller
         return request()->validate([
             'main_food_category_id' => 'required',
             'sub_food_category_id' => 'sometimes',
-            'food_header_id' => 'sometimes',
             'food_name' => 'required',
             'price' => 'required',
         ]);

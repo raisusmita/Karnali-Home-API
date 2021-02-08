@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Model\RoomTransaction;
 use App\Model\Room;
 use App\Model\FoodOrderList;
+use App\Model\CoffeeOrderList;
+use App\Model\BarOrderList;
 use Illuminate\Http\Request;
 use App\Model\RoomCategory;
 use App\Model\Reservation;
@@ -59,7 +61,6 @@ class RoomTransactionController extends Controller
                 $room->roomCategory;
                 
             });
-            return $room;
             return $this->jsonResponse(true, 'Lists of Room Transactions.', $roomTransaction, $totalRoomTransaction);
         } else {
             return $this->jsonResponse(false, 'Currently, there is no any Room Transactions yet.', $roomTransaction, $totalRoomTransaction);
@@ -109,6 +110,7 @@ class RoomTransactionController extends Controller
                     "status"=>"transact",
                     "check_in_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomDetail['check_in_date']),
                     "check_out_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomDetail['check_out_date']),
+                    "availability"=>'0'
                 ]);
 
                 // Update reservation checkIn/checkOut Date
@@ -139,14 +141,32 @@ class RoomTransactionController extends Controller
         $checkInDate = $reservation[0]->check_in_date;
         $checkOutDate = $reservation[0]->check_out_date;
 
+        //Get FoodOderList
         $foodOrderList = FoodOrderList::where('room_id', $roomId)->
         whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
-
         $foodOrderList->map(function ($order){
             $order->FoodItems;
+        });
+
+        //Get CoffeeOrderList
+        $coffeeOrderList = CoffeeOrderList::where('room_id', $roomId)->
+        whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
+        $coffeeOrderList->map(function ($order){
+            $order->CoffeeItems;
           });
 
-        return $foodOrderList;
+        //Get BarOrderList
+        $barOrderList = BarOrderList::where('room_id', $roomId)->
+        whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
+        $barOrderList->map(function ($order){
+            $order->BarItems;
+        });
+        
+        // toBase() is used to restrict the remove of multiple object having same id during merge
+        $firstMergeOrderList = $foodOrderList->toBase()->merge($coffeeOrderList);
+        $allOrderList = $firstMergeOrderList->toBase()->merge($barOrderList);
+
+        return $allOrderList;
 
         //   if ($foodOrder->isNotEmpty()) {
         //     return $this->jsonResponse(true, 'List of Food Order made by room.', $foodOrder);
@@ -159,12 +179,30 @@ class RoomTransactionController extends Controller
         $params = $request->all();
         $tableId = $params['table_id'];
 
+        //Get FoodOrderList
         $foodOrderList = FoodOrderList::where(['table_id'=>$tableId, 'status'=>'due'])->get();
         $foodOrderList->map(function ($order){
             $order->FoodItems;
-          });
+        });
+
+        //Get CoffeeOrderList
+        $coffeeOrderList = CoffeeOrderList::where(['table_id'=>$tableId, 'status'=>'due'])->get();
+        $coffeeOrderList->map(function ($order){
+            $order->CoffeeItems;
+        });
+
+        //Get BarOrderList
+        $barOrderList = BarOrderList::where(['table_id'=>$tableId, 'status'=>'due'])->get();
+        $barOrderList->map(function ($order){
+            $order->BarItems;
+        });
         
-        return $foodOrderList;
+
+        // toBase() is used to restrict the remove of multiple object having same id during merge
+        $firstMergeOrderList = $foodOrderList->toBase()->merge($coffeeOrderList);
+        $allOrderList = $firstMergeOrderList->toBase()->merge($barOrderList);
+        
+        return $allOrderList;
 
 
         // if ($foodOrder->isNotEmpty()) {

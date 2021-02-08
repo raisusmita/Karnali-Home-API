@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBarItemsTable extends Migration
+class CreateCoffeeItemsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateBarItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('bar_items', function (Blueprint $table) {
+        Schema::create('coffee_items', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('main_bar_category_id')->nullable();
-            $table->foreign('main_bar_category_id')->references('id')->on('main_bar_categories');
-            $table->string('bar_name');
-            $table->enum('quantity', ['30ML', '60ML', 'QRT', 'HALF', 'FULL', 'GLASS', 'PER PC', 'PACKET'])->nullable();
+            $table->unsignedBigInteger('main_coffee_category_id')->nullable();
+            $table->foreign('main_coffee_category_id')->references('id')->on('main_coffee_categories');
+            $table->string('coffee_name');
             $table->double('price');
             $table->text('details')->nullable();
             $table->timestamps();
@@ -32,6 +31,6 @@ class CreateBarItemsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bar_items');
+        Schema::dropIfExists('coffee_items');
     }
 }

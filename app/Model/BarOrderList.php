@@ -4,18 +4,14 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class FoodOrderList extends Model
+class BarOrderList extends Model
 {
+    //
     protected $guarded = [];
 
     public function room()
     {
         return $this->belongsTo(Room::class);
-    }
-
-    public function reservation()
-    {
-        return $this->belongsTo(Reservation::class);
     }
 
     public function table()
@@ -31,16 +27,6 @@ class FoodOrderList extends Model
     public function foodOrder()
     {
         return $this->belongsTo(FoodOrder::class);
-    }
-
-    public function foodItems()
-    {
-        return $this->belongsTo(FoodItems::class);
-    }
-
-    public function coffeeItems()
-    {
-        return $this->belongsTo(CoffeeItems::class);
     }
 
     public function barItems()
