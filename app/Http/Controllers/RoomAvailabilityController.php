@@ -25,11 +25,28 @@ class RoomAvailabilityController extends Controller
         $room->map(function ($roomCat) {
             $roomCat->roomCategory->id;
         });
-        $room = $room->groupBy('room_category_id');
+        // $room = $room->groupBy('room_category_id');
 
         return $this->jsonResponse(true, 'Available Rooms.', $room);
     }
 
+    public function getAvailableRoomByCategory()
+    {
+        // getting unavailable data to filter available
+        $unAvailableRoom = RoomAvailability::unavailable()->get();
+        $roomIds = [];
+        foreach ($unAvailableRoom as $av) {
+            array_push($roomIds, $av->room_id);
+        }
+
+        $room = Room::whereNotIn('id', $roomIds)->get();
+        $room->map(function ($roomCat) {
+            $roomCat->roomCategory->id;
+        });
+        $room = $room->groupBy('room_category_id');
+
+        return $this->jsonResponse(true, 'Available Rooms.', $room);
+    }
     public function getUnavailableRoom()
     {
         // getting unavailable data 
