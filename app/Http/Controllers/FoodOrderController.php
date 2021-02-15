@@ -188,6 +188,24 @@ class FoodOrderController extends Controller
         return $this->jsonResponse(true, 'Food Order has been deleted successfully.');
     }
 
+    public function updateOrderStatus()
+    {
+        if (request()->input('food')) {
+            $food = FoodOrderList::find(request()->input('food'));
+            $food->order_status = request()->input('order_status');
+            $food->save();
+        } else if (request()->input('bar')) {
+            $bar = BarOrderList::find(request()->input('bar'));
+            $bar->order_status = request()->input('order_status');
+            $bar->save();
+        } else {
+            $coffee = CoffeeOrderList::find(request()->input('coffee'));
+            $coffee->order_status = request()->input('order_status');
+            $coffee->save();
+        }
+        return $this->jsonResponse(true, 'Order Status has been updated to ' . strtoupper(request()->input('order_status')));
+    }
+
     // Todo: user validation in coming future.
     // private function validateOrderItemRequest()
     // {
