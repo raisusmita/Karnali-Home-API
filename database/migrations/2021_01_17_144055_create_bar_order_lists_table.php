@@ -26,6 +26,7 @@ class CreateBarOrderListsTable extends Migration
             $table->unsignedBigInteger('invoice_id')->nullable();
             $table->foreign('invoice_id')->references('id')->on('invoices');
             $table->integer('quantity');
+            $table->enum('order_status', array('ordered', 'processing', 'completed'))->default('ordered');
             $table->enum('status', array('due', 'paid'));
             $table->decimal('price', 25, 2);
             $table->decimal('total_amount', 50, 2);

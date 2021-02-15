@@ -36,7 +36,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('/foodOrderList', 'FoodOrderListController');
     Route::apiResource('/foodOrder', 'FoodOrderController');
     Route::post('/singleFoodOrder', 'FoodOrderController@deleteSingleFoodOrder');
-
+    Route::post('/orderStatus', 'FoodOrderController@updateOrderStatus');
 
 
     Route::apiResource('/tables', 'TableController');
@@ -100,7 +100,3 @@ Route::apiResource('/room_categories', 'RoomCategoryController');
 Route::post('/availableRoomByDate', 'RoomAvailabilityController@getAvailableRoomByDate');
 Route::post('/multipleBooking', 'BookingController@storeMultipleBooking');
 Route::get('/available', 'RoomAvailabilityController@getAvailableRoom');
-
-
-
-
