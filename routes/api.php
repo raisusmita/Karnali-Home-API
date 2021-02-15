@@ -93,6 +93,10 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/roomListByCustomerId', 'RoomAvailabilityController@getRoomDetailByCustomerId');
     Route::post('/availableRoomByBooking', 'RoomAvailabilityController@storeRoomAvailability');
     Route::post('/bookingToReservation', 'RoomAvailabilityController@updateBookingToReservation');
+    Route::get('/availableRoomCount', 'ReportController@fetchAvailability');
+    Route::get('/orderDetails', 'ReportController@fetchOrderDetails');
+    Route::get('/revenue', 'ReportController@fetchTotalRevenue');
+    Route::get('/availableTables', 'ReportController@fetchAvailableTables');
 });
 
 Route::apiResource('/room_categories', 'RoomCategoryController');
