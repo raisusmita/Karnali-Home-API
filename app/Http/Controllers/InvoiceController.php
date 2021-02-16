@@ -130,20 +130,26 @@ class InvoiceController extends Controller
     {
         // Update Food Order List
         foreach ($foodOrderLists as $foodOrderList) {
-            $foodItem = FoodOrderList::where(['id' => $foodOrderList['id']])->update([
-                "invoice_id" => $invoiceId
+            FoodOrderList::where(['id' => $foodOrderList['id']])->update([
+                "invoice_id" => $invoiceId,
+                "status" => "paid",
+                "order_status" => "completed"
             ]);
         }
         // Update Bar Order List
         foreach ($barOrderLists as $barOrderList) {
-            $barItem = BarOrderList::where(['id' => $barOrderList['id']])->update([
-                "invoice_id" => $invoiceId
+            BarOrderList::where(['id' => $barOrderList['id']])->update([
+                "invoice_id" => $invoiceId,
+                "status" => "paid",
+                "order_status" => "completed"
             ]);
         }
         // Update Coffee Order List
         foreach ($coffeeOrderLists as $coffeeOrderList) {
-            $coffeeItem = CoffeeOrderList::where(['id' => $coffeeOrderList['id']])->update([
-                "invoice_id" => $invoiceId
+            CoffeeOrderList::where(['id' => $coffeeOrderList['id']])->update([
+                "invoice_id" => $invoiceId,
+                "status" => "paid",
+                "order_status" => "completed"
             ]);
         }
     }
@@ -154,19 +160,22 @@ class InvoiceController extends Controller
             $tableNumber = $transaction['table_id'];
             $tableId = $transaction['table_id'];
             // Update Food Order List
-            $foodItem = FoodOrderList::where(['table_id' => $tableId, 'invoice_id' => null])->update([
+            FoodOrderList::where(['table_id' => $tableId, 'invoice_id' => null])->update([
                 "invoice_id" => $invoiceId,
-                "status" => "paid"
+                "status" => "paid",
+                "order_status" => "completed"
             ]);
             // Update Bar Order List
-            $barItem = BarOrderList::where(['table_id' => $tableId, 'invoice_id' => null])->update([
+            BarOrderList::where(['table_id' => $tableId, 'invoice_id' => null])->update([
                 "invoice_id" => $invoiceId,
-                "status" => "paid"
+                "status" => "paid",
+                "order_status" => "completed"
             ]);
             // Update Coffee Order List
-            $coffeeItem = CoffeeOrderList::where(['table_id' => $tableId, 'invoice_id' => null])->update([
+            CoffeeOrderList::where(['table_id' => $tableId, 'invoice_id' => null])->update([
                 "invoice_id" => $invoiceId,
-                "status" => "paid"
+                "status" => "paid",
+                "order_status" => "completed"
             ]);
         }
     }

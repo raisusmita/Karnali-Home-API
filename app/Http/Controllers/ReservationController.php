@@ -18,7 +18,7 @@ class ReservationController extends Controller
 {
     public function __construct(RoomAvailabilityServices $roomAvailabilityService)
     {
-        $this->roomAvailabilityService= $roomAvailabilityService;
+        $this->roomAvailabilityService = $roomAvailabilityService;
     }
 
 
@@ -40,12 +40,13 @@ class ReservationController extends Controller
         }
     }
 
-    public function getReservationList(Request $request){
-        $skip =$request->skip;
-        $limit=$request->limit;
-        $totalReservation = Reservation::where('status','!=','cancelled')->get()->count();
+    public function getReservationList(Request $request)
+    {
+        $skip = $request->skip;
+        $limit = $request->limit;
+        $totalReservation = Reservation::where('status', '!=', 'cancelled')->get()->count();
 
-        $reservation = Reservation::where('status','!=','cancelled')->skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
+        $reservation = Reservation::where('status', '!=', 'cancelled')->skip($skip)->take($limit)->orderBy('id', 'DESC')->get();
         if ($reservation->isNotEmpty()) {
             $reservation->map(function ($reservation) {
                 $reservation->Room;
@@ -71,64 +72,63 @@ class ReservationController extends Controller
         $status = array_shift($data);
 
         // Date formatting
-        $all = array_map(function($reserved){
+        $all = array_map(function ($reserved) {
             $reserved['check_in_date'] = Carbon::createFromFormat('Y-m-d\TH:i:s+', $reserved['check_in_date']);
             $reserved['check_out_date'] = Carbon::createFromFormat('Y-m-d\TH:i:s+', $reserved['check_out_date']);
+            $reserved["created_at"] = Carbon::now();
             return $reserved;
         }, $data);
 
-        $arrayLength= count($all);
-        
-        try{
+        $arrayLength = count($all);
+
+        try {
             DB::beginTransaction();
             // 1- get the last id of your table ($lastIdBeforeInsertion)  56 [59,60]
             $id = DB::table('reservations')->latest('id')->first();
 
             // Incase the reservation table is empty return 0 as last reservation id
-            if( empty($id))
-            {
-                $lastIdBeforeInsertion =0;
-            }else{
+            if (empty($id)) {
+                $lastIdBeforeInsertion = 0;
+            } else {
                 $lastIdBeforeInsertion = $id->id;
             }
-        
+
             // 2- insert multiple reservation
             $reservation = Reservation::insert($all);
-                
-            // 3- Getting the last inserted ids
-            $insertedIds = Reservation::where('id' ,'>' ,$lastIdBeforeInsertion)->get('id');
 
-            if($status['byBooking']== true){
-              
+            // 3- Getting the last inserted ids
+            $insertedIds = Reservation::where('id', '>', $lastIdBeforeInsertion)->get('id');
+
+            if ($status['byBooking'] == true) {
+
                 // Update the data in room availability if the room is booked
-                for ($i=0; $i < $arrayLength ; $i++) { 
-                    $roomAvailability= RoomAvailability::where(['booking_id'=> $all[$i]['booking_id'], 'room_id'=> $all[$i]['room_id']])->update([
-                      "reservation_id" => $insertedIds[$i]['id'],
-                      "check_in_date" => $all[$i]['check_in_date'],
-                      "check_out_date" => $all[$i]['check_out_date'],
-                      "status" => "reserved",
-                      "availability"=>"1",
+                for ($i = 0; $i < $arrayLength; $i++) {
+                    $roomAvailability = RoomAvailability::where(['booking_id' => $all[$i]['booking_id'], 'room_id' => $all[$i]['room_id']])->update([
+                        "reservation_id" => $insertedIds[$i]['id'],
+                        "check_in_date" => $all[$i]['check_in_date'],
+                        "check_out_date" => $all[$i]['check_out_date'],
+                        "status" => "reserved",
+                        "availability" => "1",
                     ]);
 
-                    $booking = Booking::where(['id'=> $all[0]['booking_id']])->update([
-                        "status"=>"complete"
+                    $booking = Booking::where(['id' => $all[0]['booking_id']])->update([
+                        "status" => "complete"
                     ]);
                 }
-            }
-            else{
+            } else {
                 // For direct reservation
                 // Creating params to insert rooms in roomAvailable table for "room number" reservation input 
-                for ($i=0; $i < $arrayLength ; $i++) { 
+                for ($i = 0; $i < $arrayLength; $i++) {
                     $availableRoomParams =  array(
-                    "reservation_id" => $insertedIds[$i]['id'],
-                    "room_id" => $all[$i]['room_id'],
-                    "check_in_date" => $all[$i]['check_in_date'],
-                    "check_out_date" => $all[$i]['check_out_date'],
-                    "status" => "reserved",
-                    "booking_id" => null,
-                    "availability"=>"1",
-                    "created_at" => Carbon::now(),
-                    "updated_at" => Carbon::now(),
+                        "reservation_id" => $insertedIds[$i]['id'],
+                        "room_id" => $all[$i]['room_id'],
+                        "check_in_date" => $all[$i]['check_in_date'],
+                        "check_out_date" => $all[$i]['check_out_date'],
+                        "status" => "reserved",
+                        "booking_id" => null,
+                        "availability" => "1",
+                        "created_at" => Carbon::now(),
+                        "updated_at" => Carbon::now(),
                     );
 
                     array_push($totalRooms, $availableRoomParams);
@@ -136,13 +136,11 @@ class ReservationController extends Controller
                 // Inserting into room availability 
                 $this->roomAvailabilityService->storeRoomAvailability($totalRooms);
             }
-                
+
 
             DB::commit();
             return $this->jsonResponse(true, 'Reservation has been created successfully.', $all);
-        }
-        catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             DB::rollback();
         }
     }
@@ -156,18 +154,18 @@ class ReservationController extends Controller
 
     public function update(Request $request, Reservation $reservation)
     {
-        try{
+        try {
             DB::beginTransaction();
             // First index is params for reservationUpdate
             $reservationParams =  array(
                 "id" => $request[0]['reservation_id'],
                 'check_in_date' => Carbon::createFromFormat('Y-m-d\TH:i:s+', $request[0]['check_in_date']),
-                'check_out_date' =>Carbon::createFromFormat('Y-m-d\TH:i:s+', $request[0]['check_out_date']),
+                'check_out_date' => Carbon::createFromFormat('Y-m-d\TH:i:s+', $request[0]['check_out_date']),
                 'room_id' => $request[0]['room_id']
             );
 
             // Formatting dates
-            $paramsRoomAvailable = array_map(function($reserved){
+            $paramsRoomAvailable = array_map(function ($reserved) {
                 $reserved['check_in_date'] = Carbon::createFromFormat('Y-m-d\TH:i:s+', $reserved['check_in_date']);
                 $reserved['check_out_date'] = Carbon::createFromFormat('Y-m-d\TH:i:s+', $reserved['check_out_date']);
                 return $reserved;
@@ -177,14 +175,14 @@ class ReservationController extends Controller
             array_shift($paramsRoomAvailable);
 
             // Update reservation info
-            $reservation= Reservation::where(['id'=> $reservationParams['id']])->update([
+            $reservation = Reservation::where(['id' => $reservationParams['id']])->update([
                 "check_in_date" => $reservationParams['check_in_date'],
                 "check_out_date" => $reservationParams['check_out_date'],
                 "room_id" => $reservationParams['room_id'],
             ]);
 
             // Update roomAvailability info
-            $roomAvailability= RoomAvailability::where(['reservation_id'=> $paramsRoomAvailable[0]['reservation_id']])->update([
+            $roomAvailability = RoomAvailability::where(['reservation_id' => $paramsRoomAvailable[0]['reservation_id']])->update([
                 "check_in_date" => $paramsRoomAvailable[0]['check_in_date'],
                 "check_out_date" => $paramsRoomAvailable[0]['check_out_date'],
                 "room_id" => $paramsRoomAvailable[0]['room_id'],
@@ -193,10 +191,7 @@ class ReservationController extends Controller
 
             DB::commit();
             return $this->jsonResponse(true, 'Reservation has been updated.', $reservation);
-
-        }
-        catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             DB::rollback();
         }
     }
@@ -209,7 +204,7 @@ class ReservationController extends Controller
 
     private function validateRequest()
     {
-        foreach(request() as $data){
+        foreach (request() as $data) {
             return $data->validate([
                 'room_id' => 'required',
                 'customer_id' => 'required',
@@ -220,13 +215,13 @@ class ReservationController extends Controller
         }
     }
 
-    private function jsonResponse($success = false, $message = '', $data = null, $totalCount=0)
+    private function jsonResponse($success = false, $message = '', $data = null, $totalCount = 0)
     {
         return response()->json([
             'success' => $success,
             'message' => $message,
             'data' => $data,
-            'totalCount'=>$totalCount
+            'totalCount' => $totalCount
 
         ]);
     }
