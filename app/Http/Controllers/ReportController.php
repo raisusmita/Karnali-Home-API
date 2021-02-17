@@ -60,7 +60,7 @@ class ReportController extends Controller
         $table = collect(Table::pluck('id')->toArray());
         $availableTable = $table->diff(array_unique(array_merge($foodTables->toArray(), $barTables->toArray(), $coffeeTables->toArray())));
         $tables = Table::whereIn('id', $availableTable)->get();
-        return $this->jsonResponse(true, 'Total Ordered and completed list', $table);
+        return $this->jsonResponse(true, 'Total Available Table', $tables);
     }
 
     private function jsonResponse($success = false, $message = '', $data = null)
