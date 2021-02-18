@@ -80,7 +80,7 @@ class BookingController extends Controller
             $availableRoomParams = [];
             $totalRooms = [];
             // Create room booking
-            $booking = Booking::insert($this->validateRequest($request));
+            $booking = Booking::create($this->validateRequest($request));
             $booking = Booking::all()->last();
             // Get available room 
             $availableRoom = $this->roomAvailabilityService->getAvailableRoom();
@@ -311,7 +311,8 @@ class BookingController extends Controller
     
         public function validateRequest($request)
         {
-            $test = $request->validate([
+            
+            $validateData = $request->validate([
                 'customer_id' => 'required',
                 'room_category_id' => 'required',
                 'number_of_rooms' => 'required',
@@ -321,7 +322,7 @@ class BookingController extends Controller
                 'check_out_date' => 'required',
             ]);
 
-            return $test;
+            return $validateData;
         }
     
     private function jsonResponse($success = false, $message = '', $data = null, $totalCount=0)
