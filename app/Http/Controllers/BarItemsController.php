@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Model\BarItems;
+use App\Model\BarName;
 use App\Model\MainBarCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BarItemsController extends Controller
 {
@@ -16,6 +18,9 @@ class BarItemsController extends Controller
         $bar->map(function ($bar) {
             if ($bar->main_bar_category_id != null) {
                 $bar->mainBarCategory;
+            }
+            if ($bar->bar_name_id != null) {
+                $bar['bar_name'] = BarName::find($bar->bar_name_id)->bar_name;
             }
         });
         if ($bar->isNotEmpty()) {
@@ -37,6 +42,9 @@ class BarItemsController extends Controller
                 if ($bar->main_bar_category_id != null) {
                     $bar->mainBarCategory;
                 }
+                if ($bar->bar_name_id != null) {
+                    $bar['bar_name'] = BarName::find($bar->bar_name_id)->bar_name;
+                }
             });
             return $this->jsonResponse(true, 'Lists of bars.', $bar, $totalBarItems);
         } else {
@@ -49,9 +57,19 @@ class BarItemsController extends Controller
         $barList = array(
             "barItems" => []
         );
-        $barItems = BarItems::where('main_bar_category_id', request()->id)->get();
+
+        $barItems = BarName::get();
+        foreach ($barItems as $key => $bName) {
+            $bName->BarItems->where('main_bar_category_id', '=', request()->id);
+            // WIP: filter out unrelated data
+            if ($bName->barItems) {
+                unset($barItems[$key]);
+            }
+        }
+
+        // $barItems = BarItems::groupBy('bar_name_id')->whereNotNull('bar_name_id')->where('main_bar_category_id', request()->id)->get();
         $barList["barItems"] = $barItems;
-        return $this->jsonResponse(true, 'Lists of sub bars.', $barList);
+        return $this->jsonResponse(true, 'Lists of bars items.', $barList);
     }
 
     public function store()
@@ -81,8 +99,8 @@ class BarItemsController extends Controller
     {
         return request()->validate([
             'main_bar_category_id' => 'sometimes',
-            'bar_name' => 'required',
-            'quantity' => 'sometimes',
+            'bar_name_id' => 'sometimes',
+            'quantity' => 'required',
             'price' => 'required',
         ]);
     }

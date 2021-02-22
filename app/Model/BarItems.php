@@ -18,4 +18,9 @@ class BarItems extends Model
     {
         return $this->belongsTo(BarOrderList::class);
     }
+
+    public function barName()
+    {
+        return $this->belongsTo(BarName::class);
+    }
 }
