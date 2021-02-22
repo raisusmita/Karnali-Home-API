@@ -161,6 +161,8 @@ class ReservationController extends Controller
                 "id" => $request[0]['reservation_id'],
                 'check_in_date' => Carbon::createFromFormat('Y-m-d\TH:i:s+', $request[0]['check_in_date']),
                 'check_out_date' => Carbon::createFromFormat('Y-m-d\TH:i:s+', $request[0]['check_out_date']),
+                "number_of_adult" => $request[0]['number_of_adult'],
+                "number_of_child" => $request[0]['number_of_child'],
                 'room_id' => $request[0]['room_id']
             );
 
