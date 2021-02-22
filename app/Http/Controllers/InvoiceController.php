@@ -288,7 +288,6 @@ class InvoiceController extends Controller
             if (($transactions[0]['callFrom']) == 'transaction') {
                 // Params for Invoice
                 $invoiceParams =  array(
-                    "invoice_number" => 'INV00' . $transactionNumber,
                     "service_charge" => $serviceCharge,
                     "tax" => $tax,
                     "vat" => $vAT,
@@ -311,7 +310,6 @@ class InvoiceController extends Controller
                 $coffeeOrderLists = $coffeeOrderDetail[1];
                 // Params for Invoice
                 $invoiceParams =  array(
-                    "invoice_number" => 'INVTAB00' . $tableNumber,
                     "service_charge" => $serviceCharge,
                     "tax" => $tax,
                     "vat" => $vAT,
@@ -322,6 +320,8 @@ class InvoiceController extends Controller
             }
             // insert into invoice table
             $invoice = Invoice::create($invoiceParams);
+            $invoice->invoice_number='INV00' . $invoice->id;
+            $invoice->save();
             // Store invoice related data in previously made final array
             $initialTransactionDetail = array("invoice" => $invoice);
             array_push($finalTransactionDetail, $initialTransactionDetail);
