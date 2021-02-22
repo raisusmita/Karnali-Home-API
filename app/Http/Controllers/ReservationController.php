@@ -178,6 +178,8 @@ class ReservationController extends Controller
             $reservation = Reservation::where(['id' => $reservationParams['id']])->update([
                 "check_in_date" => $reservationParams['check_in_date'],
                 "check_out_date" => $reservationParams['check_out_date'],
+                "number_of_adult" => $reservationParams['number_of_adult'],
+                "number_of_child" => $reservationParams['number_of_child'],
                 "room_id" => $reservationParams['room_id'],
             ]);
 

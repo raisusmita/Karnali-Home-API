@@ -21,6 +21,8 @@ class CreateReservationsTable extends Migration
             $table->foreign('customer_id')->references('id')->on('customers');
             $table->unsignedBigInteger('booking_id')->nullable();
             $table->foreign('booking_id')->references('id')->on('bookings');
+            $table->integer('number_of_adult')->nullable();
+            $table->integer('number_of_child')->nullable();
             $table->enum('status', array('active', 'complete', 'cancelled'));
             $table->dateTime('check_in_date');
             $table->dateTime('check_out_date');
