@@ -24,7 +24,10 @@ class ReportController extends Controller
         $counts['totalAvailableRoom'] = Room::whereNotIn('id', $roomIds)->count();
         $counts['totalReservation'] = RoomAvailability::unavailable()->where('status', 'reserved')->count();
         $counts['totalBooking'] = RoomAvailability::unavailable()->where('status', 'booked')->count();
-        // Todo: total guest 
+        $adult = Reservation::where('status', 'active')->sum('number_of_adult');
+        $child = Reservation::where('status', 'active')->sum('number_of_child');
+        $counts['totalNumberOfGuest'] = $adult + $child;
+
         return $this->jsonResponse(true, 'Available data', $counts);
     }
 
