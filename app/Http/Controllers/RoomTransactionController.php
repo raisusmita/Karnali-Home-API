@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Model\RoomCategory;
 use App\Model\Reservation;
 use App\Model\RoomAvailability;
+use App\Model\Customer;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -77,6 +78,9 @@ class RoomTransactionController extends Controller
 
             $roomTransaction = $request->all();
 
+            $transactionDetail =[];
+            $allTransactionDetail=[];
+
             foreach($roomTransaction as $roomDetail){
                 // Get room category detail for price
                 $roomCategory = RoomCategory::where(['id'=>$roomDetail['room_category_id']])->get();
@@ -105,6 +109,24 @@ class RoomTransactionController extends Controller
 
                 $roomTransaction = RoomTransaction::create($roomTransactionParams);
 
+                $customerData=Customer::where(['id'=>$roomTransaction->customer_id])->get();
+                $reservationData =Reservation::where(['id'=>$roomTransaction->reservation_id])->get();
+
+                $reservationData->map(function($reservation){
+                    $reservation->Room;
+                });
+
+                 // Params for room transaction
+                 $transactionDetail =  array(
+                    "customer" =>$customerData,
+                    "reservation" =>$reservationData,
+                    "transaction"=>$roomTransaction,
+                    "callFrom"=>"transaction"
+                );
+
+               array_push($allTransactionDetail, $transactionDetail);
+
+
                 // Update roomAvailability info
                 $roomAvailability= RoomAvailability::where(['reservation_id'=> $roomDetail['reservation_id'], 'room_id'=>$roomDetail['room_id']])->update([
                     "status"=>"transact",
@@ -122,9 +144,12 @@ class RoomTransactionController extends Controller
 
             };
 
+
+            
+
             DB::commit();
 
-            return $this->jsonResponse(true, 'Room Transaction has been created successfully.', $roomTransaction);
+            return $this->jsonResponse(true, 'Room Transaction has been created successfully.', $allTransactionDetail);
         }
         catch(\Exception $e)
         {
