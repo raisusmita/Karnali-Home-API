@@ -199,6 +199,8 @@ class InvoiceController extends Controller
         $initialTransactionDetail = [];
         $finalTransactionDetail = [];
         $transactions = $request->all();
+        $discount =$transactions[0]['discount'];
+        $serviceCharge = $transactions[0]['service_tax'];
 
         if (($transactions[0]['callFrom']) == 'transaction') {
             // Get Food Order for updating the invoice id in food order table 
@@ -207,40 +209,23 @@ class InvoiceController extends Controller
             $reservation = Reservation::where('id', $reservationId)->get();
             $checkInDate = $reservation[0]->check_in_date;
             $checkOutDate = $reservation[0]->check_out_date;
-
             //Get Food total amount and order lists
             $foodOrderDetail = $this->getFoodTotalByRoom($checkInDate, $checkOutDate, $roomId);
             $foodTotal = $foodOrderDetail[0];
             $foodOrderLists = $foodOrderDetail[1];
-
             //Get Bar total amount and order lists
             $barOrderDetail = $this->getBarTotalByRoom($checkInDate, $checkOutDate, $roomId);
             $barTotal = $barOrderDetail[0];
             $barOrderLists = $barOrderDetail[1];
-
             //Get Coffee total amount and order lists
             $coffeeOrderDetail = $this->getCoffeeTotalByRoom($checkInDate, $checkOutDate, $roomId);
             $coffeeTotal = $coffeeOrderDetail[0];
             $coffeeOrderLists = $coffeeOrderDetail[1];
 
-            $charges = Charge::all();
-            // Extracting charges value from charge table
-            foreach ($charges as $charge) {
-                if ($charge['charges'] == 'Tax') {
-                    $tax = $charge['value'];
-                } else if ($charge['charges'] == 'Discount') {
-                    $discount = $charge['value'];
-                } else if ($charge['charges'] == 'Service charge') {
-                    $serviceCharge = $charge['value'];
-                } else if ($charge['charges'] == 'VAT') {
-                    $vAT = $charge['value'];
-                }
-            }
             // Calculating total amount from all transactions 
             // Also storing each transactions number to generate invoiceNumber later
             $transactionNumber = $transactionNumber . $transactions[0]['transaction_id'];
         }
-
         if (($transactions[0]['callFrom']) == 'transaction' || ($transactions[0]['callFrom']) == 'invoice') {
             foreach ($transactions as $transaction) {
                 $total_amount = (float)$total_amount + (float)$transaction['amount'];
@@ -262,6 +247,8 @@ class InvoiceController extends Controller
                 );
                 array_push($finalTransactionDetail, $initialTransactionDetail);
             }
+
+
         }
         // invoice is only created when call from transaction and table transaction
         if (($transactions[0]['callFrom']) == 'invoice') {
@@ -280,15 +267,17 @@ class InvoiceController extends Controller
             $initialTransactionDetail = array("invoice" => $invoice);
             array_push($finalTransactionDetail, $initialTransactionDetail);
         } else {
-            // Actual calculation for each charges
-            $appliedVAT = (float)($vAT / 100) * $total_amount;
-            $appliedDiscount = (float)($discount / 100) * $total_amount;
-            $appliedTax = (float)($tax / 100) * $total_amount;
-            $appliedServiceCharge = (float)($serviceCharge / 100) * $total_amount;
+           
+
             if (($transactions[0]['callFrom']) == 'transaction') {
+                $grand_total = $total_amount + $foodTotal + $barTotal + $coffeeTotal;
+                // Actual calculation for each charges
+                $appliedVAT = (float)($vAT / 100) * $grand_total;
+                $appliedDiscount = (float)($discount / 100) * $grand_total;
+                $appliedTax = (float)($tax / 100) * $grand_total;
+                $appliedServiceCharge = (float)($serviceCharge / 100) * $grand_total;
                 // Params for Invoice
                 $invoiceParams =  array(
-                    "invoice_number" => 'INV00' . $transactionNumber,
                     "service_charge" => $serviceCharge,
                     "tax" => $tax,
                     "vat" => $vAT,
@@ -309,9 +298,17 @@ class InvoiceController extends Controller
                 $coffeeOrderDetail = $this->getCoffeeTotalByTable($transactions);
                 $coffeeTotal = $coffeeOrderDetail[0];
                 $coffeeOrderLists = $coffeeOrderDetail[1];
+
+                
+                $grand_total = $foodTotal + $barTotal+$coffeeTotal;
+                // Actual calculation for each charges
+                $appliedVAT = (float)($vAT / 100) * $grand_total;
+                $appliedDiscount = (float)($discount / 100) * $grand_total;
+                $appliedTax = (float)($tax / 100) * $grand_total;
+                $appliedServiceCharge = (float)($serviceCharge / 100) * $grand_total;
+
                 // Params for Invoice
                 $invoiceParams =  array(
-                    "invoice_number" => 'INVTAB00' . $tableNumber,
                     "service_charge" => $serviceCharge,
                     "tax" => $tax,
                     "vat" => $vAT,
@@ -320,8 +317,11 @@ class InvoiceController extends Controller
                     "grand_total" => (float)($foodTotal + $barTotal + $coffeeTotal + $appliedServiceCharge + $appliedTax + $appliedVAT - $appliedDiscount),
                 );
             }
+
             // insert into invoice table
             $invoice = Invoice::create($invoiceParams);
+            $invoice->invoice_number='INV00' . $invoice->id;
+            $invoice->save();
             // Store invoice related data in previously made final array
             $initialTransactionDetail = array("invoice" => $invoice);
             array_push($finalTransactionDetail, $initialTransactionDetail);

@@ -15,7 +15,7 @@ class CreateInvoicesTable extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('invoice_number');
+            $table->string('invoice_number')->nullable();
             $table->integer('vat')->default(13);
             $table->integer('discount')->default(0);
             $table->integer('service_charge');
