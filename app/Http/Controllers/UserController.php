@@ -119,7 +119,7 @@ class UserController extends Controller
     {
         return request()->validate([
             'name' => 'required',
-            'email' => 'required|email',
+            'email' => 'required|min:2',
             'password' => 'required|min:6',
             'role' => [
                 'required',
