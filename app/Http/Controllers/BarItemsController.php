@@ -58,15 +58,29 @@ class BarItemsController extends Controller
             "barItems" => []
         );
 
-        $barItems = BarName::get();
-        foreach ($barItems as $key => $bName) {
-            $bName->BarItems->where('main_bar_category_id', '=', request()->id);
-            // WIP: filter out unrelated data
-            if ($bName->barItems) {
-                unset($barItems[$key]);
-            }
-        }
+        // $barItems = BarName::get();
+        // foreach ($barItems as $key => $bName) {
+        //     $bName->BarItems->where('main_bar_category_id', request()->id);
+        //     // WIP: filter out unrelated data
+        //     if (empty($bName->barItems)) {
+        //         unset($barItems[$key]);
+        //     }
+        // }
 
+        $barItems = BarName::with(['barItems' => function ($q) {
+            $q->where('main_bar_category_id', request()->id); // '=' is optional
+        }])->get();
+
+        // $val = [];
+        // foreach ($barItems as $key => $value) {
+        //     if (!empty($value->bar_items)) {
+        //         // return $value->bar_items;
+        //         // unset($barItems[$key]);
+        //     } else {
+        //         array_push($val, $value);
+        //     }
+        // }
+        // return $val;
         // $barItems = BarItems::groupBy('bar_name_id')->whereNotNull('bar_name_id')->where('main_bar_category_id', request()->id)->get();
         $barList["barItems"] = $barItems;
         return $this->jsonResponse(true, 'Lists of bars items.', $barList);
