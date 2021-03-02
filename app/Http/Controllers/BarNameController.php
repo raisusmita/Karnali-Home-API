@@ -39,21 +39,13 @@ class BarNameController extends Controller
         return $this->jsonResponse(true, 'Main Bar Category has been created successfully.', $barName);
     }
 
-    // public function show($id)
-    // {
-    //     //
-    // }
-
+  
     public function update(BarName $barName)
     {
         $barName->update($this->validateRequest());
         return $this->jsonResponse(true, 'Main bar category has been updated.', $barName);
     }
-    // public function destroy(BarName $barName)
-    // {
-    //     $barName->delete();
-    //     return $this->jsonResponse(true, 'BarItems has been deleted successfully.');
-    // }
+ 
 
     private function validateRequest()
     {
