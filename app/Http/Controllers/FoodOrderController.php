@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Model\BarOrderList;
 use App\Model\CoffeeOrderList;
 use App\Model\FoodOrder;
+use App\Model\BarItems;
+use App\Model\BarName;
 use App\Model\FoodOrderList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -34,6 +36,10 @@ class FoodOrderController extends Controller
             });
             $foodOrderItem->BarOrderLists->map(function ($barItem) {
                 $barItem->BarItems;
+                $BarNameId = BarItems::find($barItem->bar_items_id)->bar_name_id;
+                $BarName = BarName::find($BarNameId)->bar_name;
+                $barItem['bar_name'] =$BarName;
+              
                 if ($barItem->room_id) {
                     $barItem->Room;
                 } else {
