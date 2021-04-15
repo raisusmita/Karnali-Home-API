@@ -10,11 +10,17 @@ class TableController extends Controller
 
     public function index()
     {
+        $totaltable = Table::get()->count();
         $table = Table::all();
+        $table->map(function($itemOrderList){
+            $itemOrderList->foodOrderLists = $itemOrderList->foodOrderLists()->where(['invoice_id'=>null,'status'=>'due'])->get();
+            $itemOrderList->barOrderLists = $itemOrderList->barOrderLists()->where(['invoice_id'=>null,'status'=>'due'])->get();
+            $itemOrderList->coffeeOrderLists = $itemOrderList->coffeeOrderLists()->where(['invoice_id'=>null,'status'=>'due'])->get();
+        });
         if ($table->isNotEmpty()) {
-            return $this->jsonResponse(true, 'Lists of Table.', $table);
+            return $this->jsonResponse(true, 'Lists of Table.', $table, $totaltable);
         } else {
-            return $this->jsonResponse(false, 'Currently, there is no any table yet.', $table);
+            return $this->jsonResponse(false, 'Currently, there is no any table yet.', $table, $totaltable);
         }
     }
 
@@ -35,6 +41,8 @@ class TableController extends Controller
             return $this->jsonResponse(false, 'Currently, there is no any table yet.', $table, $totaltable);
         }
     }
+
+    
 
 
     public function store()
