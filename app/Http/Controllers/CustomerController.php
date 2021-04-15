@@ -106,9 +106,9 @@ class CustomerController extends Controller
             'email' => 'sometimes',
             'phone' => 'required',
             'date_of_birth' => 'required',
-            'profession' => 'required',
+            'profession' => '',
             'identity_type' => 'required',
-            'identity_number' => 'required',
+            'identity_number' => '',
             'identity_image_first' => 'file|image|mimes:jpeg,png,jpg,gif|nullable|sometimes',
             'identity_image_second' => 'file|image|mimes:jpeg,png,jpg,gif|nullable|sometimes'
         ]);
