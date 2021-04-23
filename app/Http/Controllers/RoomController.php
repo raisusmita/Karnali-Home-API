@@ -54,7 +54,7 @@ class RoomController extends Controller
 
     public function store()
     {
-        $room = Room::create($this->validateRequest());
+        $room = Room::create($this->validateAddRequest());
         return $this->jsonResponse(true, 'Room has been created successfully', $room);
     }
 
@@ -65,7 +65,7 @@ class RoomController extends Controller
 
     public function update(Room $room)
     {
-        $room->update($this->validateRequest());
+        $room->update($this->validateEditRequest());
         return $this->jsonResponse(true, 'Room has been updated.', $room);
     }
 
@@ -75,7 +75,7 @@ class RoomController extends Controller
         return $this->jsonResponse(true, 'Room has been deleted successfully.');
     }
 
-    private function validateRequest()
+    private function validateAddRequest()
     {
         return request()->validate([
             'room_category_id' => 'required',
@@ -84,6 +84,17 @@ class RoomController extends Controller
             'telephone_number' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/',
         ]);
     }
+
+    private function validateEditRequest()
+    {
+        return request()->validate([
+            'room_category_id' => 'required',
+            'room_number' => 'required |unique:rooms,room_number,'. request()->id,
+            'number_of_bed' => 'required',
+            'telephone_number' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/',
+        ]);
+    }
+
 
     private function jsonResponse($success = false, $message = '', $data = null, $totalRoom=0)
     {
