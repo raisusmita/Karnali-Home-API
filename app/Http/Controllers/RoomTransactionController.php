@@ -12,6 +12,8 @@ use App\Model\RoomCategory;
 use App\Model\Reservation;
 use App\Model\RoomAvailability;
 use App\Model\Customer;
+use App\Model\BarItems;
+use App\Model\BarName;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -72,31 +74,21 @@ class RoomTransactionController extends Controller
     public function store(Request $request)
 
     {
-       
         try{
             DB::beginTransaction();
-
             $roomTransaction = $request->all();
-
             $transactionDetail =[];
             $allTransactionDetail=[];
-
             foreach($roomTransaction as $roomDetail){
                 // Get room category detail for price
                 $roomCategory = RoomCategory::where(['id'=>$roomDetail['room_category_id']])->get();
-
                 // Get reservation detail for customer id
                 $customer = Reservation::where(['id'=>$roomDetail['reservation_id']])->get();
-
-
                 // Subtracting todayDate from checkInDate to calculate number of days stayed
                 $checkInDate = new \DateTime($roomDetail['check_in_date']);
                 $checkOutDate = new \DateTime($roomDetail['check_out_date']);
                 $interval = $checkOutDate->diff($checkInDate);
                 $days = $interval->format('%a');
-
-
-
                 // Params for room transaction
                 $roomTransactionParams =  array(
                     "customer_id" => $customer[0]['customer_id'],
@@ -106,16 +98,12 @@ class RoomTransactionController extends Controller
                     "total_amount" => $roomCategory[0]['room_price'] * $days,
                     "invoice_id"=>null,
                 );
-
                 $roomTransaction = RoomTransaction::create($roomTransactionParams);
-
                 $customerData=Customer::where(['id'=>$roomTransaction->customer_id])->get();
                 $reservationData =Reservation::where(['id'=>$roomTransaction->reservation_id])->get();
-
                 $reservationData->map(function($reservation){
                     $reservation->Room;
                 });
-
                  // Params for room transaction
                  $transactionDetail =  array(
                     "customer" =>$customerData,
@@ -123,10 +111,7 @@ class RoomTransactionController extends Controller
                     "transaction"=>$roomTransaction,
                     "callFrom"=>"transaction"
                 );
-
-               array_push($allTransactionDetail, $transactionDetail);
-
-
+                array_push($allTransactionDetail, $transactionDetail);
                 // Update roomAvailability info
                 $roomAvailability= RoomAvailability::where(['reservation_id'=> $roomDetail['reservation_id'], 'room_id'=>$roomDetail['room_id']])->update([
                     "status"=>"transact",
@@ -134,21 +119,14 @@ class RoomTransactionController extends Controller
                     "check_out_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomDetail['check_out_date']),
                     "availability"=>'0'
                 ]);
-
                 // Update reservation checkIn/checkOut Date
                 $roomAvailability= Reservation::where(['id'=> $roomDetail['reservation_id']])->update([
                     "check_in_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomDetail['check_in_date']),
                     "check_out_date"=> Carbon::createFromFormat('Y-m-d\TH:i:s+', $roomDetail['check_out_date']),
                     "status"=>'complete'
                 ]);
-
             };
-
-
-            
-
             DB::commit();
-
             return $this->jsonResponse(true, 'Room Transaction has been created successfully.', $allTransactionDetail);
         }
         catch(\Exception $e)
@@ -161,38 +139,62 @@ class RoomTransactionController extends Controller
         $params = $request->all();
         $roomId = $params['roomId'];
         $reservationId = $params['reservationId'];
-
+        $callFrom = $params['callFrom'];
         $reservation = Reservation::where('id',$reservationId)->get();
         $checkInDate = $reservation[0]->check_in_date;
         $checkOutDate = $reservation[0]->check_out_date;
-
-        //Get FoodOderList
-        $foodOrderList = FoodOrderList::where('room_id', $roomId)->
-        whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
-        $foodOrderList->map(function ($order){
-            $order->FoodItems;
-        });
-
-        //Get CoffeeOrderList
-        $coffeeOrderList = CoffeeOrderList::where('room_id', $roomId)->
-        whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
-        $coffeeOrderList->map(function ($order){
-            $order->CoffeeItems;
-          });
-
-        //Get BarOrderList
-        $barOrderList = BarOrderList::where('room_id', $roomId)->
-        whereBetween('created_at', [$checkInDate, $checkOutDate])->get();
-        $barOrderList->map(function ($order){
-            $order->BarItems;
-        });
-        
-        // toBase() is used to restrict the remove of multiple object having same id during merge
-        $firstMergeOrderList = $foodOrderList->toBase()->merge($coffeeOrderList);
-        $allOrderList = $firstMergeOrderList->toBase()->merge($barOrderList);
-
+        if($callFrom =='afterProcessing'){
+             //Get FoodOderList
+            $foodOrderList = FoodOrderList::where('room_id', $roomId)->
+            whereBetween('created_at', [$checkInDate, $checkOutDate])->whereNotNull('invoice_id')->get();
+            $foodOrderList->map(function ($order){
+                $order->FoodItems;
+            });
+            //Get CoffeeOrderList
+            $coffeeOrderList = CoffeeOrderList::where('room_id', $roomId)->
+            whereBetween('created_at', [$checkInDate, $checkOutDate])->whereNotNull('invoice_id')->get();
+            $coffeeOrderList->map(function ($order){
+                $order->CoffeeItems;
+            });
+            //Get BarOrderList
+            $barOrderList = BarOrderList::where('room_id', $roomId)->
+            whereBetween('created_at', [$checkInDate, $checkOutDate])->whereNotNull('invoice_id')->get();
+            $barOrderList->map(function ($order){
+                $order->BarItems;
+                $BarNameId = BarItems::find($order->bar_items_id)->bar_name_id;
+                $BarName = BarName::find($BarNameId)->bar_name;
+                $order['bar_name'] =$BarName;
+            });
+            // toBase() is used to restrict the remove of multiple object having same id during merge
+            $firstMergeOrderList = $foodOrderList->toBase()->merge($coffeeOrderList);
+            $allOrderList = $firstMergeOrderList->toBase()->merge($barOrderList);
+        }else{
+            //Get FoodOderList
+            $foodOrderList = FoodOrderList::where('room_id', $roomId)->
+            whereBetween('created_at', [$checkInDate, $checkOutDate])->where('invoice_id',null)->get();
+            $foodOrderList->map(function ($order){
+                $order->FoodItems;
+            });
+            //Get CoffeeOrderList
+            $coffeeOrderList = CoffeeOrderList::where('room_id', $roomId)->
+            whereBetween('created_at', [$checkInDate, $checkOutDate])->where('invoice_id', null)->get();
+            $coffeeOrderList->map(function ($order){
+                $order->CoffeeItems;
+              });
+            //Get BarOrderList
+            $barOrderList = BarOrderList::where('room_id', $roomId)->
+            whereBetween('created_at', [$checkInDate, $checkOutDate])->where('invoice_id', null)->get();
+            $barOrderList->map(function ($order){
+                $order->BarItems;
+                $BarNameId = BarItems::find($order->bar_items_id)->bar_name_id;
+                $BarName = BarName::find($BarNameId)->bar_name;
+                $order['bar_name'] =$BarName;
+            });
+            // toBase() is used to restrict the remove of multiple object having same id during merge
+            $firstMergeOrderList = $foodOrderList->toBase()->merge($coffeeOrderList);
+            $allOrderList = $firstMergeOrderList->toBase()->merge($barOrderList);
+        }
         return $allOrderList;
-
         //   if ($foodOrder->isNotEmpty()) {
         //     return $this->jsonResponse(true, 'List of Food Order made by room.', $foodOrder);
         // } else {
@@ -220,6 +222,9 @@ class RoomTransactionController extends Controller
         $barOrderList = BarOrderList::where(['table_id'=>$tableId, 'status'=>'due'])->get();
         $barOrderList->map(function ($order){
             $order->BarItems;
+            $BarNameId = BarItems::find($order->bar_items_id)->bar_name_id;
+            $BarName = BarName::find($BarNameId)->bar_name;
+            $order['bar_name'] =$BarName;
         });
         
 

@@ -273,9 +273,9 @@ class InvoiceController extends Controller
                 $grand_total = $total_amount + $foodTotal + $barTotal + $coffeeTotal;
                 // Actual calculation for each charges
                 $appliedVAT = (float)($vAT / 100) * $grand_total;
-                $appliedDiscount = (float)($discount / 100) * $grand_total;
+                $appliedDiscount = (float)($discount );
                 $appliedTax = (float)($tax / 100) * $grand_total;
-                $appliedServiceCharge = (float)($serviceCharge / 100) * $grand_total;
+                $appliedServiceCharge = (float)($serviceCharge);
                 // Params for Invoice
                 $invoiceParams =  array(
                     "service_charge" => $serviceCharge,
@@ -303,9 +303,9 @@ class InvoiceController extends Controller
                 $grand_total = $foodTotal + $barTotal+$coffeeTotal;
                 // Actual calculation for each charges
                 $appliedVAT = (float)($vAT / 100) * $grand_total;
-                $appliedDiscount = (float)($discount / 100) * $grand_total;
+                $appliedDiscount = (float)($discount);
                 $appliedTax = (float)($tax / 100) * $grand_total;
-                $appliedServiceCharge = (float)($serviceCharge / 100) * $grand_total;
+                $appliedServiceCharge = (float)($serviceCharge);
 
                 // Params for Invoice
                 $invoiceParams =  array(
